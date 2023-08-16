@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
+import path from 'path'
 import nunjucks from 'nunjucks'
 import express from 'express'
-import path from 'path'
 import { initialiseName } from './utils'
 import { ApplicationInfo } from '../applicationInfo'
 
@@ -11,7 +11,7 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
   app.set('view engine', 'njk')
 
   app.locals.asset_path = '/assets/'
-  app.locals.applicationName = 'Probation Search Ui'
+  app.locals.applicationName = 'Probation Search'
 
   // Cachebusting version string
   if (production) {

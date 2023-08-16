@@ -3,12 +3,10 @@
 
 generic-service:
   ingress:
-    host: probation-search-ui.hmpps.service.justice.gov.uk
+    host: probation-search.hmpps.service.justice.gov.uk
 
   env:
-    INGRESS_URL: "https://probation-search-ui.hmpps.service.justice.gov.uk"
+    ENVIRONMENT: prod
+    INGRESS_URL: "https://probation-search.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api.prison.service.justice.gov.uk"
-
-generic-prometheus-alerts:
-  alertSeverity: digital-prison-service
