@@ -31,6 +31,7 @@ export interface ApiConfig {
 
 export default {
   buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
+  environment: get('ENVIRONMENT', 'local', requiredInProduction),
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
   production,
@@ -45,6 +46,10 @@ export default {
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
     expiryMinutes: Number(get('WEB_SESSION_TIMEOUT_IN_MINUTES', 120)),
+  },
+  sentry: {
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: process.env.SENTRY_TRACES_SAMPLE_RATE,
   },
   apis: {
     hmppsAuth: {
