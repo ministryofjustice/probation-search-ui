@@ -15,4 +15,4 @@ generic-service:
     SENTRY_TRACES_SAMPLE_RATE: "1.0"
 
 generic-prometheus-alerts:
-  alertSeverity: digital-prison-service-dev
+  businessHoursOnly: true
