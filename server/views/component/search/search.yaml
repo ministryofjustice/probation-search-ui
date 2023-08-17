@@ -1,0 +1,31 @@
+params:
+  - name: id
+    type: string
+    required: true
+    description: The ID of the search component.
+  - name: name
+    type: string
+    required: true
+    description: The name of the search component, which is submitted with the form data.
+  - name: value
+    type: string
+    required: false
+    description: Optional initial value of the search input.
+  - name: label
+    type: object
+    required: true
+    description: Options for the label component.
+    isComponent: true
+  - name: hint
+    type: object
+    required: false
+    description: Options for the hint component.
+    isComponent: true
+  - name: results
+    type: object
+    required: true
+    description: Data passed back by the search router.
+    isComponent: true
+
+examples:
+  # TODO add examples

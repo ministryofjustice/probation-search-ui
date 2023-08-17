@@ -1,11 +1,22 @@
 {% extends "../partials/layout.njk" %}
+{% from "../component/search/macro.njk" import probationSearch %}
 
 {% set pageTitle = applicationName + " - Home" %}
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
 
-  <h1>This site is under construction...</h1>
-  <p>Please check back later when there is content to view.</p>
+  <div class="govuk-!-width-two-thirds">
+    {{ probationSearch({
+      id: "search",
+      name: "search",
+      label: {
+        text: "Search for people on probation",
+        classes: "govuk-heading-l",
+        isPageHeading: true
+      },
+      results: probationSearchResults
+    }) }}
+  </div>
 
 {% endblock %}

@@ -9,6 +9,7 @@ export const services = () => {
   return {
     applicationInfo,
     userService,
+    hmppsAuthClient,
   }
 }
 

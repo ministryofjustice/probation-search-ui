@@ -31,7 +31,7 @@ export interface ApiConfig {
 
 export default {
   buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
-  environment: get('ENVIRONMENT', 'local', requiredInProduction),
+  environment: get('ENVIRONMENT', 'local', requiredInProduction) as 'local' | 'dev' | 'preprod' | 'prod',
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
   production,

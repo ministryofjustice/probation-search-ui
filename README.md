@@ -60,6 +60,7 @@ Create an `.env` file at the root of the project:
 ```properties
 NODE_ENV=development
 REDIS_HOST=localhost
+ENVIRONMENT=dev
 HMPPS_AUTH_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
 PROBATION_SEARCH_API_URL=https://probation-offender-search-dev.hmpps.service.justice.gov.uk
 
