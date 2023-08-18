@@ -20,7 +20,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: npm ci -w '@ministryofjustice/probation-search-frontend'
+        run: npm clean-install -w '@ministryofjustice/probation-search-frontend'
 
       - name: Build
         run: npm run build -w '@ministryofjustice/probation-search-frontend'

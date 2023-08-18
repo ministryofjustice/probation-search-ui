@@ -22,13 +22,13 @@ jobs:
           node-version-file: .nvmrc
           registry-url: https://npm.pkg.github.com
 
-      - name: Bump version (major)
-        if: contains(github.event.head_commit.message, '!major')
-        run: npm version major --no-git-tag-version -w '@ministryofjustice/probation-search-frontend'
+      - name: Bump major version
+        if: ${{ contains(github.event.head_commit.message, '!major') }}
+        run: npm version major --from-git --no-git-tag-version -w '@ministryofjustice/probation-search-frontend'
 
-      - name: Bump version (minor)
-        if: !contains(github.event.head_commit.message, '!major')
-        run: npm version minor --no-git-tag-version -w '@ministryofjustice/probation-search-frontend'
+      - name: Bump minor version
+        if: ${{ ! contains(github.event.head_commit.message, '!major') }}
+        run: npm version minor --from-git --no-git-tag-version -w '@ministryofjustice/probation-search-frontend'
 
       - name: Install dependencies
         run: npm clean-install -w '@ministryofjustice/probation-search-frontend'
