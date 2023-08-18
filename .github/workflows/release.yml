@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'packages/probation-search/**'
+  workflow_dispatch:
 
 jobs:
   release:
