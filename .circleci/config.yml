@@ -31,7 +31,9 @@ jobs:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: Install Dependencies
-          command: npm ci --no-audit
+          command: |
+            npm run build --workspaces
+            npm ci --no-audit
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
@@ -39,7 +41,6 @@ jobs:
             - ~/.cache
       - run:
           command: |
-            npm run build --workspaces
             npm run build
       - run: # Run linter after build because the integration test code depend on compiled typescript...
           name: Linter check
