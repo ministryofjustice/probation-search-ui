@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'packages/probation-search/**'
+      - '.github/workflows/build.yml'
 
 jobs:
   build:
