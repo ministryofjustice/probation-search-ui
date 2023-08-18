@@ -1,6 +1,6 @@
 import { type RequestHandler, Router } from 'express'
 
-import probationSearchRoutes from '@ministryofjustice/probation-search-frontend/dist/routes/search'
+import probationSearchRoutes from '@ministryofjustice/probation-search-frontend/routes/search'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import config from '../config'
 import type { Services } from '../services'

@@ -1,10 +1,10 @@
 name: Release component
 on:
   push:
-#    branches: # TODO uncomment after testing
-#      - main
+    branches:
+      - main
     paths:
-      - 'packages/probation-search/**'
+      - 'packages/probation-search-frontend/**'
       - '.github/workflows/release.yml'
   workflow_dispatch:
 
@@ -15,6 +15,9 @@ jobs:
     permissions:
       contents: write # to publish GitHub release
       packages: write # to publish npm package
+    defaults:
+      run:
+        working-directory: packages/probation-search-frontend
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -25,21 +28,20 @@ jobs:
 
       - name: Bump major version
         if: ${{ contains(github.event.head_commit.message, '!major') }}
-        run: npm version major --from-git --no-git-tag-version -w '@ministryofjustice/probation-search-frontend'
+        run: npm version major --from-git --no-git-tag-version
 
       - name: Bump minor version
         if: ${{ ! contains(github.event.head_commit.message, '!major') }}
-        run: npm version minor --from-git --no-git-tag-version -w '@ministryofjustice/probation-search-frontend'
+        run: npm version minor --from-git --no-git-tag-version
 
       - name: Install dependencies
-        run: npm clean-install -w '@ministryofjustice/probation-search-frontend'
+        run: npm clean-install
 
       - name: Build
-        run: npm run build -w '@ministryofjustice/probation-search-frontend'
+        run: npm run build
 
       - name: Publish
-        run: npm publish
-        working-directory: packages/probation-search/dist
+        run: cd dist && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
