@@ -1,5 +1,5 @@
 {% extends "../partials/layout.njk" %}
-{% from "../component/search/macro.njk" import probationSearch %}
+{% from "probationSearch/macro.njk" import probationSearch %}
 
 {% set pageTitle = applicationName + " - Home" %}
 {% set mainClasses = "app-container govuk-body" %}
@@ -12,7 +12,7 @@
       name: "search",
       label: {
         text: "Search for people on probation",
-        classes: "govuk-heading-l",
+        classes: "govuk-label--l",
         isPageHeading: true
       },
       results: probationSearchResults

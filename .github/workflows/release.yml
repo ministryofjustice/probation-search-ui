@@ -1,0 +1,44 @@
+name: Release component
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/probation-search/**'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to publish GitHub release
+      packages: write # to publish npm package
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          node-version-file: .nvmrc
+          registry-url: https://npm.pkg.github.com
+
+      - name: Bump version (major)
+        if: contains(github.event.head_commit.message, '!major')
+        run: npm version major --no-git-tag-version -w '@ministryofjustice/probation-search-frontend'
+
+      - name: Bump version (minor)
+        if: !contains(github.event.head_commit.message, '!major')
+        run: npm version minor --no-git-tag-version -w '@ministryofjustice/probation-search-frontend'
+
+      - name: Install dependencies
+        run: npm clean-install -w '@ministryofjustice/probation-search-frontend'
+
+      - name: Publish
+        run: npm publish
+        working-directory: packages/probation-search/dist
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag release
+        run: gh release create "$(jq -r '.version' packages/probation-search/package.json)" --generate-notes
+        env:
+          version: v${{ steps.version.outputs.version }}

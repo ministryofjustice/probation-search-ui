@@ -1,0 +1,49 @@
+{
+  "name": "@ministryofjustice/probation-search-frontend",
+  "version": "0.0.0",
+  "description": "A shared UI component to search for probation cases from within your Express/Nunjucks application",
+  "author": "HMPPS Probation Integration Team",
+  "keywords": [
+    "hmpps",
+    "probation",
+    "search"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/ministryofjustice/probation-search-ui#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ministryofjustice/probation-search-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ministryofjustice/probation-search-ui/issues"
+  },
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "cp -R package.json src/components dist",
+    "package": "cd dist && npm pack",
+    "lint": "eslint . --cache --max-warnings 0",
+    "semantic-release": "semantic-release"
+  },
+  "dependencies": {
+    "date-fns": "^2.30.0",
+    "express": "^4.18.2",
+    "superagent": "^8.1.2"
+  },
+  "devDependencies": {
+    "@types/superagent": "^4.1.18",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.45.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "eslint-plugin-cypress": "^2.13.3",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-no-only-tests": "^3.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.8",
+    "prettier-plugin-jinja-template": "^0.5.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.1.6"
+  }
+}
