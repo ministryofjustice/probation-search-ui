@@ -7,16 +7,7 @@
 {% block content %}
 
   <div class="govuk-!-width-two-thirds">
-    {{ probationSearch({
-      id: "search",
-      name: "search",
-      label: {
-        text: "Search for people on probation",
-        classes: "govuk-label--l",
-        isPageHeading: true
-      },
-      results: probationSearchResults
-    }) }}
+    {{ probationSearch({ id: "search", name: "search", results: probationSearchResults }) }}
   </div>
 
 {% endblock %}

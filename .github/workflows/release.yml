@@ -1,8 +1,8 @@
 name: Release component
 on:
   push:
-    branches:
-      - main
+#    branches:
+#      - main
     paths:
       - 'packages/probation-search-frontend/**'
       - '.github/workflows/release.yml'
@@ -24,7 +24,7 @@ jobs:
         with:
           cache: npm
           node-version-file: .nvmrc
-          registry-url: https://npm.pkg.github.com
+          registry-url: https://registry.npmjs.org
 
       - name: Bump major version
         if: ${{ contains(github.event.head_commit.message, '!major') }}
@@ -43,9 +43,9 @@ jobs:
       - name: Publish
         run: cd dist && npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Tag release
-        run: gh release create "$(jq -r '.version' packages/probation-search/package.json)" --generate-notes
+        run: gh release create "$(jq -r '.version' package.json)" --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}

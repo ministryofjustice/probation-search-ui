@@ -3,7 +3,7 @@
 
 A user interface for the [Probation Search API](https://github.com/ministryofjustice/probation-offender-search).
 
-Try it out in the dev environment: https://probation-search-ui-dev.hmpps.service.justice.gov.uk
+Try it out in the dev environment: https://probation-search-dev.hmpps.service.justice.gov.uk
 
 ## Get started
 
