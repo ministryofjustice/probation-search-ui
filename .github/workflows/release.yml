@@ -46,6 +46,6 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Tag release
-        run: gh release create "$(jq -r '.version' package.json)" --generate-notes
+        run: gh release create "v$(jq -r '.version' package.json)" --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}
