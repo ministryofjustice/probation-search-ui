@@ -3,6 +3,8 @@ generic-service:
   nameOverride: probation-search-ui
   productId: "UNASSIGNED"   # productId for the product that this belongs too, i.e. DPS001, see README.md for details
 
+  serviceAccountName: probation-search-ui
+
   replicaCount: 4
 
   image:

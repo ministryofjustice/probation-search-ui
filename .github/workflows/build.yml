@@ -1,0 +1,31 @@
+name: Build component
+on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - 'packages/probation-search-frontend/**'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: packages/probation-search-frontend
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: npm clean-install
+
+      - name: Build
+        run: npm run build

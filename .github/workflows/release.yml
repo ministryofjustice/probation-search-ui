@@ -1,0 +1,53 @@
+name: Release component
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/probation-search-frontend/**'
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to publish GitHub release
+    defaults:
+      run:
+        working-directory: packages/probation-search-frontend
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+
+      - name: Bump major version
+        if: ${{ contains(github.event.head_commit.message, '!major') }}
+        run: npm version major --from-git --no-git-tag-version
+
+      - name: Bump minor version
+        if: ${{ ! contains(github.event.head_commit.message, '!major') }}
+        run: npm version minor --from-git --no-git-tag-version
+
+      - name: Install dependencies
+        run: npm clean-install
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish
+        run: cd dist && npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Tag release
+        run: gh release create "v$(jq -r '.version' package.json)" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

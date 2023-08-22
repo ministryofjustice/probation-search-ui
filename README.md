@@ -3,7 +3,7 @@
 
 A user interface for the [Probation Search API](https://github.com/ministryofjustice/probation-offender-search).
 
-Try it out in the dev environment: https://probation-search-ui-dev.hmpps.service.justice.gov.uk
+Try it out in the dev environment: https://probation-search-dev.hmpps.service.justice.gov.uk
 
 ## Get started
 
@@ -60,6 +60,7 @@ Create an `.env` file at the root of the project:
 ```properties
 NODE_ENV=development
 REDIS_HOST=localhost
+ENVIRONMENT=dev
 HMPPS_AUTH_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
 PROBATION_SEARCH_API_URL=https://probation-offender-search-dev.hmpps.service.justice.gov.uk
 
