@@ -14,12 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # to publish GitHub release
-      packages: write # to publish npm package
     defaults:
       run:
         working-directory: packages/probation-search-frontend
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-node@v3
         with:
           cache: npm
