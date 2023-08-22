@@ -1,8 +1,8 @@
 name: Release component
 on:
   push:
-#    branches:
-#      - main
+    branches:
+      - main
     paths:
       - 'packages/probation-search-frontend/**'
       - '.github/workflows/release.yml'
