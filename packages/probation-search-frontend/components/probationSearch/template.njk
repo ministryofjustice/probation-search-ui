@@ -26,6 +26,17 @@
             value: params.results.query
         }) }}
 
+        {% if params.results.suggestions | length %}
+            <p id="{{ params.id }}-suggestions">
+                Did you mean
+                {%- set comma = joiner() %}
+                {%- for suggestion in params.results.suggestions %}{{ comma() }}
+                    <a href="?q={{ suggestion }}" class="govuk-link govuk-link--no-visited-state"
+                       title="Search again using {{ suggestion }}">{{ suggestion }}</a>
+                {%- endfor %}?
+            </p>
+        {% endif %}
+
         {% if params.postHint %}
             {{ params.postHint.html | safe if params.postHint.html else '<p>' + params.postHint.text + '</p>' }}
         {% endif %}
@@ -40,18 +51,24 @@
               })
             </script>
         {% else %}
-        {{ govukButton({ text: "Search" }) }}
+            {{ govukButton({ text: "Search" }) }}
         {% endif %}
     </div>
 </form>
 
-{% if params.results.results | length %}
+{% if params.results.response.totalElements > 0 %}
     <div id="{{ params.id }}-results">
-    <p>Showing {{ params.results.page.from }} to {{ params.results.page.to }} of {{ params.results.page.totalResults }} results.</p>
-    {{ govukTable({ firstCellIsHeader: true, head: params.results.headers, rows: params.results.results }) }}
-    {% if params.results.page.items | length > 1 %}
-        {{ govukPagination({ previous: { href: params.results.page.prev }, next: { href: params.results.page.next }, items: params.results.page.items }) }}
-    {% endif %}
+        <p>Showing {{ params.results.page.from }} to {{ params.results.page.to }} of {{ params.results.page.totalResults }} results.</p>
+
+        {% if params.results.results is string %}
+            {{ params.results.results | safe }}
+        {% else %}
+            {{ govukTable({ firstCellIsHeader: true, head: params.results.results.head, rows: params.results.results.rows }) }}
+        {% endif %}
+
+        {% if params.results.page.items | length > 1 %}
+            {{ govukPagination({ previous: { href: params.results.page.prev }, next: { href: params.results.page.next }, items: params.results.page.items }) }}
+        {% endif %}
     </div>
 {% elif params.results.query != null %}
     <div id="{{ params.id }}-results"><p>There are no results for your search. Try refining your query above.</p></div>
