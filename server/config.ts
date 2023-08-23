@@ -37,8 +37,9 @@ export default {
   production,
   https: production,
   staticResourceCacheDuration: '1h',
-  liveReload: !!get('LIVE_RELOAD', false),
+  liveReload: get('LIVE_RELOAD', 'false') === 'true',
   redis: {
+    enabled: get('REDIS_ENABLED', 'true') === 'true',
     host: get('REDIS_HOST', 'localhost', requiredInProduction),
     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
     password: process.env.REDIS_AUTH_TOKEN,
