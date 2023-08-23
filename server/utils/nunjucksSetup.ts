@@ -4,6 +4,7 @@ import nunjucks from 'nunjucks'
 import express from 'express'
 import { initialiseName } from './utils'
 import { ApplicationInfo } from '../applicationInfo'
+import config from '../config'
 
 const production = process.env.NODE_ENV === 'production'
 
@@ -37,6 +38,7 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
     {
       autoescape: true,
       express: app,
+      watch: config.liveReload,
     },
   )
 

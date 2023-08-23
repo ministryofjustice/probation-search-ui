@@ -15,6 +15,7 @@ export default function routes(service: Services): Router {
     }),
   )
 
+  // Home page - example search
   probationSearchRoutes({
     router,
     path: '/',
@@ -22,6 +23,18 @@ export default function routes(service: Services): Router {
     environment: config.environment,
     oauthClient: service.hmppsAuthClient,
   })
+
+  // Delius search screen (fka new tech)
+  probationSearchRoutes({
+    router,
+    path: '/newTech',
+    template: 'pages/newTech/index',
+    allowEmptyQuery: true,
+    environment: config.environment,
+    oauthClient: service.hmppsAuthClient,
+  })
+
+  get('/newTech/help', (req, res) => res.render('pages/newTech/help'))
 
   return router
 }
