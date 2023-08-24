@@ -49,6 +49,7 @@ jobs:
             - node_modules
             - build
             - dist
+            - packages
             - .cache/Cypress
 
   unit_test:

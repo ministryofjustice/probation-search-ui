@@ -28,6 +28,11 @@ jobs:
           node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
 
+      - name: Set version from git
+        run: gh release create "v$(jq -r '.version' package.json)" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Bump major version
         if: ${{ contains(github.event.head_commit.message, '!major') }}
         run: npm version major --from-git --no-git-tag-version
