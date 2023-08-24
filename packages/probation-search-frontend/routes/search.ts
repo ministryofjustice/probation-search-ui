@@ -100,7 +100,7 @@ export default function probationSearchRoutes({
             response,
             suggestions: Object.values(response?.suggestions?.suggest || {})
               .flatMap(suggestions => suggestions.flatMap(suggestion => suggestion.options))
-              .sort((a, b) => b.freq - a.freq)
+              .sort((a, b) => b.score - a.score || b.freq - a.freq)
               .slice(0, 3)
               .map(suggestion => suggestion.text),
             page: calculatePagination(

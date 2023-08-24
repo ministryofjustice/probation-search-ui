@@ -76,5 +76,6 @@ export interface Suggestion {
   options: {
     text: string
     freq: number
+    score: number
   }[]
 }
