@@ -28,13 +28,12 @@ jobs:
           node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
 
-      - name: Bump major version
-        if: ${{ contains(github.event.head_commit.message, '!major') }}
-        run: npm version major --from-git --no-git-tag-version
-
-      - name: Bump minor version
-        if: ${{ ! contains(github.event.head_commit.message, '!major') }}
-        run: npm version minor --from-git --no-git-tag-version
+      - name: Bump version
+        run: |
+          jq ".version = \"$(git describe --tags --abbrev=0 | sed 's/^v//')\"" package.json > tmp && mv tmp package.json
+          npm version "$type" --no-git-tag-version
+        env:
+          type: ${{ contains(github.event.head_commit.message, '!major') && 'major' || 'minor' }}
 
       - name: Install dependencies
         run: npm clean-install
@@ -43,7 +42,7 @@ jobs:
         run: npm run build
 
       - name: Publish
-        run: cd dist && npm publish --access public
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

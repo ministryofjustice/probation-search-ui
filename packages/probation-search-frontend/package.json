@@ -18,11 +18,9 @@
     "url": "https://github.com/ministryofjustice/probation-search-ui/issues"
   },
   "scripts": {
+    "watch": "tsc -w",
     "build": "tsc",
-    "postbuild": "cp -R package.json src/components dist",
-    "package": "cd dist && npm pack",
-    "lint": "eslint . --cache --max-warnings 0",
-    "semantic-release": "semantic-release"
+    "lint": "eslint . --cache --max-warnings 0"
   },
   "dependencies": {
     "date-fns": "^2.30.0",

@@ -1,6 +1,4 @@
 node_modules
-public
-assets
-cypress.json
-reporter-config.json
-dist/
+**/*.js
+**/*.js.map
+**/*.d.ts
