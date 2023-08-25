@@ -43,10 +43,23 @@ probationSearchRoutes({
 That's it! Start your service and visit http://localhost:3000/search to try it out.
 
 ## Configuration
-// TODO
+
+The `probationSearchRoutes` function takes the following options:
+
+| Option           | Description                                                                                   | Default                                                                    |
+|------------------|-----------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| `environment`    | Whether you want to search cases in the dev, preprod or prod environment.                     | local                                                                      |
+| `path`           | The URL to display your search component on.                                                  | /search                                                                    |
+| `template`       | The path to your Nunjucks template file.                                                      | pages/search                                                               |
+| `resultPath`     | A function that returns the path to the result                                                | (crn: string) => `/case/${crn}`                                            |
+| `pageSize`       | The number of results to return per page.                                                     | 10                                                                         |
+| `maxPagesToShow` | The maximum number of pages to show on the paginator.                                         | 7                                                                          |
+| `nameFormatter`  | A function that returns a formatted name for the result.                                      | (result: ProbationSearchResult) => `${result.firstName} ${result.surname}` |
+| `dateFormatter`  | A function that returns a formatted date for the result.                                      | (date: Date) => format(date, 'dd/MM/yyyy')                                 |
+| `localData`      | A list of search results to return during local development (i.e. when environment = 'local') | Two dummy records - John Doe and Jane Doe                                  |
 
 ## Examples
-For a fully working example, check out the [hmpps-sentence-plan-ui](https://github.com/search?q=repo%3Aministryofjustice%2Fhmpps-sentence-plan-ui%20probationSearch&type=code) project.
+For a fully working example, check out the [hmpps-sentence-plan-ui](https://github.com/search?q=%28repo%3Aministryofjustice%2Fhmpps-sentence-plan-ui+probationSearch%29+OR+%28repo%3Aministryofjustice%2Fhmpps-sentence-plan-ui+probation-search-frontend%29&type=code) project.
 
 The front-end can be accessed here: https://sentence-plan-dev.hmpps.service.justice.gov.uk/search
 
