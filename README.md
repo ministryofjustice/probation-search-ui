@@ -1,9 +1,10 @@
 # Probation Search UI
 [![Repository Standards](https://img.shields.io/badge/dynamic/json?color=blue&logo=github&label=MoJ%20Compliant&query=%24.message&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fprobation-search-ui)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-report/probation-search-ui "Link to report")
 
-A user interface for the [Probation Search API](https://github.com/ministryofjustice/probation-offender-search).
-
+A user interface for the [Probation Search API](https://github.com/ministryofjustice/probation-offender-search). 
 Try it out in the dev environment: https://probation-search-dev.hmpps.service.justice.gov.uk
+
+To include this in your project, check out the [probation-search-frontend](./packages/probation-search-frontend) package.
 
 ## Get started
 
