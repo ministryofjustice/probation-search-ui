@@ -35,18 +35,47 @@ export default class ProbationSearchClient {
 }
 
 export interface ProbationSearchResult {
-  firstName: string
-  middleNames?: string
-  surname: string
-  dateOfBirth: string
   otherIds: {
     crn: string
   }
+  firstName: string
+  middleNames?: string[]
+  surname: string
+  dateOfBirth: string
+  age: number
+  gender: string
+  currentDisposal?: string
+  offenderProfile?: {
+    riskColour?: string
+  }
+  offenderManagers?: {
+    active: boolean
+    probationArea: {
+      description: string
+    }
+    staff: {
+      forenames: string
+      surname: string
+    }
+  }[]
+  accessDenied?: boolean
 }
 
 export interface ProbationSearchResponse {
   content: ProbationSearchResult[]
+  suggestions?: {
+    suggest?: { [key: string]: Suggestion[] }
+  }
   size: number
   totalElements: number
   totalPages: number
+}
+
+export interface Suggestion {
+  text: string
+  options: {
+    text: string
+    freq: number
+    score: number
+  }[]
 }

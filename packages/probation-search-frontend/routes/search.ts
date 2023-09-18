@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns'
 import { NextFunction, Request, RequestHandler, Response, Router } from 'express'
-import ProbationSearchClient, { ProbationSearchResult } from '../data/probationSearchClient'
+import ProbationSearchClient, { ProbationSearchResponse, ProbationSearchResult } from '../data/probationSearchClient'
 import OAuthClient from '../data/oauthClient'
 
 export interface ProbationSearchRouteOptions {
@@ -12,9 +12,16 @@ export interface ProbationSearchRouteOptions {
   template?: string
   nameFormatter?: (result: ProbationSearchResult) => string
   dateFormatter?: (date: Date) => string
+  responseFormatter?: (result: ProbationSearchResponse) => string | Table
   localData?: ProbationSearchResult[]
+  allowEmptyQuery?: boolean
   pageSize?: number
   maxPagesToShow?: number
+}
+
+export interface Table {
+  head: { text: string }[]
+  rows: { html?: string; text?: string }[][]
 }
 
 export default function probationSearchRoutes({
@@ -26,10 +33,37 @@ export default function probationSearchRoutes({
   template = 'pages/search',
   nameFormatter = (result: ProbationSearchResult) => `${result.firstName} ${result.surname}`,
   dateFormatter = (date: Date) => format(date, 'dd/MM/yyyy'),
+  responseFormatter = (response: ProbationSearchResponse) => {
+    return {
+      head: [{ text: 'Name' }, { text: 'CRN' }, { text: 'Date of Birth' }],
+      rows: response.content?.map(result => [
+        { html: `<a href="${resultPath(result.otherIds.crn)}">${nameFormatter(result)}</a>` },
+        { text: result.otherIds.crn },
+        { text: result.dateOfBirth ? dateFormatter(parseISO(result.dateOfBirth)) : '' },
+      ]),
+    }
+  },
   localData = [
-    { firstName: 'John', surname: 'Doe', dateOfBirth: '1980-01-01', otherIds: { crn: 'A000001' } },
-    { firstName: 'Jane', surname: 'Doe', dateOfBirth: '1982-02-02', otherIds: { crn: 'A000002' } },
+    {
+      otherIds: { crn: 'A000001' },
+      firstName: 'John',
+      surname: 'Doe',
+      dateOfBirth: '1980-01-01',
+      age: 43,
+      gender: 'Male',
+      currentDisposal: '1',
+    },
+    {
+      firstName: 'Jane',
+      surname: 'Doe',
+      dateOfBirth: '1982-02-02',
+      age: 41,
+      gender: 'Female',
+      currentDisposal: '0',
+      otherIds: { crn: 'A000002' },
+    },
   ],
+  allowEmptyQuery = false,
   pageSize = 10,
   maxPagesToShow = 7,
 }: ProbationSearchRouteOptions): Router {
@@ -37,11 +71,11 @@ export default function probationSearchRoutes({
 
   router.post(path, (req, res) => {
     const { search } = req.body
-    if (search == null || search.length === 0) {
+    if (!allowEmptyQuery && (search == null || search.length === 0)) {
       res.render(template, {
         probationSearchResults: {
           errorMessage: { text: 'Please enter a search term' },
-          csrfToken: res.locals.csrfToken,
+          ...defaultResult(res),
         },
       })
     } else {
@@ -53,28 +87,31 @@ export default function probationSearchRoutes({
     path,
     wrapAsync(async (req, res) => {
       const query = req.query.q as string
-      if (query == null) {
-        res.render(template, { probationSearchResults: { csrfToken: res.locals.csrfToken } })
+      if (query == null || query === '') {
+        res.render(template, { probationSearchResults: defaultResult(res) })
       } else {
         const currentPage = req.query.page ? Number.parseInt(req.query.page as string, 10) : 1
-        const results = await client.search(query, res.locals.user.username, currentPage, pageSize)
+        const response = await client.search(query, res.locals.user.username, currentPage, pageSize)
+        const results = responseFormatter(response)
         res.render(template, {
           probationSearchResults: {
             query,
-            headers: [{ text: 'Name' }, { text: 'CRN' }, { text: 'Date of Birth' }],
-            results: results.content?.map(result => [
-              { html: `<a href="${resultPath(result.otherIds.crn)}">${nameFormatter(result)}</a>` },
-              { text: result.otherIds.crn },
-              { text: result.dateOfBirth ? dateFormatter(parseISO(result.dateOfBirth)) : '' },
-            ]),
+            results,
+            response,
+            suggestions: Object.values(response?.suggestions?.suggest || {})
+              .flatMap(suggestions => suggestions.flatMap(suggestion => suggestion.options))
+              .sort((a, b) => b.score - a.score || b.freq - a.freq)
+              .slice(0, 3)
+              .map(suggestion => suggestion.text),
             page: calculatePagination(
               currentPage,
-              results.totalPages,
-              results.totalElements,
+              response.totalPages,
+              response.totalElements,
               page => `${path}?q=${query}&page=${page}`,
+              pageSize,
               maxPagesToShow,
             ),
-            csrfToken: res.locals.csrfToken,
+            ...defaultResult(res),
           },
         })
       }
@@ -84,19 +121,27 @@ export default function probationSearchRoutes({
   return router
 }
 
+function defaultResult(res: Response) {
+  return {
+    csrfToken: res.locals.csrfToken,
+    cspNonce: res.locals.cspNonce,
+  }
+}
+
 function calculatePagination(
   currentPage: number,
   totalPages: number,
   totalResults: number,
   pathFn: (pageNumber: number) => string,
+  pageSize: number,
   maxPagesToShow: number,
 ) {
   const firstPage = Math.max(currentPage - Math.floor(maxPagesToShow / 2), 1)
   const lastPage = Math.min(currentPage + Math.floor(maxPagesToShow / 2), totalPages)
   return {
-    totalResults,
-    from: (currentPage - 1) * 10 + 1,
-    to: Math.min(currentPage * 10, totalResults),
+    totalResults: totalResults.toLocaleString(),
+    from: (currentPage - 1) * pageSize + 1,
+    to: Math.min(currentPage * pageSize, totalResults),
     next: currentPage < totalPages ? pathFn(currentPage + 1) : null,
     prev: currentPage > 1 ? pathFn(currentPage - 1) : null,
     items: [

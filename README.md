@@ -26,17 +26,14 @@ Install NPM package dependencies:
 npm install
 ```
 
-Pull the latest Docker image versions:
-
-```shell
-docker-compose pull
-```
-
 ### Run the service
 
 To run the service locally, with dependencies in Docker:
 
 ```shell
+# Pull the latest Docker image versions
+docker-compose pull
+
 # Start the dependencies only
 docker-compose up -d --scale=app=0
 
@@ -54,14 +51,16 @@ Open http://localhost:3000 in your browser, and login with the following credent
 Alternatively, you can integrate your local UI with the dev/test services deployed on MOJ Cloud Platform using a personal HMPPS Auth client.
 If you don't already have a personal client, request one in the [#hmpps-auth-audit-registers](https://mojdt.slack.com/archives/C02S71KUBED) Slack channel.
 
-You'll need the following roles:
-* `ROLE_PROBATION_SEARCH` for searching probation cases
+This removes the need for using Docker.
 
-Create an `.env` file at the root of the project:
+You'll need the following roles:
+* `ROLE_PROBATION_SEARCH` for searching probation cases (TBC)
+
+Create a `.env` file at the root of the project:
 ```properties
 NODE_ENV=development
-REDIS_HOST=localhost
 ENVIRONMENT=dev
+REDIS_ENABLED=false
 HMPPS_AUTH_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
 PROBATION_SEARCH_API_URL=https://probation-offender-search-dev.hmpps.service.justice.gov.uk
 
@@ -74,10 +73,6 @@ SYSTEM_CLIENT_SECRET=clientsecret
 
 Then, start the UI service:
 ```shell
-# Start Redis only
-docker-compose up -d redis
-
-# Start the UI service and watch for changes
 npm run start:dev
 ```
 

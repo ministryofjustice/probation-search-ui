@@ -1,0 +1,63 @@
+{% extends "../../partials/layout.njk" %}
+{% from "probationSearch/macro.njk" import probationSearch %}
+
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block pageTitle %}HMPPS - National Search{% endblock %}
+
+{% block header %}
+    {% include "pages/newTech/phaseBanner.njk" %}
+
+    <div class="govuk-width-container">
+        <a tabindex="3"
+           title="Add a new person"
+           class="app-national-search-add govuk-link govuk-link--inverse govuk-body"
+           href="javascript:">Add a new person</a>
+    </div>
+
+    {{ probationSearch({
+        id: "search",
+        name: "search",
+        classes: "app-search-input govuk-body-l govuk-!-padding-3 govuk-!-margin-bottom-2",
+        label: {
+            text: "Search for people on probation",
+            classes: "govuk-label--l",
+            isPageHeading: true
+        },
+        hint: {
+            text: "Use any combination of names, dates of birth, ID numbers, telephone numbers, towns and postcodes."
+        },
+        postHint: {
+            html: "<a tabindex='2'
+                      title='View tips for getting better results'
+                      class='app-national-search-help govuk-link govuk-body'
+                      href='/newTech/help'>Tips for getting better results</a>"
+        },
+        attributes: {
+            autofocus: 'true',
+            tabindex: '1'
+        },
+        searchOnInput: true,
+        results: probationSearchResults
+    }) }}
+{% endblock %}
+
+{% block content %}
+    <h3 class="govuk-heading-m">Find people by using any combination of:</h3>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>name and date of birth</li>
+        <li>CRN, PNC and National Insurance numbers</li>
+        <li>aliases and other recorded dates of birth</li>
+        <li>towns and postcodes</li>
+    </ul>
+{% endblock %}
+
+{% block head %}
+    <link href="/assets/stylesheets/new-tech.css?{{ version }}" rel="stylesheet" />
+{% endblock %}
+
+{% block bodyEnd %}
+    <script src="/assets/govuk/all.js"></script>
+    <script src="/assets/govukFrontendInit.js"></script>
+    <script src="/assets/moj/all.js"></script>
+{% endblock %}

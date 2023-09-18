@@ -1,0 +1,197 @@
+$govuk-global-styles: true;
+$path: "/assets/images/";
+
+$moj-page-width: 1170px;
+$govuk-page-width: $moj-page-width;
+
+@import 'govuk/all';
+@import 'moj/all';
+
+#search-form {
+  background-color: $govuk-brand-colour;
+  padding-top: govuk-spacing(5);
+  .govuk-form-group {
+    margin-bottom: 0;
+  }
+}
+
+#search-input-container {
+  @include govuk-width-container;
+  @include govuk-clearfix;
+  .govuk-label, .govuk-link, .govuk-hint {
+    color: govuk-colour("white");
+  }
+}
+
+#search-results {
+  @include govuk-width-container;
+  padding-top: govuk-spacing(4);
+  & ~ .govuk-width-container > .govuk-main-wrapper {
+    display: none; // hide welcome content when results are rendered
+  }
+}
+
+#search-suggestions {
+  color: govuk-colour("white");
+  float: left;
+  margin-top: govuk-spacing(2)
+}
+
+.govuk-phase-banner {
+  border-bottom: none;
+}
+
+.app-national-search-filter {
+  background-color: govuk-colour("mid-grey");
+  margin-bottom: 10px;
+
+  button {
+    z-index: 100;
+    position: relative;
+    border: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    padding: govuk-spacing(2);
+    background: govuk-colour("mid-grey") url(../images/accordion-arrow.png) no-repeat;
+
+    &.open {
+      background-position: right -50px;
+    }
+
+    &.closed {
+      background-position: right -5px;
+    }
+  }
+
+  .filter-container {
+    border: $govuk-border-colour 5px solid;
+    border-top: 0;
+    background-color: govuk-colour("white");
+    max-height: 20vh;
+
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    &.closed {
+      display: none;
+    }
+
+    label {
+      //@include govuk-font($size: 16);
+      display: block;
+      padding: govuk-spacing(2) govuk-spacing(4);
+      cursor: pointer;
+      border-bottom: 1px $govuk-border-colour solid;
+
+      &:hover {
+        background-color: govuk-colour("light-grey");
+      }
+    }
+
+    .filter-option {
+      float: left;
+      width: 20px;
+      height: 20px;
+      margin-left: -10px;
+    }
+  }
+}
+
+.app-national-search-add {
+  float: right;
+  margin-top: 35px;
+}
+
+.app-national-search-help {
+  background: govuk-colour("black");
+  float: right;
+  padding: 15px 20px 20px 20px;
+  margin-bottom: 0;
+  @include govuk-typography-weight-bold
+}
+
+.app-mark {
+  background-color: mix(govuk-colour("yellow"), white, 25%);
+}
+
+.app-risk-icon {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin: 0;
+  padding: 0;
+
+  &.app-risk-icon--green {
+    background: govuk-colour("light-green");
+  }
+
+  &.app-risk-icon--amber {
+    background: govuk-colour("yellow");
+  }
+
+  &.app-risk-icon--red {
+    background: $govuk-error-colour;
+  }
+}
+
+.app-icon {
+  display: inline-block;
+
+  &.app-icon__prev-arrow {
+    width: 20px;
+    height: 20px;
+    margin-right: 3px;
+    background: url("../images/icon-prev-arrow.gif") no-repeat bottom;
+    background-size: contain;
+  }
+}
+
+.app-search-hint-middle {
+  padding: 25px 50px 0 70px;
+}
+
+.app-search-input {
+  position: relative;
+  height: auto;
+  z-index: 1;
+  //@include govuk-media-query(mobile, tablet) {
+  //  margin-bottom: 0;
+  //}
+}
+
+.app-offender-image {
+  border: 2px solid $govuk-border-colour;
+}
+
+.app-search-hint {
+  background: linear-gradient(90deg, govuk-colour("black") 0%, govuk-colour("black") 75%, white 100%);
+  display: inline-block;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  padding: 1px;
+  position: relative;
+
+  &:before {
+    background: linear-gradient(90deg, govuk-colour("light-grey") 0%, govuk-colour("light-grey") 75%, white 100%);
+    content: attr(data-hint);
+    display: inline-block;
+    padding: 15px 45px 15px 15px;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 50px;
+    height: 52px;
+    background: url("../images/icon-search-help.png") no-repeat top left / 50px 51px;
+    @media only screen and ( min-resolution: 124.8dpi ) {
+      background: url("../images/icon-search-help-2x.png") no-repeat top left / 50px 51px;
+    }
+  }
+}

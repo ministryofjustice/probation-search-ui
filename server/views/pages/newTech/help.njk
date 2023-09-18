@@ -1,0 +1,93 @@
+{% extends "../../partials/layout.njk" %}
+{% from "probationSearch/macro.njk" import probationSearch %}
+
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block pageTitle %}HMPPS - National Search{% endblock %}
+
+{% block header %}
+    {% include "pages/newTech/phaseBanner.njk" %}
+{% endblock %}
+
+{% block content %}
+    <p class="govuk-!-margin-top-4">
+        <a href="/newTech" class="govuk-back-link">Back to search</a>
+    </p>
+
+    <h1 class="govuk-heading-l">Search tips</h1>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>
+            <h2 class="govuk-heading-m">Refine the results by selecting ‘Yes’ to ‘Match all terms’</h2>
+            <p>This will search on all the information you enter.</p>
+        </li>
+        <li>
+            <h2 class="govuk-heading-m">Expand the results by selecting ‘No’ to ‘Match all terms’</h2>
+            <p>This will search on any of the information you enter.</p>
+        </li>
+        <li>
+            <h2 class="govuk-heading-m">Search by name and date of birth at the same time</h2>
+            <p>
+                For example, <strong>John Smith 23/06/1986</strong> - the results will be based on all those search terms.
+            </p>
+
+            <div class="app-search-hint" data-hint="John Smith 23/06/1986"></div>
+        </li>
+        <li>
+            <h2 class="govuk-heading-m">
+                Search by town, postcode at the same time as name
+            </h2>
+            <p>
+                For example, <strong>John Smith S1 1AB</strong> or <strong>John Smith Sheffield</strong> and so on.
+                The search box can handle multiple search terms simultaneously.
+            </p>
+
+            <div class="app-search-hint" data-hint="John Smith S1 1AB"></div>
+
+            <span class="govuk-!-margin-3">Or</span>
+
+            <div class="app-search-hint" data-hint="John Smith Sheffield"></div>
+        </li>
+        <li>
+            <h2 class="govuk-heading-m">Include CRN, CRO, PNC, National Insurance and NOMS numbers in your search</h2>
+            <p>Using unique numbers will achieve more accurate results.</p>
+
+            <div class="app-search-hint" data-hint="X087946"></div>
+        </li>
+        <li>
+            <h2 class="govuk-heading-m">Include telephone numbers in your search</h2>
+            <p>
+                Telephone numbers can be included on their own or alongside other search terms.
+                Telephone number terms need to contain more than 5 digits.
+                Avoid including spaces in telephone numbers as these will not match when <strong>Match all
+                    Terms</strong> is selected.
+                Partial telephone numbers will also match as long as the number of digits in the search term is greater
+                than 5.
+            </p>
+
+            <div class="app-search-hint" data-hint="0779876767"></div>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block head %}
+    <!--[if !IE 8]><!-->
+    <link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet" />
+    <!--<![endif]-->
+
+    <!--[if lt IE 9]>
+    <link href="/assets/stylesheets/application-ie8.css?{{ version }}" rel="stylesheet"/>
+    <script src="/assets/js/html5shiv-3.7.3.min.js"></script>
+    <![endif]-->
+
+    <link href="/assets/stylesheets/new-tech.css?{{ version }}" rel="stylesheet" />
+
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            nonce="{{ cspNonce }}"
+            crossorigin="anonymous"></script>
+    <link href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel="stylesheet"
+          nonce="{{ cspNonce }}" crossorigin>
+
+{% endblock %}
