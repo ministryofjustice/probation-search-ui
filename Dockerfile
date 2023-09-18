@@ -33,6 +33,7 @@ RUN apt-get update && \
         apt-get install -y make python g++
 
 COPY package*.json ./
+COPY packages ./packages
 RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit
 
 COPY . .
@@ -47,6 +48,9 @@ COPY --from=build --chown=appuser:appgroup \
         /app/package.json \
         /app/package-lock.json \
         ./
+
+COPY --from=build --chown=appuser:appgroup \
+        /app/packages ./packages
 
 COPY --from=build --chown=appuser:appgroup \
         /app/assets ./assets
