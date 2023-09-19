@@ -3,9 +3,19 @@ import OAuthClient from './oauthClient'
 import config, { Environment } from '../config'
 
 export default class ProbationSearchClient {
-  constructor(private oauthClient: OAuthClient, private dataSource: Environment | ProbationSearchResult[]) {}
+  constructor(
+    private oauthClient: OAuthClient,
+    private dataSource: Environment | ProbationSearchResult[],
+  ) {}
 
-  async search(query: string, asUsername: string = null, page = 1, size = 10): Promise<ProbationSearchResponse> {
+  async search({
+    query,
+    matchAllTerms = true,
+    providersFilter = [],
+    asUsername,
+    page = 1,
+    size = 10,
+  }: ProbationSearchRequest): Promise<ProbationSearchResponse> {
     if (this.dataSource instanceof Array) {
       return Promise.resolve(this.localSearch(this.dataSource, page, size))
     }
@@ -18,20 +28,55 @@ export default class ProbationSearchClient {
       .retry(2)
       .send({
         phrase: query,
-        matchAllTerms: true,
+        probationAreasFilter: providersFilter,
+        matchAllTerms,
       })
     return response.body
   }
 
   private localSearch(data: ProbationSearchResult[], page: number, size: number): ProbationSearchResponse {
     const content = data.slice((page - 1) * size, page * size)
+    const probationAreaAggregations = Array.from(
+      data
+        .map(r => r.offenderManagers?.filter(manager => manager.active).shift().probationArea)
+        .reduce((map, obj) => {
+          map.set(obj.code, { ...obj, count: map.has(obj.code) ? map.get(obj.code).count + 1 : 1 })
+          return map
+        }, new Map())
+        .values(),
+    )
     return {
       content,
+      probationAreaAggregations,
       size: content.length,
       totalElements: this.dataSource.length,
       totalPages: Math.ceil(this.dataSource.length / size),
     }
   }
+}
+
+export interface ProbationSearchRequest {
+  query: string
+  matchAllTerms: boolean
+  providersFilter: string[]
+  asUsername: string
+  page: number
+  size: number
+}
+
+export interface ProbationSearchResponse {
+  content: ProbationSearchResult[]
+  suggestions?: {
+    suggest?: { [key: string]: Suggestion[] }
+  }
+  probationAreaAggregations: {
+    code: string
+    description: string
+    count: number
+  }[]
+  size: number
+  totalElements: number
+  totalPages: number
 }
 
 export interface ProbationSearchResult {
@@ -51,6 +96,7 @@ export interface ProbationSearchResult {
   offenderManagers?: {
     active: boolean
     probationArea: {
+      code: string
       description: string
     }
     staff: {
@@ -59,16 +105,6 @@ export interface ProbationSearchResult {
     }
   }[]
   accessDenied?: boolean
-}
-
-export interface ProbationSearchResponse {
-  content: ProbationSearchResult[]
-  suggestions?: {
-    suggest?: { [key: string]: Suggestion[] }
-  }
-  size: number
-  totalElements: number
-  totalPages: number
 }
 
 export interface Suggestion {

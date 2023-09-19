@@ -60,4 +60,24 @@
     <script src="/assets/govuk/all.js"></script>
     <script src="/assets/govukFrontendInit.js"></script>
     <script src="/assets/moj/all.js"></script>
+    <script nonce="{{ cspNonce }}">
+      // This code will be replaced as part of adding live result / ajax functionality. It's just here to enable testing of the filters.
+      document.getElementsByName('match-all-terms').forEach(function(el) {
+        el.addEventListener('input', function() {
+          const url = new URL(window.location.href)
+          url.searchParams.set('matchAllTerms', this.value)
+          window.location.href = url.toString()
+        })
+      })
+      document.getElementsByName('providers-filter').forEach(function(el) {
+        el.addEventListener('input', function() {
+          const url = new URL(window.location.href)
+          url.searchParams.delete('providers[]')
+          document.querySelectorAll('input[name="providers-filter"]:checked').forEach(function(el) {
+            url.searchParams.append('providers[]', el.value)
+          })
+          window.location.href = url.toString()
+        })
+      })
+    </script>
 {% endblock %}
