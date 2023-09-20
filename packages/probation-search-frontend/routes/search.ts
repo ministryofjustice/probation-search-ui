@@ -1,6 +1,10 @@
 import { format, parseISO } from 'date-fns'
 import { NextFunction, Request, RequestHandler, Response, Router } from 'express'
-import ProbationSearchClient, { ProbationSearchResponse, ProbationSearchResult } from '../data/probationSearchClient'
+import ProbationSearchClient, {
+  ProbationSearchRequest,
+  ProbationSearchResponse,
+  ProbationSearchResult,
+} from '../data/probationSearchClient'
 import OAuthClient from '../data/oauthClient'
 
 export interface ProbationSearchRouteOptions {
@@ -12,7 +16,7 @@ export interface ProbationSearchRouteOptions {
   template?: string
   nameFormatter?: (result: ProbationSearchResult) => string
   dateFormatter?: (date: Date) => string
-  responseFormatter?: (result: ProbationSearchResponse) => string | Table
+  resultsFormatter?: (apiResponse: ProbationSearchResponse, apiRequest: ProbationSearchRequest) => string | Table
   localData?: ProbationSearchResult[]
   allowEmptyQuery?: boolean
   pageSize?: number
@@ -33,7 +37,7 @@ export default function probationSearchRoutes({
   template = 'pages/search',
   nameFormatter = (result: ProbationSearchResult) => `${result.firstName} ${result.surname}`,
   dateFormatter = (date: Date) => format(date, 'dd/MM/yyyy'),
-  responseFormatter = (response: ProbationSearchResponse) => {
+  resultsFormatter = (response: ProbationSearchResponse) => {
     return {
       head: [{ text: 'Name' }, { text: 'CRN' }, { text: 'Date of Birth' }],
       rows: response.content?.map(result => [
@@ -87,12 +91,22 @@ export default function probationSearchRoutes({
     path,
     wrapAsync(async (req, res) => {
       const query = req.query.q as string
+      const providers = (req.query.providers as string[]) ?? []
+      const matchAllTerms = (req.query.matchAllTerms ?? 'true') === 'true'
       if (query == null || query === '') {
         res.render(template, { probationSearchResults: defaultResult(res) })
       } else {
         const currentPage = req.query.page ? Number.parseInt(req.query.page as string, 10) : 1
-        const response = await client.search(query, res.locals.user.username, currentPage, pageSize)
-        const results = responseFormatter(response)
+        const request = {
+          query,
+          matchAllTerms,
+          providersFilter: providers,
+          asUsername: res.locals.user.username,
+          page: currentPage,
+          size: pageSize,
+        }
+        const response = await client.search(request)
+        const results = resultsFormatter(response, request)
         res.render(template, {
           probationSearchResults: {
             query,

@@ -18,14 +18,18 @@ $govuk-page-width: $moj-page-width;
 #search-input-container {
   @include govuk-width-container;
   @include govuk-clearfix;
+  margin-bottom: govuk-spacing(4);
   .govuk-label, .govuk-link, .govuk-hint {
     color: govuk-colour("white");
   }
 }
 
+#search-result-summary, #search-pagination, #search-results {
+  @include govuk-width-container;
+}
+
 #search-results {
   @include govuk-width-container;
-  padding-top: govuk-spacing(4);
   & ~ .govuk-width-container > .govuk-main-wrapper {
     display: none; // hide welcome content when results are rendered
   }
@@ -42,61 +46,22 @@ $govuk-page-width: $moj-page-width;
 }
 
 .app-national-search-filter {
-  background-color: govuk-colour("mid-grey");
-  margin-bottom: 10px;
+  background-color: govuk-colour("light-grey");
 
-  button {
-    z-index: 100;
-    position: relative;
-    border: none;
-    display: block;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
+  legend {
+    font-weight: $govuk-font-weight-bold;
+    margin-bottom: 0;
     padding: govuk-spacing(2);
-    background: govuk-colour("mid-grey") url(../images/accordion-arrow.png) no-repeat;
-
-    &.open {
-      background-position: right -50px;
-    }
-
-    &.closed {
-      background-position: right -5px;
-    }
   }
 
-  .filter-container {
-    border: $govuk-border-colour 5px solid;
-    border-top: 0;
+  fieldset > div {
     background-color: govuk-colour("white");
-    max-height: 20vh;
-
-    position: relative;
+    border: 5px solid govuk-colour("light-grey");
+    border-top: 0;
+    max-height: 30vh;
     overflow-y: auto;
     overflow-x: hidden;
-
-    &.closed {
-      display: none;
-    }
-
-    label {
-      //@include govuk-font($size: 16);
-      display: block;
-      padding: govuk-spacing(2) govuk-spacing(4);
-      cursor: pointer;
-      border-bottom: 1px $govuk-border-colour solid;
-
-      &:hover {
-        background-color: govuk-colour("light-grey");
-      }
-    }
-
-    .filter-option {
-      float: left;
-      width: 20px;
-      height: 20px;
-      margin-left: -10px;
-    }
+    padding: govuk-spacing(2) 0 govuk-spacing(2) govuk-spacing(4);
   }
 }
 

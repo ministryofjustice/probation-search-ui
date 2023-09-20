@@ -57,19 +57,23 @@
 </form>
 
 {% if params.results.response.totalElements > 0 %}
-    <div id="{{ params.id }}-results">
+    <div id="{{ params.id }}-result-summary">
         <p>Showing {{ params.results.page.from }} to {{ params.results.page.to }} of {{ params.results.page.totalResults }} results.</p>
+    </div>
+{% endif %}
 
-        {% if params.results.results is string %}
-            {{ params.results.results | safe }}
-        {% else %}
-            {{ govukTable({ firstCellIsHeader: true, head: params.results.results.head, rows: params.results.results.rows }) }}
-        {% endif %}
-
-        {% if params.results.page.items | length > 1 %}
-            {{ govukPagination({ previous: { href: params.results.page.prev }, next: { href: params.results.page.next }, items: params.results.page.items }) }}
-        {% endif %}
+{% if params.results.results is string %}
+    {{ params.results.results | safe }}
+{% elif params.results.response.totalElements > 0 %}
+    <div id="{{ params.id }}-results">
+        {{ govukTable({ firstCellIsHeader: true, head: params.results.results.head, rows: params.results.results.rows }) }}
     </div>
 {% elif params.results.query != null %}
-    <div id="{{ params.id }}-results"><p>There are no results for your search. Try refining your query above.</p></div>
+    <p>There are no results for your search. Try refining your query above.</p>
+{% endif %}
+
+{% if params.results.page.items | length > 1 %}
+    <div id="{{ params.id }}-pagination">
+        {{ govukPagination({ previous: { href: params.results.page.prev }, next: { href: params.results.page.next }, items: params.results.page.items }) }}
+    </div>
 {% endif %}
