@@ -1,12 +1,10 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/pagination/macro.njk" import govukPagination %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
 
-<form id="{{ params.id }}-form" method="POST">
+<form id="{{ params.id }}-form" class="probation-search__form" method="POST">
     <input type="hidden" name="_csrf" value="{{ params.results.csrfToken }}">
 
-    <div id="{{ params.id }}-input-container">
+    <div class="probation-search__input-container">
         {{ govukInput({
             attributes: params.attributes,
             autocomplete: params.autocomplete,
@@ -21,21 +19,21 @@
                 classes: "govuk-label--l",
                 isPageHeading: true
             },
-            name: params.name,
+            name: "probation-search-input",
             type: params.type if params.type else "search",
             value: params.results.query
         }) }}
 
-        {% if params.results.suggestions | length %}
-            <p id="{{ params.id }}-suggestions">
+        <p id="{{ params.id }}-suggestions" class="probation-search__suggestions">
+            {% if params.results.suggestions | length %}
                 Did you mean
                 {%- set comma = joiner() %}
                 {%- for suggestion in params.results.suggestions %}{{ comma() }}
                     <a href="?q={{ suggestion }}" class="govuk-link govuk-link--no-visited-state"
                        title="Search again using {{ suggestion }}">{{ suggestion }}</a>
                 {%- endfor %}?
-            </p>
-        {% endif %}
+            {% endif %}
+        </p>
 
         {% if params.postHint %}
             {{ params.postHint.html | safe if params.postHint.html else '<p>' + params.postHint.text + '</p>' }}
@@ -44,10 +42,24 @@
         {% if params.searchOnInput %}
             <label for="{{ params.id }}" class="govuk-visually-hidden">Results will be updated as you type</label>
             <script nonce="{{ params.results.cspNonce }}">
-              let timeoutId = null;
-              document.getElementById("{{ params.id }}").addEventListener("input", function() {
-                window.clearTimeout(timeoutId);
-                timeoutId = window.setTimeout(function() { document.getElementById("{{ params.id }}-form").submit() }, 250);
+              let timeoutId = null
+              document.getElementById("{{ params.id }}").addEventListener('input', function() {
+                clearTimeout(timeoutId)
+                const url = new URL(location.href)
+                url.searchParams.forEach((value, name) => url.searchParams.delete(name))
+                url.searchParams.set('q', this.value)
+                timeoutId = setTimeout(() => fetch(url).then(async response => {
+                  if (response.status === 200) {
+                    const doc = new DOMParser().parseFromString(await response.text(), 'text/html')
+                    document.getElementById("{{ params.id }}-suggestions").innerHTML = doc.getElementById("{{ params.id }}-suggestions").innerHTML
+                    document.getElementById("{{ params.id }}-results-container").innerHTML = doc.getElementById("{{ params.id }}-results-container").innerHTML
+                    document.getElementById("{{ params.id }}-results-container").classList = doc.getElementById("{{ params.id }}-results-container").classList
+                    history.pushState({}, '', url)
+                  } else {
+                    document.getElementById("{{ params.id }}-results-container").innerHTML = '<p>Something went wrong. The error has been logged. Please try again.</p>'
+                    document.getElementById("{{ params.id }}-suggestions").innerHTML = ''
+                  }
+                }), 250)
               })
             </script>
         {% else %}
@@ -56,24 +68,7 @@
     </div>
 </form>
 
-{% if params.results.response.totalElements > 0 %}
-    <div id="{{ params.id }}-result-summary">
-        <p>Showing {{ params.results.page.from }} to {{ params.results.page.to }} of {{ params.results.page.totalResults }} results.</p>
-    </div>
-{% endif %}
-
-{% if params.results.results is string %}
-    {{ params.results.results | safe }}
-{% elif params.results.response.totalElements > 0 %}
-    <div id="{{ params.id }}-results">
-        {{ govukTable({ firstCellIsHeader: true, head: params.results.results.head, rows: params.results.results.rows }) }}
-    </div>
-{% elif params.results.query != null %}
-    <p>There are no results for your search. Try refining your query above.</p>
-{% endif %}
-
-{% if params.results.page.items | length > 1 %}
-    <div id="{{ params.id }}-pagination">
-        {{ govukPagination({ previous: { href: params.results.page.prev }, next: { href: params.results.page.next }, items: params.results.page.items }) }}
-    </div>
-{% endif %}
+<div id="{{ params.id }}-results-container"
+     class="probation-search__results-container {{ 'probation-search__has-results' if params.results.results else '' }}">
+{% include "./results.njk" %}
+</div>

@@ -17,7 +17,6 @@
 
     {{ probationSearch({
         id: "search",
-        name: "search",
         classes: "app-search-input govuk-body-l govuk-!-padding-3 govuk-!-margin-bottom-2",
         label: {
             text: "Search for people on probation",
@@ -61,23 +60,24 @@
     <script src="/assets/govukFrontendInit.js"></script>
     <script src="/assets/moj/all.js"></script>
     <script nonce="{{ cspNonce }}">
-      // This code will be replaced as part of adding live result / ajax functionality. It's just here to enable testing of the filters.
-      document.getElementsByName('match-all-terms').forEach(function(el) {
-        el.addEventListener('input', function() {
-          const url = new URL(window.location.href)
-          url.searchParams.set('matchAllTerms', this.value)
-          window.location.href = url.toString()
-        })
-      })
-      document.getElementsByName('providers-filter').forEach(function(el) {
-        el.addEventListener('input', function() {
-          const url = new URL(window.location.href)
-          url.searchParams.delete('providers[]')
-          document.querySelectorAll('input[name="providers-filter"]:checked').forEach(function(el) {
-            url.searchParams.append('providers[]', el.value)
-          })
-          window.location.href = url.toString()
-        })
+      function debounce(func, wait) {
+        let timeoutId
+        return function(...args) {
+          clearTimeout(timeoutId)
+          timeoutId = setTimeout(() => func.apply(this, args), wait)
+        }
+      }
+
+      function updateFilters() {
+        const url = new URL(window.location.href)
+        url.searchParams.set('matchAllTerms', document.querySelector('input[name="match-all-terms"]:checked').value)
+        url.searchParams.delete('providers[]')
+        document.querySelectorAll('input[name="providers-filter"]:checked').forEach(el => url.searchParams.append('providers[]', el.value))
+        window.location.href = url.toString()
+      }
+
+      document.getElementById('search-results-container').addEventListener('input', e => {
+        if (e.target.name === 'match-all-terms' || e.target.name === 'providers-filter') debounce(updateFilters, 250)()
       })
     </script>
 {% endblock %}
