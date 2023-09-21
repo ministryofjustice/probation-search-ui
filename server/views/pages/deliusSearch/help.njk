@@ -6,12 +6,12 @@
 {% block pageTitle %}HMPPS - National Search{% endblock %}
 
 {% block header %}
-    {% include "pages/newTech/phaseBanner.njk" %}
+    {% include "pages/deliusSearch/phaseBanner.njk" %}
 {% endblock %}
 
 {% block content %}
     <p class="govuk-!-margin-top-4">
-        <a href="/newTech" class="govuk-back-link">Back to search</a>
+        <a href="/delius?{{ query }}" class="govuk-back-link">Back to search</a>
     </p>
 
     <h1 class="govuk-heading-l">Search tips</h1>

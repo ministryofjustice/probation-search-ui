@@ -83,10 +83,7 @@
       }
     ],
     "comma-dangle": ["error", "always-multiline"],
-    "import/no-extraneous-dependencies": [
-      "error",
-      { "devDependencies": ["**/*.test.js", "**/*.test.ts", "**/testutils/**", "cypress.config.ts"] }
-    ],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "no-only-tests/no-only-tests": "error",
     "no-empty-function": "off",
     "@typescript-eslint/no-empty-function": "error",
