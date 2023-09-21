@@ -3,8 +3,8 @@ import { type RequestHandler, Router } from 'express'
 import probationSearchRoutes from '@ministryofjustice/probation-search-frontend/routes/search'
 import nunjucks from 'nunjucks'
 import {
-  ProbationSearchResponse,
   ProbationSearchRequest,
+  ProbationSearchResponse,
 } from '@ministryofjustice/probation-search-frontend/data/probationSearchClient'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import config from '../config'
@@ -25,6 +25,15 @@ export default function routes(service: Services): Router {
     router,
     path: '/',
     template: 'pages/index',
+    environment: config.environment,
+    oauthClient: service.hmppsAuthClient,
+  })
+
+  // Examples page
+  probationSearchRoutes({
+    router,
+    path: '/examples',
+    template: 'pages/examples',
     environment: config.environment,
     oauthClient: service.hmppsAuthClient,
   })

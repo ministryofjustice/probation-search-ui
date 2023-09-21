@@ -74,8 +74,8 @@ export default function probationSearchRoutes({
   const client = new ProbationSearchClient(oauthClient, environment === 'local' ? localData : environment)
 
   router.post(path, (req, res) => {
-    const { search } = req.body
-    if (!allowEmptyQuery && (search == null || search.length === 0)) {
+    const query = req.body['probation-search-input']
+    if (!allowEmptyQuery && (query == null || query.length === 0)) {
       res.render(template, {
         probationSearchResults: {
           errorMessage: { text: 'Please enter a search term' },
@@ -83,7 +83,7 @@ export default function probationSearchRoutes({
         },
       })
     } else {
-      res.redirect(`${path}?q=${req.body.search}`)
+      res.redirect(`${path}?q=${query}`)
     }
   })
 

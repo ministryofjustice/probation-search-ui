@@ -1,0 +1,26 @@
+{% extends "../partials/layout.njk" %}
+{% from "probationSearch/macro.njk" import probationSearch %}
+
+{% set pageTitle = applicationName + " - Home" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+  <h1 class="govuk-heading-l">Examples</h1>
+  <p>A collection of examples showing how the <a href="https://www.npmjs.com/package/@ministryofjustice/probation-search-frontend">probation-search-frontend</a> UI component can be configured.</p>
+
+  <div class="govuk-!-width-two-thirds">
+    <ul class="govuk-list govuk-list--bullet">
+      <li>
+        <h2 class="govuk-heading-m">Basic example</h2>
+        <pre>{% raw %}{{ probationSearch({ id: "basic", results: probationSearchResults }) }}{% endraw %}</pre>
+        <div class="example-output">{{ probationSearch({ id: "basic", results: probationSearchResults }) }}</div>
+      </li>
+
+      <li>
+        <h2 class="govuk-heading-m">Search as you type</h2>
+        <pre>{% raw %}{{ probationSearch({ id: "on-input", searchOnInput: true, results: probationSearchResults }) }}{% endraw %}</pre>
+        <div class="example-output">{{ probationSearch({ id: "on-input", searchOnInput: true, results: probationSearchResults }) }}</div>
+      </li>
+    </ul>
+  </div>
+{% endblock %}

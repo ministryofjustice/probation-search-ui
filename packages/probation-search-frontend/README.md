@@ -4,7 +4,7 @@ A Nunjucks component to search for probation cases.
 
 Easily build probation case search functionality into your HMPPS service, while delivering a consistent search experience to probation practitioners.
 
-Try it out in the dev environment: https://probation-search-dev.hmpps.service.justice.gov.uk
+Try it out in the dev environment: https://probation-search-dev.hmpps.service.justice.gov.uk/examples
 
 ## Get started
  
@@ -21,8 +21,11 @@ Register the macro by adding the `'node_modules/@ministryofjustice/probation-sea
 ```nunjuck
 {% from "probationSearch/macro.njk" import probationSearch %}
 
-{{ probationSearch({ id: "search", name: "search", results: probationSearchResults }) }}
+{{ probationSearch({ id: "search", results: probationSearchResults }) }}
 ```
+Example: 
+* [nunjucksSetup.ts](https://github.com/ministryofjustice/hmpps-sentence-plan-ui/blob/4cf961428e4c4e69565367bf7af17bac8c8da674/server/utils/nunjucksSetup.ts#L34)
+* [search.njk](https://github.com/ministryofjustice/hmpps-sentence-plan-ui/blob/4cf961428e4c4e69565367bf7af17bac8c8da674/server/views/pages/search.njk)
 
 ### 3. Configure the Express routes
 
@@ -39,6 +42,7 @@ probationSearchRoutes({
     oauthClient: service.hmppsAuthClient, // a reference to your HMPPS Auth client
 })
 ```
+Example: [routes/index.ts](https://github.com/ministryofjustice/hmpps-sentence-plan-ui/blob/4cf961428e4c4e69565367bf7af17bac8c8da674/server/routes/index.ts#L16)
 
 That's it! Start your service and visit http://localhost:3000/search to try it out.
 
