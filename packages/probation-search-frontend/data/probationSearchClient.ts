@@ -109,6 +109,8 @@ export interface ProbationSearchResult {
 
 export interface Suggestion {
   text: string
+  offset: number
+  length: number
   options: {
     text: string
     freq: number
