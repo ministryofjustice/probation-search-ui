@@ -15,6 +15,7 @@ export interface ProbationSearchRouteOptions {
   path?: string
   resultPath?: (crn: string) => string
   template?: string
+  templateFields?: (req: Request, res: Response) => object
   nameFormatter?: (result: ProbationSearchResult) => string
   dateFormatter?: (date: Date) => string
   resultsFormatter?: (apiResponse: ProbationSearchResponse, apiRequest: ProbationSearchRequest) => string | Table
@@ -36,6 +37,7 @@ export default function probationSearchRoutes({
   path = '/search',
   resultPath = (crn: string) => `/case/${crn}`,
   template = 'pages/search',
+  templateFields = () => ({}),
   nameFormatter = (result: ProbationSearchResult) => `${result.firstName} ${result.surname}`,
   dateFormatter = (date: Date) => format(date, 'dd/MM/yyyy'),
   resultsFormatter = (response: ProbationSearchResponse) => {
@@ -50,6 +52,7 @@ export default function probationSearchRoutes({
   },
   localData = [
     {
+      offenderId: 1,
       otherIds: { crn: 'A000001' },
       firstName: 'John',
       surname: 'Doe',
@@ -59,6 +62,7 @@ export default function probationSearchRoutes({
       currentDisposal: '1',
     },
     {
+      offenderId: 2,
       firstName: 'Jane',
       surname: 'Doe',
       dateOfBirth: '1982-02-02',
@@ -82,6 +86,7 @@ export default function probationSearchRoutes({
           errorMessage: { text: 'Please enter a search term' },
           ...defaultResult(res),
         },
+        ...templateFields(req, res),
       })
     } else {
       res.redirect(`${path}?q=${query}`)
@@ -95,7 +100,7 @@ export default function probationSearchRoutes({
       const providers = (req.query.providers as string[]) ?? []
       const matchAllTerms = (req.query.matchAllTerms ?? 'true') === 'true'
       if (query == null || query === '') {
-        res.render(template, { probationSearchResults: defaultResult(res) })
+        res.render(template, { probationSearchResults: defaultResult(res), ...templateFields(req, res) })
       } else {
         const currentPage = req.query.page ? Number.parseInt(req.query.page as string, 10) : 1
         const request = {
@@ -135,6 +140,7 @@ export default function probationSearchRoutes({
             ),
             ...defaultResult(res),
           },
+          ...templateFields(req, res),
         })
       }
     }),

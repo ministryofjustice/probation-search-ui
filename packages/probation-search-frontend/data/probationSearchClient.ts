@@ -80,6 +80,7 @@ export interface ProbationSearchResponse {
 }
 
 export interface ProbationSearchResult {
+  offenderId: number
   otherIds: {
     crn: string
   }
