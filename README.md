@@ -54,7 +54,7 @@ If you don't already have a personal client, request one in the [#hmpps-auth-aud
 This removes the need for using Docker.
 
 You'll need the following roles:
-* `ROLE_PROBATION_SEARCH` for searching probation cases (TBC)
+* `ROLE_COMMUNITY` for searching probation cases
 
 Create a `.env` file at the root of the project:
 ```properties
@@ -62,7 +62,7 @@ NODE_ENV=development
 ENVIRONMENT=dev
 REDIS_ENABLED=false
 HMPPS_AUTH_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
-PROBATION_SEARCH_API_URL=https://probation-offender-search-dev.hmpps.service.justice.gov.uk
+PRISON_API_URL=https://prison-api-dev.prison.service.justice.gov.uk
 
 # Add your personal client credentials below:
 API_CLIENT_ID=clientid
