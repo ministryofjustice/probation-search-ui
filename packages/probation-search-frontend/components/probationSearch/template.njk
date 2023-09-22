@@ -29,8 +29,8 @@
                 Did you mean
                 {%- set comma = joiner() %}
                 {%- for suggestion in params.results.suggestions %}{{ comma() }}
-                    <a href="?q={{ suggestion }}" class="govuk-link govuk-link--no-visited-state"
-                       title="Search again using {{ suggestion }}">{{ suggestion }}</a>
+                    <a href="{{ suggestion.url }}" class="govuk-link govuk-link--no-visited-state"
+                       title="Search again using {{ suggestion.text }}">{{ suggestion.text }}</a>
                 {%- endfor %}?
             {% endif %}
         </p>
@@ -46,7 +46,8 @@
               document.getElementById("{{ params.id }}").addEventListener('input', function() {
                 clearTimeout(timeoutId)
                 const url = new URL(location.href)
-                url.searchParams.forEach((value, name) => url.searchParams.delete(name))
+                url.searchParams.delete("matchAllTerms")
+                url.searchParams.delete("providers[]")
                 url.searchParams.set('q', this.value)
                 timeoutId = setTimeout(() => fetch(url).then(async response => {
                   if (response.status === 200) {

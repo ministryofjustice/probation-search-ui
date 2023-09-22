@@ -1,5 +1,6 @@
 import { format, parseISO } from 'date-fns'
 import { NextFunction, Request, RequestHandler, Response, Router } from 'express'
+import parseurl from 'parseurl'
 import ProbationSearchClient, {
   ProbationSearchRequest,
   ProbationSearchResponse,
@@ -113,10 +114,17 @@ export default function probationSearchRoutes({
             results,
             response,
             suggestions: Object.values(response?.suggestions?.suggest || {})
-              .flatMap(suggestions => suggestions.flatMap(suggestion => suggestion.options))
+              .flatMap(suggestions =>
+                suggestions.flatMap(s =>
+                  s.options.map(opts => {
+                    const params = new URLSearchParams(parseurl(req).search)
+                    params.set('q', query.slice(0, s.offset) + opts.text + query.slice(s.offset + s.length))
+                    return { url: `${path}?${params.toString()}`, ...opts }
+                  }),
+                ),
+              )
               .sort((a, b) => b.score - a.score || b.freq - a.freq)
-              .slice(0, 3)
-              .map(suggestion => suggestion.text),
+              .slice(0, 3),
             page: calculatePagination(
               currentPage,
               response.totalPages,
