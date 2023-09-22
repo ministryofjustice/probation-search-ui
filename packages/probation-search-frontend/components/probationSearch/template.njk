@@ -52,9 +52,10 @@
                 timeoutId = setTimeout(() => fetch(url).then(async response => {
                   if (response.status === 200) {
                     const doc = new DOMParser().parseFromString(await response.text(), 'text/html')
-                    document.getElementById("{{ params.id }}-suggestions").innerHTML = doc.getElementById("{{ params.id }}-suggestions").innerHTML
                     document.getElementById("{{ params.id }}-results-container").innerHTML = doc.getElementById("{{ params.id }}-results-container").innerHTML
                     document.getElementById("{{ params.id }}-results-container").classList = doc.getElementById("{{ params.id }}-results-container").classList
+                    document.getElementById("{{ params.id }}-suggestions").innerHTML = doc.getElementById("{{ params.id }}-suggestions").innerHTML
+                    document.getElementsByName("_csrf").value = doc.getElementsByName("_csrf")[0].value
                     history.pushState({}, '', url)
                   } else {
                     document.getElementById("{{ params.id }}-results-container").innerHTML = '<p>Something went wrong. The error has been logged. Please try again.</p>'

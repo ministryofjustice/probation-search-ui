@@ -1,6 +1,7 @@
 import { format, parseISO } from 'date-fns'
 import { NextFunction, Request, RequestHandler, Response, Router } from 'express'
 import parseurl from 'parseurl'
+import { Url } from 'url'
 import ProbationSearchClient, {
   ProbationSearchRequest,
   ProbationSearchResponse,
@@ -15,9 +16,13 @@ export interface ProbationSearchRouteOptions {
   path?: string
   resultPath?: (crn: string) => string
   template?: string
+  templateFields?: (req: Request, res: Response) => object
   nameFormatter?: (result: ProbationSearchResult) => string
   dateFormatter?: (date: Date) => string
-  resultsFormatter?: (apiResponse: ProbationSearchResponse, apiRequest: ProbationSearchRequest) => string | Table
+  resultsFormatter?: (
+    apiResponse: ProbationSearchResponse,
+    apiRequest: ProbationSearchRequest,
+  ) => Promise<string | Table>
   localData?: ProbationSearchResult[]
   allowEmptyQuery?: boolean
   pageSize?: number
@@ -36,20 +41,13 @@ export default function probationSearchRoutes({
   path = '/search',
   resultPath = (crn: string) => `/case/${crn}`,
   template = 'pages/search',
+  templateFields = () => ({}),
   nameFormatter = (result: ProbationSearchResult) => `${result.firstName} ${result.surname}`,
   dateFormatter = (date: Date) => format(date, 'dd/MM/yyyy'),
-  resultsFormatter = (response: ProbationSearchResponse) => {
-    return {
-      head: [{ text: 'Name' }, { text: 'CRN' }, { text: 'Date of Birth' }],
-      rows: response.content?.map(result => [
-        { html: `<a href="${resultPath(result.otherIds.crn)}">${nameFormatter(result)}</a>` },
-        { text: result.otherIds.crn },
-        { text: result.dateOfBirth ? dateFormatter(parseISO(result.dateOfBirth)) : '' },
-      ]),
-    }
-  },
+  resultsFormatter = defaultResultFormatter(resultPath, nameFormatter, dateFormatter),
   localData = [
     {
+      offenderId: 1,
       otherIds: { crn: 'A000001' },
       firstName: 'John',
       surname: 'Doe',
@@ -59,6 +57,7 @@ export default function probationSearchRoutes({
       currentDisposal: '1',
     },
     {
+      offenderId: 2,
       firstName: 'Jane',
       surname: 'Doe',
       dateOfBirth: '1982-02-02',
@@ -82,6 +81,7 @@ export default function probationSearchRoutes({
           errorMessage: { text: 'Please enter a search term' },
           ...defaultResult(res),
         },
+        ...templateFields(req, res),
       })
     } else {
       res.redirect(`${path}?q=${query}`)
@@ -95,7 +95,7 @@ export default function probationSearchRoutes({
       const providers = (req.query.providers as string[]) ?? []
       const matchAllTerms = (req.query.matchAllTerms ?? 'true') === 'true'
       if (query == null || query === '') {
-        res.render(template, { probationSearchResults: defaultResult(res) })
+        res.render(template, { probationSearchResults: defaultResult(res), ...templateFields(req, res) })
       } else {
         const currentPage = req.query.page ? Number.parseInt(req.query.page as string, 10) : 1
         const request = {
@@ -107,24 +107,13 @@ export default function probationSearchRoutes({
           size: pageSize,
         }
         const response = await client.search(request)
-        const results = resultsFormatter(response, request)
+        const results = await resultsFormatter(response, request)
         res.render(template, {
           probationSearchResults: {
             query,
             results,
             response,
-            suggestions: Object.values(response?.suggestions?.suggest || {})
-              .flatMap(suggestions =>
-                suggestions.flatMap(s =>
-                  s.options.map(opts => {
-                    const params = new URLSearchParams(parseurl(req).search)
-                    params.set('q', query.slice(0, s.offset) + opts.text + query.slice(s.offset + s.length))
-                    return { url: `${path}?${params.toString()}`, ...opts }
-                  }),
-                ),
-              )
-              .sort((a, b) => b.score - a.score || b.freq - a.freq)
-              .slice(0, 3),
+            suggestions: mapSuggestions(response, parseurl(req)),
             page: calculatePagination(
               currentPage,
               response.totalPages,
@@ -135,6 +124,7 @@ export default function probationSearchRoutes({
             ),
             ...defaultResult(res),
           },
+          ...templateFields(req, res),
         })
       }
     }),
@@ -148,6 +138,33 @@ function defaultResult(res: Response) {
     csrfToken: res.locals.csrfToken,
     cspNonce: res.locals.cspNonce,
   }
+}
+
+function defaultResultFormatter(
+  resultPath: (crn: string) => string,
+  nameFormatter: (probationSearchResult: ProbationSearchResult) => string,
+  dateFormatter: (date: Date) => string,
+): (response: ProbationSearchResponse, request: ProbationSearchRequest) => Promise<string | Table> {
+  return async (response: ProbationSearchResponse) => ({
+    head: [{ text: 'Name' }, { text: 'CRN' }, { text: 'Date of Birth' }],
+    rows: response.content?.map(result => [
+      { html: `<a href="${resultPath(result.otherIds.crn)}">${nameFormatter(result)}</a>` },
+      { text: result.otherIds.crn },
+      { text: result.dateOfBirth ? dateFormatter(parseISO(result.dateOfBirth)) : '' },
+    ]),
+  })
+}
+
+function mapSuggestions(response: ProbationSearchResponse, originalUrl: Url) {
+  return Object.values(response?.suggestions?.suggest || {})
+    .flatMap(suggestions => suggestions.flatMap(s => s.options.map(o => ({ ...s, ...o }))))
+    .sort((a, b) => b.score - a.score || b.freq - a.freq)
+    .slice(0, 3)
+    .map(s => {
+      const params = new URLSearchParams(originalUrl.search)
+      params.set('q', params.get('q').slice(0, s.offset) + s.text + params.get('q').slice(s.offset + s.length))
+      return { url: `${originalUrl.pathname}?${params.toString()}`, ...s }
+    })
 }
 
 function calculatePagination(
