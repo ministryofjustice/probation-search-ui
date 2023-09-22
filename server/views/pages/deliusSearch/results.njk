@@ -41,10 +41,11 @@
                             <div role="group" class="govuk-grid-column-three-quarters govuk-!-margin-0">
                                 <div class="govuk-inset-text app-inset-text govuk-!-margin-top-0 govuk-!-margin-left-0 govuk-!-padding-top-0">
                                     <p>
-                                        <a tabindex="1"
+                                        <a class="view-offender-link govuk-link govuk-heading-m"
+                                           data-offender-id="{{ result.offenderId }}"
                                            href="javascript:"
-                                           title="View offender record for {{ result.surname }}, {{ result.firstName }}"
-                                           class="govuk-link govuk-heading-m">
+                                           tabindex="1"
+                                           title="View offender record for {{ result.surname }}, {{ result.firstName }}">
                                             {% if result.accessDenied %}
                                                 <span>Restricted access</span>
                                             {% else %}
@@ -127,10 +128,13 @@
                                         {# TODO aliases, previous surnames and addresses #}
                                     {% endif %}
                                     <p>
-                                <span>
-                                    <a tabindex="1" href="javascript:" class="govuk-link govuk-link--no-visited-state"
-                                       title="Add contact to test test, Rar count update">Add contact</a>
-                                </span>
+                                        <span>
+                                            <a class="add-contact-link govuk-link govuk-link--no-visited-state"
+                                               data-offender-id="{{ result.offenderId }}"
+                                               href="javascript:"
+                                               tabindex="1"
+                                               title="Add contact to test test, Rar count update">Add contact</a>
+                                        </span>
                                     </p>
                                 </div>
                             </div>

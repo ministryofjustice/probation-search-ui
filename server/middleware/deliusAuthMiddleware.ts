@@ -8,7 +8,7 @@ import config from '../config'
 
 export default function deliusAuthMiddleware(hmppsAuthClient: HmppsAuthClient): RequestHandler {
   return asyncMiddleware(async (req, res, next) => {
-    if (req.path.startsWith('/delius') && req.query.user && req.query.t) {
+    if (req.path.startsWith('/delius/nationalSearch') && req.query.user && req.query.t) {
       // We've been loaded in the Delius iframe, get a client token using the Delius user token
       const username = decrypt(req.query.user as string)
       const expiry = addHours(new Date(+decrypt(req.query.t as string)), 2)
