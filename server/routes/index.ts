@@ -42,20 +42,23 @@ export default function routes(service: Services): Router {
   // Delius search screen (fka new tech)
   probationSearchRoutes({
     router,
-    path: '/delius',
+    path: '/delius/nationalSearch',
     template: 'pages/deliusSearch/index',
-    resultsFormatter: async (res, req) => nunjucks.render('pages/deliusSearch/results.njk', mapResponse(res, req)),
+    templateFields: () => ({ deliusUrl: config.delius.url }),
+    resultsFormatter: async (res, req) => nunjucks.render('pages/deliusSearch/results.njk', mapResults(res, req)),
     allowEmptyQuery: true,
     environment: config.environment,
     oauthClient: service.hmppsAuthClient,
   })
 
-  get('/delius/help', (req, res) => res.render('pages/deliusSearch/help', { query: parseurl.original(req).query }))
+  get('/delius/nationalSearch/help', (req, res) =>
+    res.render('pages/deliusSearch/help', { query: parseurl.original(req).query }),
+  )
 
   return router
 }
 
-function mapResponse(response: ProbationSearchResponse, request: ProbationSearchRequest) {
+function mapResults(response: ProbationSearchResponse, request: ProbationSearchRequest) {
   return {
     results: response.content.map(result => {
       const activeManager = result.offenderManagers?.filter(manager => manager.active).shift()
@@ -73,5 +76,6 @@ function mapResponse(response: ProbationSearchResponse, request: ProbationSearch
       }))
       .sort((a, b) => a.text?.localeCompare(b.text)),
     matchAllTerms: request.matchAllTerms,
+    deliusUrl: config.delius.url,
   }
 }
