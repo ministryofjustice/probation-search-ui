@@ -44,7 +44,7 @@ export default function routes(service: Services): Router {
     router,
     path: '/delius',
     template: 'pages/deliusSearch/index',
-    resultsFormatter: (res, req) => nunjucks.render('pages/deliusSearch/results.njk', mapResponse(res, req)),
+    resultsFormatter: async (res, req) => nunjucks.render('pages/deliusSearch/results.njk', mapResponse(res, req)),
     allowEmptyQuery: true,
     environment: config.environment,
     oauthClient: service.hmppsAuthClient,
