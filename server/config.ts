@@ -53,6 +53,10 @@ export default {
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: process.env.SENTRY_TRACES_SAMPLE_RATE,
   },
+  delius: {
+    url: get('DELIUS_URL', '*', requiredInProduction),
+    authSecret: process.env.DELIUS_AUTH_SECRET,
+  },
   apis: {
     hmppsAuth: {
       url: get('HMPPS_AUTH_URL', 'http://localhost:9090/auth', requiredInProduction),

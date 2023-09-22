@@ -6,6 +6,7 @@ import {
   ProbationSearchRequest,
   ProbationSearchResponse,
 } from '@ministryofjustice/probation-search-frontend/data/probationSearchClient'
+import parseurl from 'parseurl'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import config from '../config'
 import type { Services } from '../services'
@@ -41,15 +42,15 @@ export default function routes(service: Services): Router {
   // Delius search screen (fka new tech)
   probationSearchRoutes({
     router,
-    path: '/newTech',
-    template: 'pages/newTech/index',
-    resultsFormatter: (res, req) => nunjucks.render('pages/newTech/results.njk', mapResponse(res, req)),
+    path: '/delius',
+    template: 'pages/deliusSearch/index',
+    resultsFormatter: (res, req) => nunjucks.render('pages/deliusSearch/results.njk', mapResponse(res, req)),
     allowEmptyQuery: true,
     environment: config.environment,
     oauthClient: service.hmppsAuthClient,
   })
 
-  get('/newTech/help', (req, res) => res.render('pages/newTech/help'))
+  get('/delius/help', (req, res) => res.render('pages/deliusSearch/help', { query: parseurl.original(req).query }))
 
   return router
 }

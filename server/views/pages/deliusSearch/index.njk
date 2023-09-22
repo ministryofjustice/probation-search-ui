@@ -6,7 +6,7 @@
 {% block pageTitle %}HMPPS - National Search{% endblock %}
 
 {% block header %}
-    {% include "pages/newTech/phaseBanner.njk" %}
+    {% include "pages/deliusSearch/phaseBanner.njk" %}
 
     <div class="govuk-width-container">
         <a tabindex="3"
@@ -27,10 +27,9 @@
             text: "Use any combination of names, dates of birth, ID numbers, telephone numbers, towns and postcodes."
         },
         postHint: {
-            html: "<a tabindex='2'
+            html: "<a tabindex='2' id='help-link'
                       title='View tips for getting better results'
-                      class='app-national-search-help govuk-link govuk-body'
-                      href='/newTech/help'>Tips for getting better results</a>"
+                      class='app-national-search-help govuk-link govuk-body'>Tips for getting better results</a>"
         },
         attributes: {
             autofocus: 'true',
@@ -69,15 +68,17 @@
       }
 
       function updateFilters() {
-        const url = new URL(window.location.href)
+        const url = new URL(location.href)
         url.searchParams.set('matchAllTerms', document.querySelector('input[name="match-all-terms"]:checked').value)
         url.searchParams.delete('providers[]')
         document.querySelectorAll('input[name="providers-filter"]:checked').forEach(el => url.searchParams.append('providers[]', el.value))
-        window.location.href = url.toString()
+        location.href = url.toString()
       }
 
       document.getElementById('search-results-container').addEventListener('input', e => {
         if (e.target.name === 'match-all-terms' || e.target.name === 'providers-filter') debounce(updateFilters, 250)()
       })
+      document.getElementById('help-link').addEventListener('click', () => location.href = '/delius/help?' + new URL(location.href).searchParams.toString())
+      document.getElementById('search').focus() // the autofocus attribute doesn't work in a cross-origin iframe
     </script>
 {% endblock %}
