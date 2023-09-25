@@ -48,7 +48,7 @@ export default function routes(service: Services): Router {
     template: 'pages/deliusSearch/index',
     templateFields: () => ({ deliusUrl: config.delius.url }),
     resultsFormatter: async (res, req) =>
-      nunjucks.render('pages/deliusSearch/results.njk', mapResults(res, req, service.hmppsAuthClient)),
+      nunjucks.render('pages/deliusSearch/results.njk', await mapResults(res, req, service.hmppsAuthClient)),
     allowEmptyQuery: true,
     environment: config.environment,
     oauthClient: service.hmppsAuthClient,
@@ -75,8 +75,8 @@ async function mapResults(
         return {
           ...result,
           imageUrl: await prisonApiClient.getImageUrl(result.otherIds.nomsNumber),
-          provider: activeManager.probationArea.description,
-          officer: `${activeManager.staff.surname}, ${activeManager.staff.forenames}`,
+          provider: activeManager?.probationArea?.description,
+          officer: `${activeManager?.staff?.surname}, ${activeManager?.staff?.forenames}`,
         }
       }),
     ),

@@ -13,16 +13,16 @@ export default class ProbationSearchClient {
     matchAllTerms = true,
     providersFilter = [],
     asUsername,
-    page = 1,
-    size = 10,
+    pageNumber = 1,
+    pageSize = 10,
   }: ProbationSearchRequest): Promise<ProbationSearchResponse> {
     if (this.dataSource instanceof Array) {
-      return Promise.resolve(this.localSearch(this.dataSource, page, size))
+      return Promise.resolve(this.localSearch(this.dataSource, pageNumber, pageSize))
     }
     const token = await this.oauthClient.getSystemClientToken(asUsername)
     const apiConfig = config[this.dataSource].searchApi
     const response = await superagent
-      .post(`${apiConfig.url}/phrase?page=${page - 1}&size=${size}}`)
+      .post(`${apiConfig.url}/phrase?page=${pageNumber - 1}&size=${pageSize}}`)
       .auth(token, { type: 'bearer' })
       .timeout(apiConfig.timeout)
       .retry(2)
@@ -36,18 +36,9 @@ export default class ProbationSearchClient {
 
   private localSearch(data: ProbationSearchResult[], page: number, size: number): ProbationSearchResponse {
     const content = data.slice((page - 1) * size, page * size)
-    const probationAreaAggregations = Array.from(
-      data
-        .map(r => r.offenderManagers?.filter(manager => manager.active).shift().probationArea)
-        .reduce((map, obj) => {
-          map.set(obj.code, { ...obj, count: map.has(obj.code) ? map.get(obj.code).count + 1 : 1 })
-          return map
-        }, new Map())
-        .values(),
-    )
     return {
       content,
-      probationAreaAggregations,
+      probationAreaAggregations: [],
       size: content.length,
       totalElements: this.dataSource.length,
       totalPages: Math.ceil(this.dataSource.length / size),
@@ -60,8 +51,8 @@ export interface ProbationSearchRequest {
   matchAllTerms: boolean
   providersFilter: string[]
   asUsername: string
-  page: number
-  size: number
+  pageNumber: number
+  pageSize: number
 }
 
 export interface ProbationSearchResponse {
@@ -107,6 +98,7 @@ export interface ProbationSearchResult {
     }
   }[]
   accessDenied?: boolean
+  highlight: { [key: string]: string[] }
 }
 
 export interface Suggestion {

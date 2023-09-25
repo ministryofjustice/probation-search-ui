@@ -85,8 +85,8 @@
       });
       document.getElementById("search-results-container").addEventListener("click", e => {
         const target = e.target.closest('a')
-        if (target.classList.contains("view-offender-link")) postMessage("viewOffender", target.getAttribute("data-offender-id"));
-        if (target.classList.contains("add-contact-link")) postMessage("addContact", target.getAttribute("data-offender-id"));
+        if (target && target.classList.contains("view-offender-link")) postMessage("viewOffender", target.getAttribute("data-offender-id"));
+        if (target && target.classList.contains("add-contact-link")) postMessage("addContact", target.getAttribute("data-offender-id"));
       });
       document.getElementById("add-new-person-link").addEventListener("click", () => postMessage("addOffender"));
       document.getElementById("previous-search-link").addEventListener("click", () => postMessage("toggleSearch"));
