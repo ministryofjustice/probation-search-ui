@@ -14,6 +14,7 @@ interface GetRequest {
   headers?: Record<string, string>
   responseType?: string
   raw?: boolean
+  handle404?: boolean
 }
 
 interface PostRequest {
@@ -50,7 +51,14 @@ export default class RestClient {
     return this.config.timeout
   }
 
-  async get({ path = null, query = '', headers = {}, responseType = '', raw = false }: GetRequest): Promise<unknown> {
+  async get({
+    path = null,
+    query = '',
+    headers = {},
+    responseType = '',
+    raw = false,
+    handle404 = false,
+  }: GetRequest): Promise<unknown> {
     logger.info(`Get using user credentials: calling ${this.name}: ${path} ${query}`)
     try {
       const result = await superagent
@@ -69,6 +77,7 @@ export default class RestClient {
 
       return raw ? result : result.body
     } catch (error) {
+      if (handle404 && error.response?.status === 404) return null
       const sanitisedError = sanitiseError(error)
       logger.warn({ ...sanitisedError, query }, `Error calling ${this.name}, path: '${path}', verb: 'GET'`)
       throw sanitisedError

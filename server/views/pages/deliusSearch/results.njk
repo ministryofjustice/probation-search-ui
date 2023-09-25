@@ -35,8 +35,8 @@
                     <li>
                         <div class="govuk-grid-row qa-offender-details-row">
                             <div class="govuk-grid-column-one-quarter govuk-!-margin-0 moj-!-text-align-center app-hide-tablet">
-                                <img alt="No offender image available" class="app-offender-image"
-                                     src="assets/images/NoPhoto@2x.png"
+                                <img alt="Prisoner image for {{ result.surname }}, {{ result.firstName }}" class="app-offender-image"
+                                     src="{{ result.imageUrl }}"
                                      width="120" height="150"></div>
                             <div role="group" class="govuk-grid-column-three-quarters govuk-!-margin-0">
                                 <div class="govuk-inset-text app-inset-text govuk-!-margin-top-0 govuk-!-margin-left-0 govuk-!-padding-top-0">
