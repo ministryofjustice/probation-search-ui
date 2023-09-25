@@ -1,38 +1,16 @@
 import { format, parseISO } from 'date-fns'
-import { NextFunction, Request, RequestHandler, Response, Router } from 'express'
+import { Request, Response, Router } from 'express'
 import parseurl from 'parseurl'
-import { Url } from 'url'
 import ProbationSearchClient, {
   ProbationSearchRequest,
   ProbationSearchResponse,
   ProbationSearchResult,
 } from '../data/probationSearchClient'
 import OAuthClient from '../data/oauthClient'
-
-export interface ProbationSearchRouteOptions {
-  environment: 'local' | 'dev' | 'preprod' | 'prod'
-  oauthClient: OAuthClient
-  router: Router
-  path?: string
-  resultPath?: (crn: string) => string
-  template?: string
-  templateFields?: (req: Request, res: Response) => object
-  nameFormatter?: (result: ProbationSearchResult) => string
-  dateFormatter?: (date: Date) => string
-  resultsFormatter?: (
-    apiResponse: ProbationSearchResponse,
-    apiRequest: ProbationSearchRequest,
-  ) => Promise<string | Table>
-  localData?: ProbationSearchResult[]
-  allowEmptyQuery?: boolean
-  pageSize?: number
-  maxPagesToShow?: number
-}
-
-export interface Table {
-  head: { text: string }[]
-  rows: { html?: string; text?: string }[][]
-}
+import data from '../data/localData'
+import getPaginationLinks, { Pagination } from '../utils/pagination'
+import getSuggestionLinks, { SuggestionLink } from '../utils/suggestions'
+import wrapAsync from '../utils/middleware'
 
 export default function probationSearchRoutes({
   environment,
@@ -45,99 +23,71 @@ export default function probationSearchRoutes({
   nameFormatter = (result: ProbationSearchResult) => `${result.firstName} ${result.surname}`,
   dateFormatter = (date: Date) => format(date, 'dd/MM/yyyy'),
   resultsFormatter = defaultResultFormatter(resultPath, nameFormatter, dateFormatter),
-  localData = [
-    {
-      offenderId: 1,
-      otherIds: { crn: 'A000001' },
-      firstName: 'John',
-      surname: 'Doe',
-      dateOfBirth: '1980-01-01',
-      age: 43,
-      gender: 'Male',
-      currentDisposal: '1',
-    },
-    {
-      offenderId: 2,
-      firstName: 'Jane',
-      surname: 'Doe',
-      dateOfBirth: '1982-02-02',
-      age: 41,
-      gender: 'Female',
-      currentDisposal: '0',
-      otherIds: { crn: 'A000002' },
-    },
-  ],
+  localData = data,
   allowEmptyQuery = false,
   pageSize = 10,
   maxPagesToShow = 7,
 }: ProbationSearchRouteOptions): Router {
   const client = new ProbationSearchClient(oauthClient, environment === 'local' ? localData : environment)
 
-  router.post(path, (req, res) => {
-    const query = req.body['probation-search-input']
-    if (!allowEmptyQuery && (query == null || query.length === 0)) {
-      res.render(template, {
-        probationSearchResults: {
-          errorMessage: { text: 'Please enter a search term' },
-          ...defaultResult(res),
-        },
-        ...templateFields(req, res),
-      })
-    } else {
-      res.redirect(`${path}?q=${query}`)
-    }
-  })
-
-  router.get(
-    path,
-    wrapAsync(async (req, res) => {
-      const query = req.query.q as string
-      const providers = (req.query.providers as string[]) ?? []
-      const matchAllTerms = (req.query.matchAllTerms ?? 'true') === 'true'
-      if (query == null || query === '') {
-        res.render(template, { probationSearchResults: defaultResult(res), ...templateFields(req, res) })
-      } else {
-        const currentPage = req.query.page ? Number.parseInt(req.query.page as string, 10) : 1
-        const request = {
-          query,
-          matchAllTerms,
-          providersFilter: providers,
-          asUsername: res.locals.user.username,
-          page: currentPage,
-          size: pageSize,
-        }
-        const response = await client.search(request)
-        const results = await resultsFormatter(response, request)
-        res.render(template, {
-          probationSearchResults: {
-            query,
-            results,
-            response,
-            suggestions: mapSuggestions(response, parseurl(req)),
-            page: calculatePagination(
-              currentPage,
-              response.totalPages,
-              response.totalElements,
-              page => `${path}?q=${query}&page=${page}`,
-              pageSize,
-              maxPagesToShow,
-            ),
-            ...defaultResult(res),
-          },
-          ...templateFields(req, res),
-        })
-      }
-    }),
-  )
+  router.post(path, post({ path, allowEmptyQuery, template, templateFields }))
+  router.get(path, get(client, { path, pageSize, maxPagesToShow, resultsFormatter, template, templateFields }))
 
   return router
 }
 
-function defaultResult(res: Response) {
-  return {
-    csrfToken: res.locals.csrfToken,
-    cspNonce: res.locals.cspNonce,
+export function post({ path, allowEmptyQuery, template, templateFields }: PostOptions) {
+  return (req: Request, res: Response) => {
+    const query = req.body['probation-search-input']
+    if (!allowEmptyQuery && (query == null || query.length === 0)) {
+      const probationSearchResults: ResultTemplateParams = {
+        errorMessage: { text: 'Please enter a search term' },
+        ...securityParams(res),
+      }
+      res.render(template, { probationSearchResults, ...templateFields(req, res) })
+    } else {
+      res.redirect(`${path}?q=${query}`)
+    }
   }
+}
+
+export function get(
+  client: ProbationSearchClient,
+  { path, pageSize, maxPagesToShow, resultsFormatter, template, templateFields }: GetOptions,
+) {
+  return wrapAsync(async (req: Request, res: Response) => {
+    const query = req.query.q as string
+    if (query == null || query === '') {
+      // No query, render empty search screen
+      res.render(template, { probationSearchResults: securityParams(res), ...templateFields(req, res) })
+    } else {
+      // Render search results
+      const pageNumber = req.query.page ? Number.parseInt(req.query.page as string, 10) : 1
+      const matchAllTerms = (req.query.matchAllTerms ?? 'true') === 'true'
+      const providersFilter = (req.query.providers as string[]) ?? []
+      const asUsername = res.locals.user.username
+      const request = { query, matchAllTerms, providersFilter, asUsername, pageNumber, pageSize }
+
+      const response = await client.search(request)
+
+      const probationSearchResults: ResultTemplateParams = {
+        query,
+        response,
+        results: await resultsFormatter(response, request),
+        suggestions: getSuggestionLinks(response, parseurl(req)),
+        pagination: getPaginationLinks(
+          pageNumber,
+          response.totalPages,
+          response.totalElements,
+          page => `${path}?q=${query}&page=${page}`,
+          pageSize,
+          maxPagesToShow,
+        ),
+        ...securityParams(res),
+      }
+      res.render(template, { probationSearchResults, ...templateFields(req, res) })
+    }
+  })
 }
 
 function defaultResultFormatter(
@@ -155,48 +105,62 @@ function defaultResultFormatter(
   })
 }
 
-function mapSuggestions(response: ProbationSearchResponse, originalUrl: Url) {
-  return Object.values(response?.suggestions?.suggest || {})
-    .flatMap(suggestions => suggestions.flatMap(s => s.options.map(o => ({ ...s, ...o }))))
-    .sort((a, b) => b.score - a.score || b.freq - a.freq)
-    .slice(0, 3)
-    .map(s => {
-      const params = new URLSearchParams(originalUrl.search)
-      params.set('q', params.get('q').slice(0, s.offset) + s.text + params.get('q').slice(s.offset + s.length))
-      return { url: `${originalUrl.pathname}?${params.toString()}`, ...s }
-    })
-}
-
-function calculatePagination(
-  currentPage: number,
-  totalPages: number,
-  totalResults: number,
-  pathFn: (pageNumber: number) => string,
-  pageSize: number,
-  maxPagesToShow: number,
-) {
-  const firstPage = Math.max(currentPage - Math.floor(maxPagesToShow / 2), 1)
-  const lastPage = Math.min(currentPage + Math.floor(maxPagesToShow / 2), totalPages)
+function securityParams(res: Response): { csrfToken: string; cspNonce: string } {
   return {
-    totalResults: totalResults.toLocaleString(),
-    from: (currentPage - 1) * pageSize + 1,
-    to: Math.min(currentPage * pageSize, totalResults),
-    next: currentPage < totalPages ? pathFn(currentPage + 1) : null,
-    prev: currentPage > 1 ? pathFn(currentPage - 1) : null,
-    items: [
-      ...(firstPage > 1 ? [{ ellipsis: true }] : []),
-      ...Array.from({ length: lastPage - firstPage + 1 }, (_, i) => firstPage + i).map(pageNumber => ({
-        number: pageNumber,
-        current: currentPage === pageNumber,
-        href: pathFn(pageNumber),
-      })),
-      ...(lastPage < totalPages ? [{ ellipsis: true }] : []),
-    ],
+    csrfToken: res.locals.csrfToken,
+    cspNonce: res.locals.cspNonce,
   }
 }
 
-function wrapAsync(fn: RequestHandler) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next)
-  }
+interface GetOptions {
+  path?: string
+  pageSize?: number
+  maxPagesToShow?: number
+  template?: string
+  templateFields?: (req: Request, res: Response) => object
+  resultPath?: (crn: string) => string
+  nameFormatter?: (result: ProbationSearchResult) => string
+  dateFormatter?: (date: Date) => string
+  resultsFormatter?: (
+    apiResponse: ProbationSearchResponse,
+    apiRequest: ProbationSearchRequest,
+  ) => Promise<string | Table>
+}
+
+interface PostOptions {
+  path?: string
+  template?: string
+  templateFields?: (req: Request, res: Response) => object
+  allowEmptyQuery?: boolean
+}
+
+export type ProbationSearchRouteOptions = {
+  environment: 'local' | 'dev' | 'preprod' | 'prod'
+  oauthClient: OAuthClient
+  router: Router
+  localData?: ProbationSearchResult[]
+} & GetOptions &
+  PostOptions
+
+interface SuccessParams {
+  query: string
+  results: string | Table
+  response: ProbationSearchResponse
+  suggestions: SuggestionLink[]
+  pagination: Pagination
+  csrfToken: string
+  cspNonce: string
+}
+
+interface ErrorParams {
+  errorMessage: { text: string }
+  csrfToken: string
+  cspNonce: string
+}
+
+export type ResultTemplateParams = SuccessParams | ErrorParams
+
+export interface Table {
+  head: { text: string }[]
+  rows: { html?: string; text?: string }[][]
 }

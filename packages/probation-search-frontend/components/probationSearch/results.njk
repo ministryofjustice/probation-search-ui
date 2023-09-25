@@ -2,7 +2,7 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% if params.results.response.totalElements > 0 %}
-    <p>Showing {{ params.results.page.from }} to {{ params.results.page.to }} of {{ params.results.page.totalResults }} results.</p>
+    <p>Showing {{ params.results.pagination.from }} to {{ params.results.pagination.to }} of {{ params.results.response.totalElements }} results.</p>
 {% endif %}
 
 {% if params.results.results is string %}
@@ -13,6 +13,6 @@
     <p>There are no results for your search. Try refining your query above.</p>
 {% endif %}
 
-{% if params.results.page.items | length > 1 %}
-    {{ govukPagination({ previous: { href: params.results.page.prev }, next: { href: params.results.page.next }, items: params.results.page.items }) }}
+{% if params.results.pagination.items | length > 1 %}
+    {{ govukPagination({ previous: { href: params.results.pagination.prev }, next: { href: params.results.pagination.next }, items: params.results.pagination.items }) }}
 {% endif %}

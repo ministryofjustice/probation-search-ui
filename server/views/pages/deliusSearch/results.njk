@@ -51,7 +51,7 @@
                                             {% else %}
                                                 <span class="{{ 'app-mark' if 'surname' in result.highlight else '' }}">{{ result.surname }}</span>,
                                                 <span class="{{ 'app-mark' if 'firstName' in result.highlight else '' }}">{{ result.firstName }}</span>
-                                                <span class="{{ 'app-mark' if 'middleNames' in result.highlight else '' }}">{{ result.middleNames | join(' ') }}</span>
+                                                <span class="{{ 'app-mark' if 'middleNames' in result.highlight else '' }}">{{ result.middleNames | default([]) | join(' ') }}</span>
                                                 -
                                                 <span class="{{ 'app-mark' if 'dateOfBirth' in result.highlight else '' }}">{{ result.dateOfBirth }}</span>
                                             {% endif %}
@@ -122,7 +122,7 @@
                                         {% if 'middleNames' in result.highlight %}
                                             <p>
                                                 <span class="govuk-!-font-weight-bold">Middle names:&nbsp;</span>
-                                                <span class="app-mark">{{ result.middleNames | join(' ') }}</span>
+                                                <span class="app-mark">{{ result.middleNames | default([]) | join(' ') }}</span>
                                             </p>
                                         {% endif %}
                                         {# TODO aliases, previous surnames and addresses #}
