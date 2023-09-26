@@ -11,6 +11,7 @@ import data from '../data/localData'
 import getPaginationLinks, { Pagination } from '../utils/pagination'
 import getSuggestionLinks, { SuggestionLink } from '../utils/suggestions'
 import wrapAsync from '../utils/middleware'
+import addParameters from '../utils/url'
 
 export default function probationSearchRoutes({
   environment,
@@ -30,13 +31,13 @@ export default function probationSearchRoutes({
 }: ProbationSearchRouteOptions): Router {
   const client = new ProbationSearchClient(oauthClient, environment === 'local' ? localData : environment)
 
-  router.post(path, post({ path, allowEmptyQuery, template, templateFields }))
-  router.get(path, get(client, { path, pageSize, maxPagesToShow, resultsFormatter, template, templateFields }))
+  router.post(path, post({ allowEmptyQuery, template, templateFields }))
+  router.get(path, get(client, { pageSize, maxPagesToShow, resultsFormatter, template, templateFields }))
 
   return router
 }
 
-export function post({ path, allowEmptyQuery, template, templateFields }: PostOptions) {
+export function post({ allowEmptyQuery, template, templateFields }: PostOptions) {
   return (req: Request, res: Response) => {
     const query = req.body['probation-search-input']
     if (!allowEmptyQuery && (query == null || query.length === 0)) {
@@ -46,14 +47,14 @@ export function post({ path, allowEmptyQuery, template, templateFields }: PostOp
       }
       res.render(template, { probationSearchResults, ...templateFields(req, res) })
     } else {
-      res.redirect(`${path}?q=${query}`)
+      res.redirect(addParameters(req.url, { q: query, page: '1' }))
     }
   }
 }
 
 export function get(
   client: ProbationSearchClient,
-  { path, pageSize, maxPagesToShow, resultsFormatter, template, templateFields }: GetOptions,
+  { resultsFormatter, template, templateFields, pageSize, maxPagesToShow }: GetOptions,
 ) {
   return wrapAsync(async (req: Request, res: Response) => {
     const query = req.query.q as string
@@ -79,7 +80,7 @@ export function get(
           pageNumber,
           response.totalPages,
           response.totalElements,
-          page => `${path}?q=${query}&page=${page}`,
+          page => addParameters(req.url, { page: page.toString() }),
           pageSize,
           maxPagesToShow,
         ),
@@ -97,11 +98,15 @@ function defaultResultFormatter(
 ): (response: ProbationSearchResponse, request: ProbationSearchRequest) => Promise<string | Table> {
   return async (response: ProbationSearchResponse) => ({
     head: [{ text: 'Name' }, { text: 'CRN' }, { text: 'Date of Birth' }],
-    rows: response.content?.map(result => [
-      { html: `<a href="${resultPath(result.otherIds.crn)}">${nameFormatter(result)}</a>` },
-      { text: result.otherIds.crn },
-      { text: result.dateOfBirth ? dateFormatter(parseISO(result.dateOfBirth)) : '' },
-    ]),
+    rows: response.content?.map(result =>
+      result.accessDenied
+        ? [{ html: `Restricted access` }, { text: result.otherIds.crn }, { text: '' }]
+        : [
+            { html: `<a href="${resultPath(result.otherIds.crn)}">${nameFormatter(result)}</a>` },
+            { text: result.otherIds.crn },
+            { text: result.dateOfBirth ? dateFormatter(parseISO(result.dateOfBirth)) : '' },
+          ],
+    ),
   })
 }
 

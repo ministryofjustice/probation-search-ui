@@ -43,10 +43,11 @@
             <label for="{{ params.id }}" class="govuk-visually-hidden">Results will be updated as you type</label>
             <script nonce="{{ params.results.cspNonce }}">
               let timeoutId = null
+              document.getElementById("{{ params.id }}-form").addEventListener("submit", () => clearTimeout(timeoutId))
               document.getElementById("{{ params.id }}").addEventListener('input', function() {
                 clearTimeout(timeoutId)
                 const url = new URL(location.href)
-                url.searchParams.delete("matchAllTerms")
+                url.searchParams.delete("page")
                 url.searchParams.delete("providers[]")
                 url.searchParams.set('q', this.value)
                 timeoutId = setTimeout(() => fetch(url).then(async response => {
@@ -55,10 +56,10 @@
                     document.getElementById("{{ params.id }}-results-container").innerHTML = doc.getElementById("{{ params.id }}-results-container").innerHTML
                     document.getElementById("{{ params.id }}-results-container").classList = doc.getElementById("{{ params.id }}-results-container").classList
                     document.getElementById("{{ params.id }}-suggestions").innerHTML = doc.getElementById("{{ params.id }}-suggestions").innerHTML
-                    document.getElementsByName("_csrf").value = doc.getElementsByName("_csrf")[0].value
+                    document.getElementsByName("_csrf")[0].value = doc.getElementsByName("_csrf")[0].value
                     history.pushState({}, '', url)
                   } else {
-                    document.getElementById("{{ params.id }}-results-container").innerHTML = '<p>Something went wrong. The error has been logged. Please try again.</p>'
+                    document.getElementById("{{ params.id }}-results-container").innerHTML = '<div class="govuk-error-summary"><h2 class="govuk-error-summary__title">Something went wrong</h2><div class="govuk-error-summary__body">The error has been logged. Please try again.</div></div>'
                     document.getElementById("{{ params.id }}-suggestions").innerHTML = ''
                   }
                 }), 250)

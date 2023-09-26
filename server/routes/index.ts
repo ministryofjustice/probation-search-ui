@@ -7,6 +7,7 @@ import {
   ProbationSearchResponse,
 } from '@ministryofjustice/probation-search-frontend/data/probationSearchClient'
 import parseurl from 'parseurl'
+import { format, parseISO } from 'date-fns'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import config from '../config'
 import type { Services } from '../services'
@@ -74,9 +75,10 @@ async function mapResults(
         const activeManager = result.offenderManagers?.filter(manager => manager.active).shift()
         return {
           ...result,
+          formattedDateOfBirth: result.dateOfBirth ? format(parseISO(result.dateOfBirth), 'dd/MM/yyyy') : '',
           imageUrl: await prisonApiClient.getImageUrl(result.otherIds.nomsNumber),
-          provider: activeManager?.probationArea?.description,
           officer: `${activeManager?.staff?.surname}, ${activeManager?.staff?.forenames}`,
+          provider: activeManager?.probationArea?.description,
         }
       }),
     ),

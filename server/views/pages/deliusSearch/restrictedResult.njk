@@ -1,0 +1,45 @@
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-quarter govuk-!-text-align-right govuk-!-padding-right-5">
+        <img alt="No image available"
+             src="/assets/images/NoPhoto@2x.png" class="app-result-image">
+    </div>
+
+    <div role="group"
+         class="app-result-text govuk-grid-column-three-quarters govuk-!-padding-left-5 govuk-!-margin-bottom-6">
+        <p class="app-result-heading">
+            <a class="view-offender-link govuk-heading-m govuk-link govuk-link--no-visited-state"
+               data-offender-id="{{ result.offenderId }}"
+               tabindex="1"
+               title="Restricted access">
+                <span>Restricted access</span>
+            </a>
+        </p>
+
+        <p class="app-result-body govuk-body">
+            <span id="crn-label-{{ result.otherIds.crn }}" class="govuk-!-font-weight-bold">
+                <abbr title="Case Reference Number">CRN</abbr>:
+            </span>
+            <span class="govuk-!-font-weight-bold govuk-!-margin-right-1"
+                  aria-labelledby="crn-label-{{ result.otherIds.crn }}">{{ result.otherIds.crn }}</span>
+            <span id="provider-{{ result.otherIds.crn }}">
+                <span id="provider-label-{{ result.otherIds.crn }}">Provider:</span>
+                <span class="govuk-!-margin-right-1"
+                      aria-labelledby="provider-label-{{ result.otherIds.crn }}">{{ result.provider }}</span>
+            </span>
+            <br>
+            <span id="officer-{{ result.otherIds.crn }}">
+                <span id="officer-label-{{ result.otherIds.crn }}">Officer name:</span>
+                <span class="govuk-!-margin-right-1"
+                      aria-labelledby="officer-label-{{ result.otherIds.crn }}">{{ result.officer }}</span>
+            </span>
+        </p>
+
+        <p>
+            <a class="add-contact-link govuk-link govuk-link--no-visited-state"
+               data-offender-id="{{ result.offenderId }}"
+               href="javascript:"
+               tabindex="1"
+               title="Add contact">Add contact</a>
+        </p>
+    </div>
+</div>

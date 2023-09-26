@@ -97,6 +97,14 @@ export interface ProbationSearchResult {
       surname: string
     }
   }[]
+  offenderAliases?: {
+    dataOfBirth: string
+    firstName: string
+    middleNames: string[]
+    surname: string
+    gender: string
+  }[]
+  previousSurname?: string
   accessDenied?: boolean
   highlight: { [key: string]: string[] }
 }

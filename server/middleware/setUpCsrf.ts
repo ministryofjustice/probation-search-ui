@@ -8,7 +8,12 @@ export default function setUpCsrf(): Router {
 
   // CSRF protection
   if (!testMode) {
-    router.use(csurf())
+    router.use((req, res, next) => {
+      // CSRF is disabled for the Delius search screen, as we cannot make use of
+      // the session cookie while loaded in an iframe (without setting SameSite=None)
+      if (req.path.startsWith('/delius/nationalSearch')) next()
+      else csurf()(req, res, next)
+    })
   }
 
   router.use((req, res, next) => {

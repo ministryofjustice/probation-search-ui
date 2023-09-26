@@ -1,4 +1,4 @@
-import { convertToTitleCase, initialiseName } from './utils'
+import { convertToTitleCase, highlightText, initialiseName } from './utils'
 
 describe('convert to title case', () => {
   it.each([
@@ -26,5 +26,21 @@ describe('initialise name', () => {
     ['Double barrelled', 'Robert-John Smith-Jones-Wilson', 'R. Smith-Jones-Wilson'],
   ])('%s initialiseName(%s, %s)', (_: string, a: string, expected: string) => {
     expect(initialiseName(a)).toEqual(expected)
+  })
+})
+
+describe('highlightText', () => {
+  it.each([
+    [undefined, undefined, undefined],
+    ['Hello world', undefined, 'Hello world'],
+    ['Hello world', ['world'], 'Hello <span class="highlighted-text">world</span>'],
+    ['Hello world', ['hello'], '<span class="highlighted-text">Hello</span> world'],
+    [
+      'Hello world',
+      ['hello', 'world'],
+      '<span class="highlighted-text">Hello</span> <span class="highlighted-text">world</span>',
+    ],
+  ])('should highlight text correctly', (textToHighlight, searchWords, expected) => {
+    expect(highlightText(textToHighlight, searchWords)).toEqual(expected)
   })
 })
