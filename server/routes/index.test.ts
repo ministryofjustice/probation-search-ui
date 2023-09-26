@@ -42,7 +42,7 @@ describe('GET /delius/nationalSearch', () => {
       .send({ 'probation-search-input': 'Bob' })
       .expect(res => {
         expect(res.redirect).toEqual(true)
-        expect(res.headers.location).toEqual('/delius/nationalSearch?q=Bob')
+        expect(res.headers.location).toEqual('/delius/nationalSearch?q=Bob&page=1')
       })
   })
 
