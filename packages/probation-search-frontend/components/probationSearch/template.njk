@@ -58,7 +58,7 @@
                     document.getElementsByName("_csrf").value = doc.getElementsByName("_csrf")[0].value
                     history.pushState({}, '', url)
                   } else {
-                    document.getElementById("{{ params.id }}-results-container").innerHTML = '<p>Something went wrong. The error has been logged. Please try again.</p>'
+                    document.getElementById("{{ params.id }}-results-container").innerHTML = '<div class="govuk-error-summary"><h2 class="govuk-error-summary__title">Something went wrong</h2><div class="govuk-error-summary__body">The error has been logged. Please try again.</div></div>'
                     document.getElementById("{{ params.id }}-suggestions").innerHTML = ''
                   }
                 }), 250)

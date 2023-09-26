@@ -1,0 +1,148 @@
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-quarter govuk-!-text-align-right govuk-!-padding-right-5">
+        <img alt="Prisoner image for {{ result.surname }}, {{ result.firstName }}"
+             src="{{ result.imageUrl }}" class="app-result-image">
+    </div>
+
+    <div role="group"
+         class="app-result-text govuk-grid-column-three-quarters govuk-!-padding-left-5 govuk-!-margin-bottom-6">
+        <p class="app-result-heading">
+            <a class="view-offender-link govuk-link govuk-heading-m"
+               data-offender-id="{{ result.offenderId }}"
+               href="javascript:"
+               tabindex="1"
+               title="View offender record for {{ result.surname }}, {{ result.firstName }}">
+                {{ result.surname | highlight(result.highlight['surname']) | safe }},
+                {{ result.firstName | highlight(result.highlight['firstName']) | safe }}
+                {{ result.middleNames | default([]) | join(' ') | highlight(result.highlight['middleNames']) | safe }}
+                -
+                <span class="{{ 'highlighted-text' if 'dateOfBirth' in result.highlight else '' }}">{{ result.formattedDateOfBirth }}</span>
+            </a>
+        </p>
+
+        <p class="app-result-body govuk-body">
+            <span id="crn-label-{{ result.otherIds.crn }}" class="govuk-!-font-weight-bold">
+                <abbr title="Case Reference Number">CRN</abbr>:
+            </span>
+            <span class="govuk-!-font-weight-bold govuk-!-margin-right-1"
+                  aria-labelledby="crn-label-{{ result.otherIds.crn }}">
+                {{ result.otherIds.crn | highlight(result.highlight['otherIds.crn']) | safe }}
+            </span>
+            {% if result.offenderProfile and result.offenderProfile.riskColour %}
+                <span aria-label="Risk alert colour" class="govuk-!-margin-right-1"
+                      title="{{ result.offenderProfile.riskColour }} risk alert icon">
+                    Risk
+                    <span class="app-risk-icon app-risk-icon--{{ result.offenderProfile.riskColour | lower }}"></span>
+                    <span class="govuk-visually-hidden">{{ result.offenderProfile.riskColour }}</span> |
+                </span>
+            {% endif %}
+            {% if result.currentDisposal and result.currentDisposal == '1' %}
+                <span class="govuk-!-margin-right-1" aria-label="Probation status">Current</span> |
+            {% endif %}
+            <span class="govuk-!-margin-left-1 govuk-!-margin-right-1">
+                <span aria-label="Gender">
+                    {{ result.gender | highlight(result.highlight['gender']) | safe }},
+                </span>
+                <span aria-label="Age">{{ result.age }}</span>
+            </span>
+            <br>
+            <span id="provider-{{ result.otherIds.crn }}">
+                <span id="provider-label-{{ result.otherIds.crn }}">Provider:</span>
+                <span class="govuk-!-margin-right-1"
+                      aria-labelledby="provider-label-{{ result.otherIds.crn }}">{{ result.provider }}</span>
+            </span>
+            <br>
+            <span id="officer-{{ result.otherIds.crn }}">
+                <span id="officer-label-{{ result.otherIds.crn }}">Officer name:</span>
+                <span class="govuk-!-margin-right-1"
+                      aria-labelledby="officer-label-{{ result.otherIds.crn }}">{{ result.officer }}</span>
+            </span>
+        </p>
+
+        {% if 'otherIds.pncNumberLongYear' in result.highlight or 'otherIds.pncNumberShortYear' in result.highlight %}
+            <p>
+                <span id="pnc-label-{{ result.otherIds.crn }}" class="govuk-!-font-weight-bold">
+                    <abbr title="Police National Computer ID">PNC</abbr>:
+                </span>
+                <span aria-labelledby="pnc-label-{{ result.otherIds.crn }}"
+                      class="govuk-!-margin-right-1 highlighted-text"
+                      id="pnc-{{ result.otherIds.crn }}">{{ result.otherIds.pncNumber }}</span>
+            </p>
+        {% endif %}
+        {% if 'otherIds.nomsNumber' in result.highlight %}
+            <p>
+                <span id="noms-label-{{ result.otherIds.crn }}" class="govuk-!-font-weight-bold">
+                    <abbr title="Prisoner ID">NOMS</abbr>:
+                </span>
+                <span aria-labelledby="noms-label-{{ result.otherIds.crn }}"
+                      class="govuk-!-margin-right-1 highlighted-text"
+                      id="noms-{{ result.otherIds.crn }}">{{ result.otherIds.nomsNumber }}</span>
+            </p>
+        {% endif %}
+        {% if 'otherIds.niNumber' in result.highlight %}
+            <p>
+                <span id="ni-label-{{ result.otherIds.crn }}" class="govuk-!-font-weight-bold">National Insurance Number</span>:
+                <span aria-labelledby="noms-label-{{ result.otherIds.crn }}"
+                      class="govuk-!-margin-right-1 highlighted-text"
+                      id="ni-{{ result.otherIds.crn }}">{{ result.otherIds.niNumber }}</span>
+            </p>
+        {% endif %}
+        {% if 'otherIds.croNumber' in result.highlight %}
+            <p>
+                <span id="noms-label-{{ result.otherIds.crn }}" class="govuk-!-font-weight-bold">
+                    <abbr title="Criminal Records Office Number ID">CRO</abbr>:
+                </span>
+                <span aria-labelledby="noms-label-{{ result.otherIds.crn }}"
+                      class="govuk-!-margin-right-1 highlighted-text"
+                      id="noms-{{ result.otherIds.crn }}">{{ result.otherIds.croNumber }}</span>
+            </p>
+        {% endif %}
+        {% if 'middleNames' in result.highlight %}
+            <p>
+                <span class="govuk-!-font-weight-bold">Middle names:</span>
+                <span class="highlighted-text">{{ result.middleNames | default([]) | join(' ') }}</span>
+            </p>
+        {% endif %}
+        {% if 'offenderAliases.firstName' in result.highlight or 'offenderAliases.surname' in result.highlight %}
+            {% for alias in result.offenderAliases %}
+            <p>
+                <span class='govuk-!-margin-right-1'>Alias:</span>
+                {{ alias.surname | highlight(result.highlight['offenderAliases.surname']) | safe }},
+                {{ alias.firstName | highlight(result.highlight['offenderAliases.firstName']) | safe }}
+            </p>
+            {% endfor %}
+        {% endif %}
+        {% if 'previousSurname' in result.highlight %}
+            <p>
+                <span class='govuk-!-margin-right-1'>Previous surname:</span>
+                {{ result.previousSurname | highlight(result.highlight['previousSurnames']) | safe }}
+            </p>
+        {% endif %}
+        {% if 'contactDetails.addresses.buildingName' in result.highlight
+            or 'contactDetails.addresses.streetName' in result.highlight
+            or 'contactDetails.addresses.town' in result.highlight
+            or 'contactDetails.addresses.county' in result.highlight
+            or 'contactDetails.addresses.postcode' in result.highlight %}
+            {% for address in result.contactDetails.addresses %}
+                <p>
+                    <span class='govuk-!-margin-right-1'>Address:</span>
+                    {{ [
+                        address.buildingName | highlight(result.highlight['contactDetails.addresses.buildingName']),
+                        (address.addressNumber + ' ' + address.streetName) | highlight(result.highlight['contactDetails.addresses.streetName']),
+                        address.town | highlight(result.highlight['contactDetails.addresses.town']),
+                        address.county | highlight(result.highlight['contactDetails.addresses.county']),
+                        address.postcode | highlight(result.highlight['contactDetails.addresses.postcode'])
+                    ] | reject('undefined') | join(', ') | safe }}
+                </p>
+            {% endfor %}
+        {% endif %}
+
+        <p>
+            <a class="add-contact-link govuk-link govuk-link--no-visited-state"
+               data-offender-id="{{ result.offenderId }}"
+               href="javascript:"
+               tabindex="1"
+               title="Add contact to {{ result.surname }}, {{ result.firstName }}">Add contact</a>
+        </p>
+    </div>
+</div>

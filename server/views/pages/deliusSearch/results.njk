@@ -1,6 +1,5 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
-{% from "govuk/components/details/macro.njk" import govukDetails %}
 
 <div id="search-results">
     <div class="govuk-grid-row">
@@ -32,113 +31,12 @@
             {% if results | length > 0 %}
             <ul class="govuk-list">
                 {% for result in results %}
-                    <li>
-                        <div class="govuk-grid-row qa-offender-details-row">
-                            <div class="govuk-grid-column-one-quarter govuk-!-margin-0 moj-!-text-align-center app-hide-tablet">
-                                <img alt="Prisoner image for {{ result.surname }}, {{ result.firstName }}" class="app-offender-image"
-                                     src="{{ result.imageUrl }}"
-                                     width="120" height="150"></div>
-                            <div role="group" class="govuk-grid-column-three-quarters govuk-!-margin-0">
-                                <div class="govuk-inset-text app-inset-text govuk-!-margin-top-0 govuk-!-margin-left-0 govuk-!-padding-top-0">
-                                    <p>
-                                        <a class="view-offender-link govuk-link govuk-heading-m"
-                                           data-offender-id="{{ result.offenderId }}"
-                                           href="javascript:"
-                                           tabindex="1"
-                                           title="View offender record for {{ result.surname }}, {{ result.firstName }}">
-                                            {% if result.accessDenied %}
-                                                <span>Restricted access</span>
-                                            {% else %}
-                                                <span class="{{ 'app-mark' if 'surname' in result.highlight else '' }}">{{ result.surname }}</span>,
-                                                <span class="{{ 'app-mark' if 'firstName' in result.highlight else '' }}">{{ result.firstName }}</span>
-                                                <span class="{{ 'app-mark' if 'middleNames' in result.highlight else '' }}">{{ result.middleNames | default([]) | join(' ') }}</span>
-                                                -
-                                                <span class="{{ 'app-mark' if 'dateOfBirth' in result.highlight else '' }}">{{ result.dateOfBirth }}</span>
-                                            {% endif %}
-                                        </a>
-                                    </p>
-                                    <p class="govuk-body">
-                                        <span id="crn-label-2501033282" class="govuk-!-font-weight-bold">CRN:&nbsp;</span>
-                                        <span class="govuk-!-font-weight-bold govuk-!-margin-right-1"
-                                              aria-labelledby="crn-label-2501033282">
-                                    <span class="{{ 'app-mark' if 'otherIds.crn' in result.highlight else '' }}">{{ result.otherIds.crn }}</span>
-                                </span>
-                                        {% if not result.accessDenied %}
-                                            {% if result.offenderProfile and result.offenderProfile.riskColour %}
-                                                <span aria-label="Risk alert colour" class="govuk-!-margin-right-1">
-                                            Risk <span class="app-risk-icon app-risk-icon--{{ result.offenderProfile.riskColour }}"></span>
-                                            <span class="govuk-visually-hidden">result.offenderProfile.riskColour</span> |
-                                        </span>
-                                            {% endif %}
-                                            {% if result.currentDisposal and result.currentDisposal == '1' %}
-                                                <span class="govuk-!-margin-right-1"
-                                                      aria-label="Probation status">Current</span> |
-                                            {% endif %}
-                                            <span class="govuk-!-margin-left-1 govuk-!-margin-right-1">
-                                        <span aria-label="Gender"
-                                              class="{{ 'app-mark' if 'gender' in result.highlight else '' }}">{{ result.gender }}</span>,
-                                        <span aria-label="Age">{{ result.age }}</span>
-                                    </span>
-                                        {% endif %}
-                                        <br>
-                                        <span id="provider-2501033282">
-                                    <span id="provider-label-2501033282">Provider:&nbsp;</span>
-                                    <span class="govuk-!-margin-right-1"
-                                          aria-labelledby="provider-label-2501033282">{{ result.provider }}</span>
-                                </span>
-                                        <br>
-                                        <span id="officer-2501033282">
-                                    <span id="officer-label-2501033282">Officer name:&nbsp;</span>
-                                    <span class="govuk-!-margin-right-1"
-                                          aria-labelledby="officer-label-2501033282">{{ result.officer }}</span>
-                                </span>
-                                    </p>
-
-                                    {% if not result.accessDenied %}
-                                        {% if 'otherIds.pncNumberLongYear' in result.highlight or 'otherIds.pncNumberShortYear' in result.highlight %}
-                                            <p>
-                                                <span class="govuk-!-font-weight-bold">PNC:&nbsp;</span>
-                                                <span class="app-mark">{{ result.otherIds.pncNumber }}</span>
-                                            </p>
-                                        {% endif %}
-                                        {% if 'otherIds.nomsNumber' in result.highlight %}
-                                            <p>
-                                                <span class="govuk-!-font-weight-bold">NOMS:&nbsp;</span>
-                                                <span class="app-mark">{{ result.otherIds.nomsNumber }}</span>
-                                            </p>
-                                        {% endif %}
-                                        {% if 'otherIds.niNumber' in result.highlight %}
-                                            <p>
-                                                <span class="govuk-!-font-weight-bold">National Insurance Number:&nbsp;</span>
-                                                <span class="app-mark">{{ result.otherIds.niNumber }}</span>
-                                            </p>
-                                        {% endif %}
-                                        {% if 'otherIds.croNumber' in result.highlight %}
-                                            <p>
-                                                <span class="govuk-!-font-weight-bold">CRO:&nbsp;</span>
-                                                <span class="app-mark">{{ result.otherIds.croNumber }}</span>
-                                            </p>
-                                        {% endif %}
-                                        {% if 'middleNames' in result.highlight %}
-                                            <p>
-                                                <span class="govuk-!-font-weight-bold">Middle names:&nbsp;</span>
-                                                <span class="app-mark">{{ result.middleNames | default([]) | join(' ') }}</span>
-                                            </p>
-                                        {% endif %}
-                                        {# TODO aliases, previous surnames and addresses #}
-                                    {% endif %}
-                                    <p>
-                                        <span>
-                                            <a class="add-contact-link govuk-link govuk-link--no-visited-state"
-                                               data-offender-id="{{ result.offenderId }}"
-                                               href="javascript:"
-                                               tabindex="1"
-                                               title="Add contact to test test, Rar count update">Add contact</a>
-                                        </span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                    <li class="app-result">
+                        {% if result.accessDenied %}
+                            {% include "pages/deliusSearch/restrictedResult.njk" %}
+                        {% else %}
+                            {% include "pages/deliusSearch/result.njk" %}
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>

@@ -97,11 +97,15 @@ function defaultResultFormatter(
 ): (response: ProbationSearchResponse, request: ProbationSearchRequest) => Promise<string | Table> {
   return async (response: ProbationSearchResponse) => ({
     head: [{ text: 'Name' }, { text: 'CRN' }, { text: 'Date of Birth' }],
-    rows: response.content?.map(result => [
-      { html: `<a href="${resultPath(result.otherIds.crn)}">${nameFormatter(result)}</a>` },
-      { text: result.otherIds.crn },
-      { text: result.dateOfBirth ? dateFormatter(parseISO(result.dateOfBirth)) : '' },
-    ]),
+    rows: response.content?.map(result =>
+      result.accessDenied
+        ? [{ html: `Restricted access` }, { text: result.otherIds.crn }, { text: '' }]
+        : [
+            { html: `<a href="${resultPath(result.otherIds.crn)}">${nameFormatter(result)}</a>` },
+            { text: result.otherIds.crn },
+            { text: result.dateOfBirth ? dateFormatter(parseISO(result.dateOfBirth)) : '' },
+          ],
+    ),
   })
 }
 
