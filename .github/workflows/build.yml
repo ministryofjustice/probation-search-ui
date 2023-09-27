@@ -12,7 +12,7 @@ jobs:
     name: Build
     strategy:
       matrix:
-        node-version: [16.x, 18.x, lts/*]
+        node-version: [16.x, 18.x, 20.x, lts/*]
     runs-on: ubuntu-latest
     permissions:
       contents: read
