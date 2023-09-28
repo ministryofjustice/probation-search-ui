@@ -44,4 +44,5 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
 
   njkEnv.addFilter('initialiseName', initialiseName)
   njkEnv.addFilter('highlight', highlightText)
+  njkEnv.addFilter('formatNumber', (num: number) => num.toLocaleString('en-GB'))
 }

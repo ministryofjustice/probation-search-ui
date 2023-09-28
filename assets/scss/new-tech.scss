@@ -55,7 +55,11 @@ $govuk-page-width: $moj-page-width;
     padding: govuk-spacing(2);
   }
 
-  fieldset > div {
+  .govuk-hint {
+    margin-left: govuk-spacing(2);
+  }
+
+  .govuk-radios, .govuk-checkboxes {
     background-color: govuk-colour("white");
     border: 5px solid govuk-colour("light-grey");
     border-top: 0;
