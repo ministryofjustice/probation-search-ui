@@ -40,6 +40,13 @@ describe('token verification api tests', () => {
         expect(nock.isDone()).toBe(true) // assert api was called
       })
 
+      it('Skips Delius paths', async () => {
+        fakeApi.post('/token/verify', '').reply(200, { active: true })
+        const data = await verifyToken({ path: '/delius/nationalSearch/testing', user: {}, verified: false } as Request)
+        expect(data).toEqual(true)
+        expect(nock.isDone()).toBe(false) // assert api was not called
+      })
+
       it('Calls verify and parses inactive response', async () => {
         fakeApi.post('/token/verify', '').reply(200, { active: false })
         const data = await verifyToken({ user: {}, verified: false } as Request)
