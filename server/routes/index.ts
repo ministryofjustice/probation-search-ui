@@ -29,6 +29,7 @@ export default function routes(service: Services): Router {
     router,
     path: '/',
     template: 'pages/index',
+    templateFields: () => ({ sentry: config.sentry }),
     environment: config.environment,
     oauthClient: service.hmppsAuthClient,
   })
@@ -47,7 +48,7 @@ export default function routes(service: Services): Router {
     router,
     path: '/delius/nationalSearch',
     template: 'pages/deliusSearch/index',
-    templateFields: () => ({ deliusUrl: config.delius.url }),
+    templateFields: () => ({ deliusUrl: config.delius.url, sentry: config.sentry }),
     resultsFormatter: async (res, req) =>
       nunjucks.render('pages/deliusSearch/results.njk', await mapResults(res, req, service.hmppsAuthClient)),
     allowEmptyQuery: true,

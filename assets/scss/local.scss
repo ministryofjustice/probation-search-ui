@@ -2,7 +2,7 @@
   min-height: 600px;
 }
 
-.examples-list li {
+.examples-list > li {
   margin-top: govuk-spacing(8);
 
   code {

@@ -1,0 +1,19 @@
+{% if sentry and sentry.loaderScriptId %}
+  <script src="https://js.sentry-cdn.com/{{ sentry.loaderScriptId }}.min.js" nonce="{{ cspNonce }}" crossorigin="anonymous"></script>
+  <script nonce="{{ cspNonce }}">
+    Sentry.onLoad(function() {
+      Sentry.init({
+        dsn: "{{ sentry.dsn }}",
+        release: "probation-search-ui@{{ version }}",
+        environment: "{{ sentry.environment }}",
+        integrations: [new Sentry.BrowserTracing(), new Sentry.Replay()],
+        tracesSampleRate: {{ sentry.tracesSampleRate }},
+        replaysSessionSampleRate: {{ sentry.replaySampleRate }},
+        replaysOnErrorSampleRate: 1.0, // Capture replays for any sessions with an error
+        initialScope: {
+          user: { username: "{{ user.username }}" },
+        },
+      });
+    });
+  </script>
+{% endif %}
