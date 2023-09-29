@@ -59,6 +59,7 @@
     <script src="/assets/govuk/all.js"></script>
     <script src="/assets/govukFrontendInit.js"></script>
     <script src="/assets/moj/all.js"></script>
+    {% include "../../partials/sentry.njk" %}
     <script nonce="{{ cspNonce }}">
       function debounce(func, wait) {
         let timeoutId;

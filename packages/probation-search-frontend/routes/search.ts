@@ -110,10 +110,11 @@ function defaultResultFormatter(
   })
 }
 
-function securityParams(res: Response): { csrfToken: string; cspNonce: string } {
+function securityParams(res: Response): { csrfToken: string; cspNonce: string; user: { username: string } } {
   return {
     csrfToken: res.locals.csrfToken,
     cspNonce: res.locals.cspNonce,
+    user: res.locals.user,
   }
 }
 

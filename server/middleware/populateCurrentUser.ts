@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express'
+import * as Sentry from '@sentry/node'
 import logger from '../../logger'
 import UserService from '../services/userService'
 
@@ -9,6 +10,7 @@ export default function populateCurrentUser(userService: UserService): RequestHa
         const user = res.locals.user && (await userService.getUser(res.locals.user.token))
         if (user) {
           res.locals.user = { ...user, ...res.locals.user }
+          Sentry.setUser({ username: res.locals.user.username })
         } else {
           logger.info('No user available')
         }
