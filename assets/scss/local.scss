@@ -2,9 +2,23 @@
   min-height: 600px;
 }
 
-.example-output {
-  background-color: govuk-colour('light-grey');
-  border: 1px solid $govuk-border-colour;
-  margin-bottom: govuk-spacing(4);
-  padding: govuk-spacing(4);
+.examples-list li {
+  margin-top: govuk-spacing(8);
+
+  code {
+    background-color: govuk-colour('light-grey');
+    border: 1px solid $govuk-border-colour;
+    padding: 0 2px;
+  }
+
+  pre {
+    border-bottom: 1px solid $govuk-border-colour;
+    border-top: 1px solid $govuk-border-colour;
+    padding-top: govuk-spacing(4);
+  }
+
+  .example-output {
+    border: 1px solid $govuk-border-colour;
+    padding: govuk-spacing(4);
+  }
 }

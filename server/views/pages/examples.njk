@@ -5,22 +5,94 @@
 {% set mainClasses = "app-container govuk-body" %}
 
 {% block content %}
-  <h1 class="govuk-heading-l">Examples</h1>
-  <p>A collection of examples showing how the <a href="https://www.npmjs.com/package/@ministryofjustice/probation-search-frontend">probation-search-frontend</a> UI component can be configured.</p>
+    <h1 class="govuk-heading-xl">Examples</h1>
+    <div class="govuk-!-width-two-thirds">
+        <p>
+            A collection of examples showing how the
+            <a href="https://www.npmjs.com/package/@ministryofjustice/probation-search-frontend">probation-search-frontend</a>
+            UI component can be configured.
+            To include this component in your service, follow the instructions to
+            <a href="https://www.npmjs.com/package/@ministryofjustice/probation-search-frontend#get-started">get started</a>.
+        </p>
 
-  <div class="govuk-!-width-two-thirds">
-    <ul class="govuk-list govuk-list--bullet">
-      <li>
-        <h2 class="govuk-heading-m">Basic example</h2>
-        <pre>{% raw %}{{ probationSearch({ id: "basic", results: probationSearchResults }) }}{% endraw %}</pre>
-        <div class="example-output">{{ probationSearch({ id: "basic", results: probationSearchResults }) }}</div>
-      </li>
+        <ul class="examples-list govuk-list">
+            <li>
+                <h2 class="govuk-heading-l">Basic example</h2>
+                <p>The component sets sensible defaults, and requires little additional configuration, so this basic
+                    example should be all you need for most services.</p>
+                <h3 class="govuk-heading-m">Code:</h3>
+                <pre>{% raw %}
+{{ probationSearch({
+    id: "basic",
+    results: probationSearchResults }) }}
+                {% endraw %}</pre>
+                <p>
+                    The only required fields are <code>id</code> and <code>results</code>.
+                    The <code>probationSearchResults</code> value is set up for you by the router
+                    (see
+                    <a href="https://www.npmjs.com/package/@ministryofjustice/probation-search-frontend#3-configure-the-express-routes">Configuring
+                        the Express routes</a>),
+                    and should always be passed in to <code>results</code>.
+                </p>
+                <h3 class="govuk-heading-m">Output:</h3>
+                <div class="example-output">
+                    {{ probationSearch({
+                        id: "basic",
+                        results: probationSearchResults }) }}
+                </div>
+            </li>
 
-      <li>
-        <h2 class="govuk-heading-m">Search as you type</h2>
-        <pre>{% raw %}{{ probationSearch({ id: "on-input", searchOnInput: true, results: probationSearchResults }) }}{% endraw %}</pre>
-        <div class="example-output">{{ probationSearch({ id: "on-input", searchOnInput: true, results: probationSearchResults }) }}</div>
-      </li>
-    </ul>
-  </div>
+            <li>
+                <h2 class="govuk-heading-l">Custom wording</h2>
+                <p>Any wording in the component can be overridden to suit your service's needs.</p>
+                <h3 class="govuk-heading-m">Code:</h3>
+                <pre>{% raw %}
+{{ probationSearch({
+    id: "custom-wording",
+    results: probationSearchResults,
+    label: {
+        text: "Who is this referral for?",
+        classes: "govuk-label--l"
+    },
+    hint: {
+        html: "Use the box below to find the &lt;strong&gt;probation case&lt;/strong&gt; you are making a referral for."
+    }
+}) }}
+        {% endraw %}</pre>
+                <h3 class="govuk-heading-m">Output:</h3>
+                <div class="example-output">
+                    {{ probationSearch({
+                        id: "custom-wording",
+                        results: probationSearchResults,
+                        label: {
+                            text: "Who is this referral for?",
+                            classes: "govuk-label--l"
+                        },
+                        hint: {
+                            html: "Use the box below to find the <strong>probation case</strong> you are making a referral for."
+                        }
+                    }) }}
+                </div>
+            </li>
+
+            <li>
+                <h2 class="govuk-heading-l">Search as you type</h2>
+                <p>Results will live reload as the user types their query.</p>
+                <h3 class="govuk-heading-m">Code:</h3>
+                <pre>{% raw %}
+{{ probationSearch({
+    id: "on-input",
+    searchOnInput: true,
+    results: probationSearchResults }) }}
+        {% endraw %}</pre>
+                <h3 class="govuk-heading-m">Output:</h3>
+                <div class="example-output">
+                    {{ probationSearch({
+                        id: "on-input",
+                        searchOnInput: true,
+                        results: probationSearchResults }) }}
+                </div>
+            </li>
+        </ul>
+    </div>
 {% endblock %}
