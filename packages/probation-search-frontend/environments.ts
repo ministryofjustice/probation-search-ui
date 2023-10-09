@@ -1,13 +1,14 @@
-export type Environment = 'dev' | 'preprod' | 'prod'
+export type Environment = 'local' | 'dev' | 'preprod' | 'prod'
 export interface ApiConfig {
   url: string
   timeout: number
 }
-export interface EnvironmentConfig {
+export type EnvironmentConfig = {
   searchApi: ApiConfig
 }
 
-const config: { [key in Environment]: EnvironmentConfig } = {
+const environments: { [key in Environment]: EnvironmentConfig } = {
+  local: null,
   dev: {
     searchApi: { url: 'https://probation-offender-search-dev.hmpps.service.justice.gov.uk', timeout: 5000 },
   },
@@ -19,4 +20,4 @@ const config: { [key in Environment]: EnvironmentConfig } = {
   },
 }
 
-export default config
+export default environments
