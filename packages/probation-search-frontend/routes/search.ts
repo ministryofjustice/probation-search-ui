@@ -12,6 +12,7 @@ import getPaginationLinks, { Pagination } from '../utils/pagination'
 import getSuggestionLinks, { SuggestionLink } from '../utils/suggestions'
 import wrapAsync from '../utils/middleware'
 import addParameters from '../utils/url'
+import { Environment, EnvironmentConfig } from '../environments'
 
 export default function probationSearchRoutes({
   environment,
@@ -141,7 +142,7 @@ interface PostOptions {
 }
 
 export type ProbationSearchRouteOptions = {
-  environment: 'local' | 'dev' | 'preprod' | 'prod'
+  environment: Environment | EnvironmentConfig
   oauthClient: OAuthClient
   router: Router
   localData?: ProbationSearchResult[]

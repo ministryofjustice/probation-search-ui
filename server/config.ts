@@ -1,3 +1,5 @@
+import { Environment } from '@ministryofjustice/probation-search-frontend/environments'
+
 const production = process.env.NODE_ENV === 'production'
 
 function get<T>(name: string, fallback: T, options = { requireInProduction: false }): T | string {
@@ -31,7 +33,7 @@ export interface ApiConfig {
 
 export default {
   buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
-  environment: get('ENVIRONMENT', 'local', requiredInProduction) as 'local' | 'dev' | 'preprod' | 'prod',
+  environment: customApiUrl() ?? (get('ENVIRONMENT', 'local', requiredInProduction) as Environment),
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
   production,
@@ -93,4 +95,15 @@ export default {
     },
   },
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
+}
+
+function customApiUrl() {
+  return process.env.API_URL
+    ? {
+        searchApi: {
+          url: process.env.API_URL,
+          timeout: +get('API_TIMEOUT', 5000),
+        },
+      }
+    : null
 }
