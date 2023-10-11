@@ -6,7 +6,6 @@ import {
   ProbationSearchRequest,
   ProbationSearchResponse,
 } from '@ministryofjustice/probation-search-frontend/data/probationSearchClient'
-import parseurl from 'parseurl'
 import { format, parseISO } from 'date-fns'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import config from '../config'
@@ -56,9 +55,7 @@ export default function routes(service: Services): Router {
     oauthClient: service.hmppsAuthClient,
   })
 
-  get('/delius/nationalSearch/help', (req, res) =>
-    res.render('pages/deliusSearch/help', { query: parseurl.original(req).query }),
-  )
+  get('/delius/nationalSearch/help', (req, res) => res.render('pages/deliusSearch/help'))
 
   return router
 }

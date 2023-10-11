@@ -1,10 +1,12 @@
 import passport from 'passport'
-import { Strategy } from 'passport-oauth2'
+import { Strategy as OAuth2Strategy } from 'passport-oauth2'
 import type { RequestHandler } from 'express'
-
 import config from '../config'
 import generateOauthClientToken from './clientCredentials'
 import type { TokenVerifier } from '../data/tokenVerification'
+import { HmppsAuthClient } from '../data'
+import DeliusStrategy from './deliusStrategy'
+import { UserService } from '../services'
 
 passport.serializeUser((user, done) => {
   // Not used but required for Passport
@@ -28,8 +30,8 @@ const authenticationMiddleware: AuthenticationMiddleware = verifyToken => {
   }
 }
 
-function init(): void {
-  const strategy = new Strategy(
+function init({ hmppsAuthClient, userService }: { hmppsAuthClient: HmppsAuthClient; userService: UserService }): void {
+  const oauth2Strategy = new OAuth2Strategy(
     {
       authorizationURL: `${config.apis.hmppsAuth.externalUrl}/oauth/authorize`,
       tokenURL: `${config.apis.hmppsAuth.url}/oauth/token`,
@@ -40,11 +42,16 @@ function init(): void {
       customHeaders: { Authorization: generateOauthClientToken() },
     },
     (token, refreshToken, params, profile, done) => {
-      return done(null, { token, username: params.user_name, authSource: params.auth_source })
+      const auth = { token, username: params.user_name, authSource: params.auth_source }
+      userService
+        .getUser(token)
+        .then(user => done(null, { ...user, ...auth }))
+        .catch(reason => done(reason))
     },
   )
 
-  passport.use(strategy)
+  passport.use('oauth2', oauth2Strategy)
+  passport.use('delius', new DeliusStrategy(hmppsAuthClient))
 }
 
 export default {

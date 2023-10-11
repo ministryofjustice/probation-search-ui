@@ -11,7 +11,8 @@ import data from '../data/localData'
 import getPaginationLinks, { Pagination } from '../utils/pagination'
 import getSuggestionLinks, { SuggestionLink } from '../utils/suggestions'
 import wrapAsync from '../utils/middleware'
-import addParameters from '../utils/url'
+import { addParameters } from '../utils/url'
+import SearchParameters from '../data/searchParameters'
 
 export default function probationSearchRoutes({
   environment,
@@ -31,43 +32,51 @@ export default function probationSearchRoutes({
 }: ProbationSearchRouteOptions): Router {
   const client = new ProbationSearchClient(oauthClient, environment === 'local' ? localData : environment)
 
-  router.post(path, post({ allowEmptyQuery, template, templateFields }))
-  router.get(path, get(client, { pageSize, maxPagesToShow, resultsFormatter, template, templateFields }))
+  router.post(path, redirectToResults({ allowEmptyQuery, template, templateFields }))
+  router.get(path, renderResults(client, { pageSize, maxPagesToShow, resultsFormatter, template, templateFields }))
 
   return router
 }
 
-export function post({ allowEmptyQuery, template, templateFields }: PostOptions) {
+export function redirectToResults({ allowEmptyQuery, template, templateFields }: PostOptions) {
   return (req: Request, res: Response) => {
     const query = req.body['probation-search-input']
-    if (!allowEmptyQuery && (query == null || query.length === 0)) {
+    if (!allowEmptyQuery && (query == null || query === '')) {
       const probationSearchResults: ResultTemplateParams = {
         errorMessage: { text: 'Please enter a search term' },
         ...securityParams(res),
       }
       res.render(template, { probationSearchResults, ...templateFields(req, res) })
     } else {
-      res.redirect(addParameters(req.url, { q: query, page: '1' }))
+      res.redirect(addParameters(req, { q: query, page: '1' }))
     }
   }
 }
 
-export function get(
+export function renderResults(
   client: ProbationSearchClient,
   { resultsFormatter, template, templateFields, pageSize, maxPagesToShow }: GetOptions,
 ) {
   return wrapAsync(async (req: Request, res: Response) => {
     const query = req.query.q as string
     if (query == null || query === '') {
-      // No query, render empty search screen
-      res.render(template, { probationSearchResults: securityParams(res), ...templateFields(req, res) })
+      if (SearchParameters.inSession(req)) {
+        // No query in the url, but we have one stored in the session, redirect using session values
+        res.redirect(SearchParameters.loadFromSession(req))
+      } else {
+        // No query in the url or session, render empty search screen
+        res.render(template, { probationSearchResults: securityParams(res), ...templateFields(req, res) })
+      }
     } else {
-      // Render search results
-      const pageNumber = req.query.page ? Number.parseInt(req.query.page as string, 10) : 1
-      const matchAllTerms = (req.query.matchAllTerms ?? 'true') === 'true'
-      const providersFilter = (req.query.providers as string[]) ?? []
-      const asUsername = res.locals.user.username
-      const request = { query, matchAllTerms, providersFilter, asUsername, pageNumber, pageSize }
+      // Load search results
+      const request = {
+        query,
+        matchAllTerms: (req.query.matchAllTerms ?? 'true') === 'true',
+        providersFilter: (req.query.providers as string[]) ?? [],
+        asUsername: res.locals.user.username,
+        pageNumber: req.query.page ? Number.parseInt(req.query.page as string, 10) : 1,
+        pageSize,
+      }
 
       const response = await client.search(request)
 
@@ -77,16 +86,17 @@ export function get(
         results: await resultsFormatter(response, request),
         suggestions: getSuggestionLinks(response, parseurl(req)),
         pagination: getPaginationLinks(
-          pageNumber,
+          request.pageNumber,
           response.totalPages,
           response.totalElements,
-          page => addParameters(req.url, { page: page.toString() }),
+          page => addParameters(req, { page: page.toString() }),
           pageSize,
           maxPagesToShow,
         ),
         ...securityParams(res),
       }
       res.render(template, { probationSearchResults, ...templateFields(req, res) })
+      SearchParameters.saveToSession(req)
     }
   })
 }
@@ -119,7 +129,6 @@ function securityParams(res: Response): { csrfToken: string; cspNonce: string; u
 }
 
 interface GetOptions {
-  path?: string
   pageSize?: number
   maxPagesToShow?: number
   template?: string
@@ -134,7 +143,6 @@ interface GetOptions {
 }
 
 interface PostOptions {
-  path?: string
   template?: string
   templateFields?: (req: Request, res: Response) => object
   allowEmptyQuery?: boolean
@@ -144,6 +152,7 @@ export type ProbationSearchRouteOptions = {
   environment: 'local' | 'dev' | 'preprod' | 'prod'
   oauthClient: OAuthClient
   router: Router
+  path?: string
   localData?: ProbationSearchResult[]
 } & GetOptions &
   PostOptions
