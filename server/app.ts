@@ -21,7 +21,6 @@ import routes from './routes'
 import type { Services } from './services'
 import config from './config'
 import initSentry from './utils/sentry'
-import deliusAuthMiddleware from './middleware/deliusAuthMiddleware'
 
 export default function createApp(services: Services): express.Application {
   const app = express()
@@ -38,11 +37,10 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpWebRequestParsing())
   app.use(setUpStaticResources())
   nunjucksSetup(app, services.applicationInfo)
-  app.use(deliusAuthMiddleware(services.hmppsAuthClient))
-  app.use(setUpAuthentication())
+  app.use(setUpAuthentication(services))
   app.use(authorisationMiddleware())
   app.use(setUpCsrf())
-  app.use(setUpCurrentUser(services))
+  app.use(setUpCurrentUser())
 
   app.use(routes(services))
 

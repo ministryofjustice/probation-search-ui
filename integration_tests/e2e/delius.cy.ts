@@ -26,7 +26,7 @@ context('Delius search', () => {
   it('navigates to help page', () => {
     cy.signIn()
     cy.visit('/delius/nationalSearch')
-    cy.get('#help-link').click()
+    cy.get('.app-national-search-help').click()
     cy.get('h1').should('contain.text', 'Search tips')
   })
 })

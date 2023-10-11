@@ -76,6 +76,28 @@ Then, start the UI service:
 npm run start:dev
 ```
 
+## Development
+
+### Running with HTTPS
+
+This service also provides the Delius search screen (see [/delius/nationalSearch](https://probation-search-dev.hmpps.service.justice.gov.uk/delius/nationalSearch)), 
+which is loaded in an iframe in the Delius application.
+For it to work in a cross-site iframe context, the Express session cookie must be served over HTTPS.
+
+To enable HTTPS during local development, first create a self-signed certificate:
+```shell
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem
+```
+
+Then, in the `.env` file, add the following:
+```properties
+INGRESS_URL=https://localhost:3000
+HTTPS_KEY=key.pem
+HTTPS_CERT=cert.pem
+```
+
+You will also need to add `https://localhost:3000/sign-in/callback` as a registered redirect URI for your auth client.
+
 ## Testing
 ### Run linter
 

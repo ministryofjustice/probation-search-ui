@@ -2,13 +2,16 @@ import type { Router } from 'express'
 import express from 'express'
 import passport from 'passport'
 import flash from 'connect-flash'
+import { removeParameters } from '@ministryofjustice/probation-search-frontend/utils/url'
+import * as Sentry from '@sentry/node'
 import config from '../config'
 import auth from '../authentication/auth'
+import { Services } from '../services'
 
 const router = express.Router()
 
-export default function setUpAuth(): Router {
-  auth.init()
+export default function setUpAuth(services: Services): Router {
+  auth.init(services)
 
   router.use(passport.initialize())
   router.use(passport.session())
@@ -17,6 +20,13 @@ export default function setUpAuth(): Router {
   router.get('/autherror', (req, res) => {
     res.status(401)
     return res.render('autherror')
+  })
+
+  router.get('/delius/*', passport.authenticate('delius'))
+  router.get('/delius/*', (req, res, next) => {
+    // If Delius authentication was successful, we can remove the request parameters
+    if (req.query.user && req.query.t && req.isAuthenticated()) return res.redirect(removeParameters(req, 'user', 't'))
+    return next()
   })
 
   router.get('/sign-in', passport.authenticate('oauth2'))
@@ -45,6 +55,7 @@ export default function setUpAuth(): Router {
   })
 
   router.use((req, res, next) => {
+    if (req.isAuthenticated()) Sentry.setUser({ username: req.user.username })
     res.locals.user = req.user
     next()
   })

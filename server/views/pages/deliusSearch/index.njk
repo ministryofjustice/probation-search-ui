@@ -28,7 +28,7 @@
             text: "Use any combination of names, dates of birth, ID numbers, telephone numbers, towns and postcodes."
         },
         postHint: {
-            html: "<a tabindex='2' id='help-link' href='javascript:'
+            html: "<a tabindex='2' href='/delius/nationalSearch/help'
                       title='View tips for getting better results'
                       class='app-national-search-help govuk-link govuk-body'>Tips for getting better results</a>"
         },
@@ -91,7 +91,6 @@
       });
       document.getElementById("add-new-person-link").addEventListener("click", () => postMessage("addOffender"));
       document.getElementById("previous-search-link").addEventListener("click", () => postMessage("toggleSearch"));
-      document.getElementById("help-link").addEventListener("click", () => location.href = "/delius/nationalSearch/help?" + new URL(location.href).searchParams.toString());
       document.getElementById("search").focus(); // the autofocus attribute doesn't work in a cross-origin iframe
     </script>
 {% endblock %}

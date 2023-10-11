@@ -37,7 +37,6 @@ export default {
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
   production,
-  https: production,
   staticResourceCacheDuration: '1h',
   liveReload: get('LIVE_RELOAD', 'false') === 'true',
   redis: {
@@ -60,7 +59,7 @@ export default {
   },
   delius: {
     url: get('DELIUS_URL', '*', requiredInProduction),
-    authSecret: process.env.DELIUS_AUTH_SECRET,
+    authSecret: get('DELIUS_AUTH_SECRET', 'secret', requiredInProduction),
   },
   apis: {
     hmppsAuth: {
@@ -95,6 +94,11 @@ export default {
     },
   },
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
+  https: new URL(get('INGRESS_URL', 'http://localhost:3000', requiredInProduction)).protocol === 'https:',
+  certificate: {
+    key: process.env.HTTPS_KEY,
+    cert: process.env.HTTPS_CERT,
+  },
 }
 
 function customApiUrl() {
