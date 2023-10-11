@@ -1,11 +1,11 @@
 import superagent from 'superagent'
 import OAuthClient from './oauthClient'
-import config, { Environment } from '../config'
+import environments, { EnvironmentConfig } from '../environments'
 
 export default class ProbationSearchClient {
   constructor(
     private oauthClient: OAuthClient,
-    private dataSource: Environment | ProbationSearchResult[],
+    private dataSource: 'dev' | 'preprod' | 'prod' | EnvironmentConfig | ProbationSearchResult[],
   ) {}
 
   async search({
@@ -20,7 +20,7 @@ export default class ProbationSearchClient {
       return Promise.resolve(this.localSearch(this.dataSource, pageNumber, pageSize))
     }
     const token = await this.oauthClient.getSystemClientToken(asUsername)
-    const apiConfig = config[this.dataSource].searchApi
+    const apiConfig = this.getApiConfig(this.dataSource).searchApi
     const response = await superagent
       .post(`${apiConfig.url}/phrase?page=${pageNumber - 1}&size=${pageSize}}`)
       .auth(token, { type: 'bearer' })
@@ -40,9 +40,14 @@ export default class ProbationSearchClient {
       content,
       probationAreaAggregations: [],
       size: content.length,
-      totalElements: this.dataSource.length,
-      totalPages: Math.ceil(this.dataSource.length / size),
+      totalElements: data.length,
+      totalPages: Math.ceil(data.length / size),
     }
+  }
+
+  private getApiConfig(dataSource: 'dev' | 'preprod' | 'prod' | EnvironmentConfig): EnvironmentConfig {
+    if (dataSource === 'dev' || dataSource === 'preprod' || dataSource === 'prod') return environments[dataSource]
+    return dataSource
   }
 }
 
