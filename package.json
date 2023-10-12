@@ -11,13 +11,12 @@
     "watch-views": "nodemon --watch server/views -e html,njk -x npm run copy-views",
     "watch-node": "DEBUG=gov-starter-server* nodemon -r dotenv/config --watch dist/ dist/server.js | bunyan -o short",
     "watch-sass": "npm run compile-sass -- --watch",
-    "watch-packages": "npm run watch --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present && npm run compile-sass && tsc && npm run copy-views",
+    "build": "npm run compile-sass && tsc && npm run copy-views",
     "start": "node $NODE_OPTIONS dist/server.js | bunyan -o short",
-    "start:dev": "concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node,Sass,Packages\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\" \"npm run watch-sass\" \"npm run watch-packages\"",
+    "start:dev": "concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node\" \"npm run watch-sass\"",
     "start-feature": "export $(cat feature.env) && node $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
     "watch-node-feature": "export $(cat feature.env) && nodemon --watch dist/ $NODE_DEBUG_OPTION dist/server.js | bunyan -o short",
-    "start-feature:dev": "concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node,Sass,Packages\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node-feature\" \"npm run watch-sass\" \"npm run watch-packages\"",
+    "start-feature:dev": "concurrently -k -p \"[{name}]\" -n \"Views,TypeScript,Node,Sass\" -c \"yellow.bold,cyan.bold,green.bold,blue.bold\" \"npm run watch-views\" \"npm run watch-ts\" \"npm run watch-node-feature\" \"npm run watch-sass\" \"npm run watch-packages\"",
     "lint": "eslint . --cache --max-warnings 0",
     "typecheck": "tsc && tsc -p integration_tests",
     "test": "jest",
@@ -95,6 +94,7 @@
   },
   "dependencies": {
     "@ministryofjustice/frontend": "^1.8.0",
+    "@ministryofjustice/probation-search-frontend": "^1.9.0",
     "@sentry/node": "^7.70.0",
     "agentkeepalive": "^4.5.0",
     "applicationinsights": "^2.7.3",
@@ -175,8 +175,5 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
-  },
-  "workspaces": [
-    "packages/probation-search-frontend"
-  ]
+  }
 }

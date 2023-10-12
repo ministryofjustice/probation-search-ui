@@ -4,7 +4,8 @@
 A user interface for the [Probation Search API](https://github.com/ministryofjustice/probation-offender-search). 
 Try it out in the dev environment: https://probation-search-dev.hmpps.service.justice.gov.uk
 
-To include this in your project, check out the [probation-search-frontend](./packages/probation-search-frontend) package.
+This project makes use of a re-usable probation search component. 
+To include this in your project, check out the [@ministryofjustice/probation-search-frontend](https://www.npmjs.com/package/@ministryofjustice/probation-search-frontend) package.
 
 ## Get started
 
