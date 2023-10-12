@@ -30,7 +30,6 @@ ARG BUILD_NUMBER=1_0_0
 ARG GIT_REF=not-available
 
 COPY package*.json ./
-COPY packages ./packages
 RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit
 
 COPY . .
@@ -45,9 +44,6 @@ COPY --from=build --chown=appuser:appgroup \
         /app/package.json \
         /app/package-lock.json \
         ./
-
-COPY --from=build --chown=appuser:appgroup \
-        /app/packages ./packages
 
 COPY --from=build --chown=appuser:appgroup \
         /app/assets ./assets
