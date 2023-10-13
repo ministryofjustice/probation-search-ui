@@ -8,6 +8,8 @@
          class="app-result-text govuk-grid-column-three-quarters govuk-!-padding-left-5 govuk-!-margin-bottom-6">
         <p class="app-result-heading">
             <a class="view-offender-link govuk-link govuk-heading-m"
+               data-index="{{ loop.index }}"
+               data-crn="{{ result.otherIds.crn }}"
                data-offender-id="{{ result.offenderId }}"
                href="javascript:"
                tabindex="1"
@@ -139,6 +141,8 @@
 
         <p>
             <a class="add-contact-link govuk-link govuk-link--no-visited-state"
+               data-index="{{ loop.index }}"
+               data-crn="{{ result.otherIds.crn }}"
                data-offender-id="{{ result.offenderId }}"
                href="javascript:"
                tabindex="1"

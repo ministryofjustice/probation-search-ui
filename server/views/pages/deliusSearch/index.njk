@@ -77,17 +77,31 @@
         location.href = url.toString();
       }
 
-      function postMessage(action, data) {
-        top.postMessage(JSON.stringify({ action: action, data: data || {} }), { targetOrigin: "{{ deliusUrl }}" });
+      function postMessage(action, source) {
+        fetch("/delius/nationalSearch/trackEvent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            _csrf: document.getElementsByName("_csrf")[0].value,
+            action: action,
+            index: +source?.getAttribute("data-index"),
+            crn: source?.getAttribute("data-crn")
+          })
+        }).finally(() => {
+          top.postMessage(JSON.stringify({
+            action: action,
+            data: source?.getAttribute("data-offender-id") ?? {}
+          }), { targetOrigin: "{{ deliusUrl }}" });
+        });
       }
 
       document.getElementById("search-results-container").addEventListener("input", e => {
         if (e.target.name === "match-all-terms" || e.target.name === "providers-filter") debounce(updateFilters, 250)();
       });
       document.getElementById("search-results-container").addEventListener("click", e => {
-        const target = e.target.closest('a')
-        if (target && target.classList.contains("view-offender-link")) postMessage("viewOffender", target.getAttribute("data-offender-id"));
-        if (target && target.classList.contains("add-contact-link")) postMessage("addContact", target.getAttribute("data-offender-id"));
+        const target = e.target.closest("a");
+        if (target && target.classList.contains("view-offender-link")) postMessage("viewOffender", target);
+        if (target && target.classList.contains("add-contact-link")) postMessage("addContact", target);
       });
       document.getElementById("add-new-person-link").addEventListener("click", () => postMessage("addOffender"));
       document.getElementById("previous-search-link").addEventListener("click", () => postMessage("toggleSearch"));

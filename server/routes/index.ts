@@ -1,4 +1,4 @@
-import { type RequestHandler, Router } from 'express'
+import { Router } from 'express'
 
 import probationSearchRoutes from '@ministryofjustice/probation-search-frontend/routes/search'
 import nunjucks from 'nunjucks'
@@ -7,17 +7,16 @@ import {
   ProbationSearchResponse,
 } from '@ministryofjustice/probation-search-frontend/data/probationSearchClient'
 import { format, parseISO } from 'date-fns'
-import asyncMiddleware from '../middleware/asyncMiddleware'
 import config from '../config'
 import type { Services } from '../services'
 import PrisonApiClient from '../data/prisonApiClient'
 import { HmppsAuthClient } from '../data'
+import ApplicationInsightsEvents from '../utils/azureAppInsights'
 
 export default function routes(service: Services): Router {
   const router = Router()
-  const get = (path: string | string[], handler: RequestHandler) => router.get(path, asyncMiddleware(handler))
 
-  get('/info', (req, res) =>
+  router.get('/info', (req, res) =>
     res.send({
       productId: config.productId,
     }),
@@ -55,7 +54,12 @@ export default function routes(service: Services): Router {
     oauthClient: service.hmppsAuthClient,
   })
 
-  get('/delius/nationalSearch/help', (req, res) => res.render('pages/deliusSearch/help'))
+  router.get('/delius/nationalSearch/help', (req, res) => res.render('pages/deliusSearch/help'))
+
+  router.post('/delius/nationalSearch/trackEvent', (req, res) => {
+    ApplicationInsightsEvents.trackEvent(req)
+    return res.sendStatus(200)
+  })
 
   return router
 }
@@ -65,6 +69,7 @@ async function mapResults(
   request: ProbationSearchRequest,
   hmppsAuthClient: HmppsAuthClient,
 ) {
+  ApplicationInsightsEvents.searchPerformed(request, response)
   const token = await hmppsAuthClient.getSystemClientToken()
   const prisonApiClient = new PrisonApiClient(token)
   return {
