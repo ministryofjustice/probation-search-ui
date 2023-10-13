@@ -36,7 +36,10 @@ export default class ApplicationInsightsEvents {
     defaultClient?.trackEvent({
       name: 'SearchPerformed',
       properties: {
-        query: request.query,
+        query: {
+          length: request.query.length,
+          tokens: request.query.trim().split(/\s+/).length,
+        },
         matchAllTerms: request.matchAllTerms,
         providersFilter: request.providersFilter,
         pageNumber: request.pageNumber,
@@ -62,7 +65,10 @@ export default class ApplicationInsightsEvents {
     defaultClient?.trackEvent({
       name: ApplicationInsightsEvents.mapActionToEventName(req.body.action),
       properties: {
-        query: req.session.probationSearch.q,
+        query: {
+          length: req.session.probationSearch.q?.length,
+          tokens: req.session.probationSearch.q?.trim().split(/\s+/).length,
+        },
         matchAllTerms: req.session.probationSearch.matchAllTerms,
         providersFilter: req.session.probationSearch.providers,
         asUsername: req.user.username,
