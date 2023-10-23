@@ -66,13 +66,13 @@ export default class ApplicationInsightsEvents {
       name: ApplicationInsightsEvents.mapActionToEventName(req.body.action),
       properties: {
         query: {
-          length: req.session.probationSearch.q?.length,
-          tokens: req.session.probationSearch.q?.trim().split(/\s+/).length,
+          length: req.session.probationSearch?.q?.length,
+          tokens: req.session.probationSearch?.q?.trim().split(/\s+/).length,
         },
-        matchAllTerms: req.session.probationSearch.matchAllTerms,
-        providersFilter: req.session.probationSearch.providers,
+        matchAllTerms: req.session.probationSearch?.matchAllTerms,
+        providersFilter: req.session.probationSearch?.providers,
         asUsername: req.user.username,
-        pageNumber: req.session.probationSearch.page,
+        pageNumber: req.session.probationSearch?.page,
         selectedResult: req.body.index,
         selectedCrn: req.body.crn,
       },
@@ -82,7 +82,7 @@ export default class ApplicationInsightsEvents {
   private static mapActionToEventName(action: string): string {
     if (action === 'viewOffender') return 'ResultSelected'
     if (action === 'addContact') return 'AddContactSelected'
-    if (action === 'addPerson') return 'AddPersonSelected'
+    if (action === 'addOffender') return 'AddPersonSelected'
     if (action === 'toggleSearch') return 'NavigatedToPreviousSearch'
     return action
   }
