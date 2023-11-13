@@ -60,9 +60,8 @@ generic-service:
       REDIS_AUTH_TOKEN: "auth_token"
 
   allowlist:
-    groups:
-      - internal
-      - unilink_staff
+    undefined: internal,unilink_staff/32
+    groups: []
 
 generic-prometheus-alerts:
   targetApplication: probation-search-ui
