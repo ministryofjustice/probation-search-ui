@@ -63,6 +63,9 @@ generic-service:
     groups:
       - internal
       - unilink_staff
+      - probation
+      - prisons
+      - private_prisons
 
 generic-prometheus-alerts:
   targetApplication: probation-search-ui
