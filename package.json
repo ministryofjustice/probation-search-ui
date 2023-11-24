@@ -27,7 +27,7 @@
     "clean": "rm -rf dist build node_modules stylesheets"
   },
   "engines": {
-    "node": "^20",
+    "node": "^21",
     "npm": "^10"
   },
   "jest": {
