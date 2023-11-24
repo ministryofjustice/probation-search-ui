@@ -26,7 +26,7 @@ export const initialiseName = (fullName?: string): string | null => {
 
 export const highlightText = (textToHighlight?: string, searchWords?: string[]): string =>
   searchWords && searchWords.length > 0
-    ? findAll({ searchWords, textToHighlight })
+    ? findAll({ searchWords, textToHighlight, autoEscape: true })
         .map(({ end, highlight, start }: Chunk) => {
           const text = textToHighlight.substring(start, end)
           return highlight ? `<span class="highlighted-text">${text}</span>` : text

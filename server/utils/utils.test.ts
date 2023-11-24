@@ -40,6 +40,7 @@ describe('highlightText', () => {
       ['hello', 'world'],
       '<span class="highlighted-text">Hello</span> <span class="highlighted-text">world</span>',
     ],
+    ['Hello world)', ['world)'], 'Hello <span class="highlighted-text">world)</span>'],
   ])('should highlight text correctly', (textToHighlight, searchWords, expected) => {
     expect(highlightText(textToHighlight, searchWords)).toEqual(expected)
   })
