@@ -13,7 +13,7 @@ To include this in your project, check out the [@ministryofjustice/probation-sea
 
 You'll need to install:
 
-* [Node 20.x](https://nodejs.org/download/release/latest-v20.x)*
+* [Node 21.x](https://nodejs.org/download/release/latest-v21.x)*
 * [Docker](https://www.docker.com/)
 
 *If you're already using [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm), run:
