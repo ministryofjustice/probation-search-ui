@@ -22,6 +22,7 @@ export default function setUpWebSession(): Router {
         secure: config.https,
         sameSite: config.https ? 'none' : 'lax', // https is required for SameSite=None
         maxAge: config.session.expiryMinutes * 60 * 1000,
+        domain: config.session.cookieDomain,
       },
       secret: config.session.secret,
       resave: false, // redis implements touch so shouldn't need this

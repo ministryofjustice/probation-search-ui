@@ -49,6 +49,7 @@ export default {
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
     expiryMinutes: Number(get('WEB_SESSION_TIMEOUT_IN_MINUTES', 120)),
+    cookieDomain: get('WEB_SESSION_DOMAIN', 'localhost', requiredInProduction),
   },
   sentry: {
     dsn: process.env.SENTRY_DSN,
