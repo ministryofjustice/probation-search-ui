@@ -8,6 +8,8 @@
          class="app-result-text govuk-grid-column-three-quarters govuk-!-padding-left-5 govuk-!-margin-bottom-6">
         <p class="app-result-heading">
             <a class="view-offender-link govuk-heading-m govuk-link govuk-link--no-visited-state"
+               data-index="{{ loop.index }}"
+               data-crn="{{ result.otherIds.crn }}"
                data-offender-id="{{ result.offenderId }}"
                tabindex="1"
                title="Restricted access">
