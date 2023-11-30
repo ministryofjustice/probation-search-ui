@@ -24,12 +24,13 @@ export const initialiseName = (fullName?: string): string | null => {
   return `${array[0][0]}. ${array.reverse()[0]}`
 }
 
-export const highlightText = (textToHighlight?: string, searchWords?: string[]): string =>
-  searchWords && searchWords.length > 0
-    ? findAll({ searchWords, textToHighlight, autoEscape: true })
-        .map(({ end, highlight, start }: Chunk) => {
-          const text = textToHighlight.substring(start, end)
-          return highlight ? `<span class="highlighted-text">${text}</span>` : text
-        })
-        .join('')
-    : textToHighlight
+export const highlightText = (textToHighlight?: string, searchWords?: string[]): string => {
+  if (!textToHighlight) return ''
+  if (!searchWords || searchWords.length === 0) return textToHighlight
+  return findAll({ searchWords, textToHighlight, autoEscape: true })
+    .map(({ end, highlight, start }: Chunk) => {
+      const text = textToHighlight.substring(start, end)
+      return highlight ? `<span class="highlighted-text">${text}</span>` : text
+    })
+    .join('')
+}
