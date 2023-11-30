@@ -55,8 +55,8 @@ export default {
     dsn: process.env.SENTRY_DSN,
     loaderScriptId: process.env.SENTRY_LOADER_SCRIPT_ID,
     environment: get('ENVIRONMENT', 'local', requiredInProduction),
-    tracesSampleRate: Number(get('SENTRY_TRACES_SAMPLE_RATE', 1.0)),
-    replaySampleRate: Number(get('SENTRY_REPLAY_SAMPLE_RATE', 1.0)),
+    tracesSampleRate: Number(get('SENTRY_TRACES_SAMPLE_RATE', 0.05)),
+    replaySampleRate: Number(get('SENTRY_REPLAY_SAMPLE_RATE', 0.0)),
   },
   delius: {
     url: get('DELIUS_URL', '*', requiredInProduction),
