@@ -15,7 +15,6 @@ generic-service:
     PRISON_API_URL: "https://prison-api-dev.prison.service.justice.gov.uk"
     DELIUS_URL: "*"
     SENTRY_TRACES_SAMPLE_RATE: "1.0"
-    SENTRY_REPLAY_SAMPLE_RATE: "1.0"
 
 generic-prometheus-alerts:
   businessHoursOnly: true
