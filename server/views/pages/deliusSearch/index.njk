@@ -42,13 +42,26 @@
 {% endblock %}
 
 {% block content %}
-    <h3 class="govuk-heading-m">Find people by using any combination of:</h3>
-    <ul class="govuk-list govuk-list--bullet">
-        <li>name and date of birth</li>
-        <li>CRN, PNC and National Insurance numbers</li>
-        <li>aliases and other recorded dates of birth</li>
-        <li>towns and postcodes</li>
-    </ul>
+    {% if probationSearchResults.errorMessage %}
+        <div class="govuk-error-summary">
+            <h2 class="govuk-error-summary__title">There is a problem</h2>
+            <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list">
+                    <li>
+                        <a href="#search">{{ probationSearchResults.errorMessage.text }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    {% else %}
+        <h3 class="govuk-heading-m">Find people by using any combination of:</h3>
+        <ul class="govuk-list govuk-list--bullet">
+            <li>name and date of birth</li>
+            <li>CRN, PNC and National Insurance numbers</li>
+            <li>aliases and other recorded dates of birth</li>
+            <li>towns and postcodes</li>
+        </ul>
+    {% endif %}
 {% endblock %}
 
 {% block head %}

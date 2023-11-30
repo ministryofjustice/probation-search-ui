@@ -24,6 +24,9 @@ $govuk-page-width: $moj-page-width;
   .govuk-label, .govuk-link, .govuk-hint {
     color: govuk-colour("white");
   }
+  .govuk-error-message {
+    display: none;
+  }
 }
 
 .probation-search__results-container {
