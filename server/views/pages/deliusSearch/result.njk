@@ -130,7 +130,7 @@
                     <span class='govuk-!-margin-right-1'>Address:</span>
                     {{ [
                         address.buildingName | highlight(result.highlight['contactDetails.addresses.buildingName']),
-                        (address.addressNumber + ' ' + address.streetName) | highlight(result.highlight['contactDetails.addresses.streetName']),
+                        ([address.addressNumber, address.streetName] | reject('undefined') | join(' ')) | highlight(result.highlight['contactDetails.addresses.streetName']),
                         address.town | highlight(result.highlight['contactDetails.addresses.town']),
                         address.county | highlight(result.highlight['contactDetails.addresses.county']),
                         address.postcode | highlight(result.highlight['contactDetails.addresses.postcode'])

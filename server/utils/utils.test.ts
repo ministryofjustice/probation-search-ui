@@ -31,8 +31,8 @@ describe('initialise name', () => {
 
 describe('highlightText', () => {
   it.each([
-    [undefined, undefined, ''],
-    [undefined, ['undefined'], ''],
+    [undefined, undefined, undefined],
+    [undefined, ['undefined'], undefined],
     ['Hello world', undefined, 'Hello world'],
     ['Hello world', ['world'], 'Hello <span class="highlighted-text">world</span>'],
     ['Hello world', ['hello'], '<span class="highlighted-text">Hello</span> world'],
