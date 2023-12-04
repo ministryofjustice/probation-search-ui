@@ -84,6 +84,7 @@
 
       function updateFilters() {
         const url = new URL(location.href);
+        url.searchParams.delete("page");
         url.searchParams.set("matchAllTerms", document.querySelector("input[name=\"match-all-terms\"]:checked").value);
         url.searchParams.delete("providers[]");
         document.querySelectorAll("input[name=\"providers-filter\"]:checked").forEach(el => url.searchParams.append("providers[]", el.value));
