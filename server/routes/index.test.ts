@@ -42,17 +42,25 @@ describe('GET /delius/nationalSearch', () => {
       .send({ 'probation-search-input': 'Bob' })
       .expect(res => {
         expect(res.redirect).toEqual(true)
-        expect(res.headers.location).toContain('/delius/nationalSearch?q=Bob&page=1')
+        expect(res.headers.location).toContain('/delius/nationalSearch')
       })
   })
 
-  it('displays results', () => {
+  it('displays results', async () => {
     services.hmppsAuthClient.getSystemClientToken = jest.fn().mockResolvedValue('token')
-    return request(app)
-      .get('/delius/nationalSearch?q=bloggs')
-      .expect('Content-Type', /html/)
+    let cookies: string[]
+    await request(app)
+      .post('/delius/nationalSearch')
+      .send({ 'probation-search-input': 'Bob' })
       .expect(res => {
-        expect(res.text).toContain('Showing 1 to 2 of 2 results.')
+        cookies = res.get('Set-Cookie').map(cookie => cookie.split(';')[0])
+      })
+    return request(app)
+      .get('/delius/nationalSearch')
+      .set('Cookie', cookies)
+      .expect('Content-Type', /html/)
+      .expect(getResponse => {
+        expect(getResponse.text).toContain('Showing 1 to 2 of 2 results.')
       })
   })
 })

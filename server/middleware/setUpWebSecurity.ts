@@ -34,8 +34,10 @@ export default function setUpWebSecurity(): Router {
           fontSrc: ["'self'"],
           formAction: [`'self' ${config.apis.hmppsAuth.externalUrl}`],
           frameAncestors: [`'self' ${config.delius.url}`],
+          upgradeInsecureRequests: config.https ? [] : null,
         },
       },
+      strictTransportSecurity: config.https,
       crossOriginEmbedderPolicy: true,
     }),
   )
