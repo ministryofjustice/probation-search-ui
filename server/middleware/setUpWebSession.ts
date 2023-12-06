@@ -18,6 +18,7 @@ export default function setUpWebSession(): Router {
   router.use(
     session({
       store,
+      name: 'probation-search.session',
       cookie: {
         secure: config.https,
         sameSite: config.https ? 'none' : 'lax', // https is required for SameSite=None
