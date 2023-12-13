@@ -95,7 +95,7 @@
   "dependencies": {
     "@ministryofjustice/frontend": "^1.8.1",
     "@ministryofjustice/probation-search-frontend": "^1.11.2",
-    "@sentry/node": "^7.85.0",
+    "@sentry/node": "^7.86.0",
     "agentkeepalive": "^4.5.0",
     "applicationinsights": "^2.9.1",
     "body-parser": "^1.20.2",
