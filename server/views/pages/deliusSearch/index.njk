@@ -85,9 +85,11 @@
       function updateFilters() {
         const url = new URL(location.href);
         url.searchParams.delete("page");
-        url.searchParams.set("matchAllTerms", document.querySelector("input[name=\"match-all-terms\"]:checked").value);
         url.searchParams.delete("providers[]");
-        document.querySelectorAll("input[name=\"providers-filter\"]:checked").forEach(el => url.searchParams.append("providers[]", el.value));
+        const el = document.querySelector("input[name=\"match-all-terms\"]:checked");
+        url.searchParams.set("matchAllTerms", !el || el.value);
+        document.querySelectorAll("input[name=\"providers-filter\"]:checked")
+          .forEach(el => el && url.searchParams.append("providers[]", el.value));
         location.href = url.toString();
       }
 
