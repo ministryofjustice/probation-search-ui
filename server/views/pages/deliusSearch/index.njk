@@ -33,7 +33,6 @@
                       class='app-national-search-help govuk-link govuk-body'>Tips for getting better results</a>"
         },
         attributes: {
-            autofocus: 'true',
             tabindex: '1'
         },
         searchOnInput: true,
@@ -74,53 +73,57 @@
     <script src="/assets/moj/all.js"></script>
     {% include "../../partials/sentry.njk" %}
     <script nonce="{{ cspNonce }}">
-      function debounce(func, wait) {
-        let timeoutId;
-        return function(...args) {
-          clearTimeout(timeoutId);
-          timeoutId = setTimeout(() => func.apply(this, args), wait);
-        };
-      }
+      (() => {
+        function debounce(func, wait) {
+          let timeoutId;
+          return function(...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), wait);
+          };
+        }
 
-      function updateFilters() {
-        const url = new URL(location.href);
-        url.searchParams.delete("page");
-        url.searchParams.delete("providers[]");
+        function updateFilters() {
+          const url = new URL(location.href);
+          url.searchParams.delete("page");
+          url.searchParams.delete("providers[]");
         const el = document.querySelector("input[name=\"match-all-terms\"]:checked");
-        url.searchParams.set("matchAllTerms", !el || el.value);
-        document.querySelectorAll("input[name=\"providers-filter\"]:checked")
+          url.searchParams.set("matchAllTerms", !el || el.value);
+          document.querySelectorAll("input[name=\"providers-filter\"]:checked")
           .forEach(el => el && url.searchParams.append("providers[]", el.value));
-        location.href = url.toString();
-      }
+          location.href = url.toString();
+        }
 
-      function postMessage(action, source) {
-        fetch("/delius/nationalSearch/trackEvent", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            _csrf: document.getElementsByName("_csrf")[0].value,
-            action: action,
-            index: +source?.getAttribute("data-index"),
-            crn: source?.getAttribute("data-crn")
-          })
-        }).finally(() => {
-          top.postMessage(JSON.stringify({
-            action: action,
-            data: source?.getAttribute("data-offender-id") ?? {}
-          }), { targetOrigin: "{{ deliusUrl }}" });
+        function postMessage(action, source) {
+          fetch("/delius/nationalSearch/trackEvent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              _csrf: document.getElementsByName("_csrf")[0].value,
+              action: action,
+              index: +source?.getAttribute("data-index"),
+              crn: source?.getAttribute("data-crn")
+            })
+          }).finally(() => {
+            top.postMessage(JSON.stringify({
+              action: action,
+              data: source?.getAttribute("data-offender-id") ?? {}
+            }), { targetOrigin: "{{ deliusUrl }}" });
+          });
+        }
+
+        document.getElementById("search-results-container").addEventListener("input", e => {
+          if (e.target.name === "match-all-terms" || e.target.name === "providers-filter") debounce(updateFilters, 250)();
         });
-      }
-
-      document.getElementById("search-results-container").addEventListener("input", e => {
-        if (e.target.name === "match-all-terms" || e.target.name === "providers-filter") debounce(updateFilters, 250)();
-      });
-      document.getElementById("search-results-container").addEventListener("click", e => {
-        const target = e.target.closest("a");
-        if (target && target.classList.contains("view-offender-link")) postMessage("viewOffender", target);
-        if (target && target.classList.contains("add-contact-link")) postMessage("addContact", target);
-      });
-      document.getElementById("add-new-person-link").addEventListener("click", () => postMessage("addOffender"));
-      document.getElementById("previous-search-link").addEventListener("click", () => postMessage("toggleSearch"));
-      document.getElementById("search").focus(); // the autofocus attribute doesn't work in a cross-origin iframe
+        document.getElementById("search-results-container").addEventListener("click", e => {
+          const target = e.target.closest("a");
+          if (target && target.classList.contains("view-offender-link")) postMessage("viewOffender", target);
+          if (target && target.classList.contains("add-contact-link")) postMessage("addContact", target);
+        });
+        document.getElementById("add-new-person-link").addEventListener("click", () => postMessage("addOffender"));
+        document.getElementById("previous-search-link").addEventListener("click", () => postMessage("toggleSearch"));
+        const search = document.getElementById("search");
+        search.focus(); // the autofocus attribute doesn't work in a cross-origin iframe
+        search.setSelectionRange(search.value.length, search.value.length); // focus at end of field
+      })();
     </script>
 {% endblock %}
