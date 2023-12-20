@@ -85,6 +85,7 @@ async function mapResults(
         }
       }),
     ),
+    query: request.query,
     providers: response.probationAreaAggregations
       .map(p => ({
         value: p.code,

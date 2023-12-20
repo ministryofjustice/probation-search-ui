@@ -14,9 +14,9 @@
                href="javascript:"
                tabindex="1"
                title="View offender record for {{ result.surname }}, {{ result.firstName }}">
-                {{ result.surname | highlight(result.highlight['surname']) | safe }},
-                {{ result.firstName | highlight(result.highlight['firstName']) | safe }}
-                {{ result.middleNames | default([]) | join(' ') | highlight(result.highlight['middleNames']) | safe }}
+                {{ result.surname | highlight(query, 'surname' in result.highlight) | safe }},
+                {{ result.firstName | highlight(query, 'firstName' in result.highlight) | safe }}
+                {{ result.middleNames | default([]) | join(' ') | highlight(query, 'middleNames' in result.highlight) | safe }}
                 -
                 <span class="{{ 'highlighted-text' if 'dateOfBirth' in result.highlight else '' }}">{{ result.formattedDateOfBirth }}</span>
             </a>
@@ -28,7 +28,7 @@
             </span>
             <span class="govuk-!-font-weight-bold govuk-!-margin-right-1"
                   aria-labelledby="crn-label-{{ result.otherIds.crn }}">
-                {{ result.otherIds.crn | highlight(result.highlight['otherIds.crn']) | safe }}
+                {{ result.otherIds.crn | highlight(query, 'otherIds.crn' in result.highlight) | safe }}
             </span>
             {% if result.offenderProfile and result.offenderProfile.riskColour %}
                 <span aria-label="Risk alert colour" class="govuk-!-margin-right-1"
@@ -43,7 +43,7 @@
             {% endif %}
             <span class="govuk-!-margin-left-1 govuk-!-margin-right-1">
                 <span aria-label="Gender">
-                    {{ result.gender | highlight(result.highlight['gender']) | safe }},
+                    {{ result.gender | highlight(query, 'gender' in result.highlight) | safe }},
                 </span>
                 <span aria-label="Age">{{ result.age }}</span>
             </span>
@@ -109,15 +109,15 @@
             {% for alias in result.offenderAliases %}
             <p>
                 <span class='govuk-!-margin-right-1'>Alias:</span>
-                {{ alias.surname | highlight(result.highlight['offenderAliases.surname']) | safe }},
-                {{ alias.firstName | highlight(result.highlight['offenderAliases.firstName']) | safe }}
+                {{ alias.surname | highlight(query, 'offenderAliases.surname' in result.highlight) | safe }},
+                {{ alias.firstName | highlight(query, 'offenderAliases.firstName' in result.highlight) | safe }}
             </p>
             {% endfor %}
         {% endif %}
         {% if 'previousSurname' in result.highlight %}
             <p>
                 <span class='govuk-!-margin-right-1'>Previous surname:</span>
-                {{ result.previousSurname | highlight(result.highlight['previousSurnames']) | safe }}
+                {{ result.previousSurname | highlight(query, 'previousSurnames' in result.highlight) | safe }}
             </p>
         {% endif %}
         {% if 'contactDetails.addresses.buildingName' in result.highlight
@@ -129,11 +129,11 @@
                 <p>
                     <span class='govuk-!-margin-right-1'>Address:</span>
                     {{ [
-                        address.buildingName | highlight(result.highlight['contactDetails.addresses.buildingName']),
-                        ([address.addressNumber, address.streetName] | reject('undefined') | join(' ')) | highlight(result.highlight['contactDetails.addresses.streetName']),
-                        address.town | highlight(result.highlight['contactDetails.addresses.town']),
-                        address.county | highlight(result.highlight['contactDetails.addresses.county']),
-                        address.postcode | highlight(result.highlight['contactDetails.addresses.postcode'])
+                        address.buildingName | highlight(query, 'contactDetails.addresses.buildingName' in result.highlight),
+                        ([address.addressNumber, address.streetName] | reject('undefined') | join(' ')) | highlight(query, 'contactDetails.addresses.streetName' in result.highlight),
+                        address.town | highlight(query, 'contactDetails.addresses.town' in result.highlight),
+                        address.county | highlight(query, 'contactDetails.addresses.county' in result.highlight),
+                        address.postcode | highlight(query, 'contactDetails.addresses.postcode' in result.highlight)
                     ] | reject('undefined') | join(', ') | safe }}
                 </p>
             {% endfor %}

@@ -32,17 +32,17 @@ describe('initialise name', () => {
 describe('highlightText', () => {
   it.each([
     [undefined, undefined, undefined],
-    [undefined, ['undefined'], undefined],
+    [undefined, 'undefined', undefined],
     ['Hello world', undefined, 'Hello world'],
-    ['Hello world', ['world'], 'Hello <span class="highlighted-text">world</span>'],
-    ['Hello world', ['hello'], '<span class="highlighted-text">Hello</span> world'],
+    ['Hello world', 'world', 'Hello <span class="highlighted-text">world</span>'],
+    ['Hello world', 'hello', '<span class="highlighted-text">Hello</span> world'],
     [
       'Hello world',
-      ['hello', 'world'],
+      'hello world',
       '<span class="highlighted-text">Hello</span> <span class="highlighted-text">world</span>',
     ],
-    ['Hello world)', ['world)'], 'Hello <span class="highlighted-text">world)</span>'],
-  ])('should highlight text correctly', (textToHighlight, searchWords, expected) => {
-    expect(highlightText(textToHighlight, searchWords)).toEqual(expected)
+    ['Hello world)', 'world)', 'Hello <span class="highlighted-text">world)</span>'],
+  ])('should highlight text correctly', (textToHighlight, query, expected) => {
+    expect(highlightText(textToHighlight, query, true)).toEqual(expected)
   })
 })
