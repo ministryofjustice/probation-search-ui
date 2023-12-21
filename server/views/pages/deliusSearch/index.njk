@@ -74,23 +74,31 @@
     {% include "../../partials/sentry.njk" %}
     <script nonce="{{ cspNonce }}">
       (() => {
-        function debounce(func, wait) {
+        function debounce(fn, delay) {
           let timeoutId;
           return function(...args) {
             clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => func.apply(this, args), wait);
+            timeoutId = setTimeout(() => fn.apply(this, args), delay);
           };
         }
 
         function updateFilters() {
-          const url = new URL(location.href);
-          url.searchParams.delete("page");
-          url.searchParams.delete("providers[]");
-        const el = document.querySelector("input[name=\"match-all-terms\"]:checked");
-          url.searchParams.set("matchAllTerms", !el || el.value);
-          document.querySelectorAll("input[name=\"providers-filter\"]:checked")
-          .forEach(el => el && url.searchParams.append("providers[]", el.value));
-          location.href = url.toString();
+          const matchAllTerms = document.querySelector("input[name=\"match-all-terms\"]:checked");
+          const providers = []
+          document.querySelectorAll("input[name=\"providers-filter\"]:checked").forEach(el => el && providers.push(el.value));
+          fetch("/delius/nationalSearch/filters", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              _csrf: document.getElementsByName("_csrf")[0].value,
+              matchAllTerms: !matchAllTerms || matchAllTerms.value,
+              providers: providers
+            })
+          }).then(() => {
+            const url = new URL(location.href);
+            url.search = "";
+            location.href = url;
+          });
         }
 
         function postMessage(action, source) {

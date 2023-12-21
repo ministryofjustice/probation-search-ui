@@ -9,7 +9,7 @@
                     name: "match-all-terms",
                     classes: "govuk-radios--inline govuk-radios--small",
                     fieldset: { legend: { text: "Match all terms?" } },
-                    hint: { text: "Expand the results by selecting 'No'" },
+                    hint: { text: "Expand the results by selecting 'No'" if matchAllTerms else "Refine the results by selecting 'Yes'" },
                     items: [
                         { value: "true", text: "Yes", checked: matchAllTerms },
                         { value: "false", text: "No", checked: not matchAllTerms }
