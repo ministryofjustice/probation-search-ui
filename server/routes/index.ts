@@ -10,8 +10,8 @@ import { format, parseISO } from 'date-fns'
 import config from '../config'
 import type { Services } from '../services'
 import PrisonApiClient from '../data/prisonApiClient'
-import { HmppsAuthClient } from '../data'
 import ApplicationInsightsEvents from '../utils/azureAppInsights'
+import { signUrl, verifySignedUrl } from '../utils/utils'
 
 export default function routes(service: Services): Router {
   const router = Router()
@@ -47,8 +47,7 @@ export default function routes(service: Services): Router {
     path: '/delius/nationalSearch',
     template: 'pages/deliusSearch/index',
     templateFields: () => ({ deliusUrl: config.delius.url, sentry: config.sentry }),
-    resultsFormatter: async (res, req) =>
-      nunjucks.render('pages/deliusSearch/results.njk', await mapResults(res, req, service.hmppsAuthClient)),
+    resultsFormatter: async (res, req) => nunjucks.render('pages/deliusSearch/results.njk', mapResults(res, req)),
     allowEmptyQuery: true,
     environment: config.environment,
     oauthClient: service.hmppsAuthClient,
@@ -62,6 +61,26 @@ export default function routes(service: Services): Router {
     return res.sendStatus(200)
   })
 
+  router.get('/delius/nationalSearch/prisoner-image/:prisonerId', async (req, res) => {
+    if (!verifySignedUrl(req)) {
+      res.sendStatus(403)
+    } else {
+      let data
+      if (req.params.prisonerId) {
+        const token = await service.hmppsAuthClient.getSystemClientToken()
+        data = await new PrisonApiClient(token).getImageData(req.params.prisonerId)
+      }
+      if (data) {
+        res.set('Cache-Control', 'private, max-age=86400')
+        res.removeHeader('pragma')
+        res.type('image/jpeg')
+        data.pipe(res)
+      } else {
+        res.redirect('/assets/images/NoPhoto@2x.png')
+      }
+    }
+  })
+
   router.get('/delius/nationalSearch/help', (req, res) => res.render('pages/deliusSearch/help'))
 
   router.post('/delius/nationalSearch/trackEvent', (req, res) => {
@@ -72,14 +91,8 @@ export default function routes(service: Services): Router {
   return router
 }
 
-async function mapResults(
-  response: ProbationSearchResponse,
-  request: ProbationSearchRequest,
-  hmppsAuthClient: HmppsAuthClient,
-) {
+function mapResults(response: ProbationSearchResponse, request: ProbationSearchRequest) {
   ApplicationInsightsEvents.searchPerformed(request, response)
-  const token = await hmppsAuthClient.getSystemClientToken()
-  const prisonApiClient = new PrisonApiClient(token)
   const returnedProviders = response.probationAreaAggregations.map(p => ({
     value: `${p.code}-${p.description}`,
     text: `${p.description} (${p.count})`,
@@ -93,18 +106,18 @@ async function mapResults(
       checked: true,
     }))
   return {
-    results: await Promise.all(
-      response.content.map(async result => {
-        const activeManager = result.offenderManagers?.filter(manager => manager.active).shift()
-        return {
-          ...result,
-          formattedDateOfBirth: result.dateOfBirth ? format(parseISO(result.dateOfBirth), 'dd/MM/yyyy') : '',
-          imageUrl: await prisonApiClient.getImageUrl(result.otherIds.nomsNumber),
-          officer: `${activeManager?.staff?.surname}, ${activeManager?.staff?.forenames}`,
-          provider: activeManager?.probationArea?.description,
-        }
-      }),
-    ),
+    results: response.content.map(result => {
+      const activeManager = result.offenderManagers?.filter(manager => manager.active).shift()
+      return {
+        ...result,
+        formattedDateOfBirth: result.dateOfBirth ? format(parseISO(result.dateOfBirth), 'dd/MM/yyyy') : '',
+        imageUrl: result.otherIds.nomsNumber
+          ? signUrl(`/delius/nationalSearch/prisoner-image/${result.otherIds.nomsNumber}`)
+          : '/assets/images/NoPhoto@2x.png',
+        officer: `${activeManager?.staff?.surname}, ${activeManager?.staff?.forenames}`,
+        provider: activeManager?.probationArea?.description,
+      }
+    }),
     query: request.query,
     providers: [...selectedProviders, ...returnedProviders].sort((a, b) => a.text?.localeCompare(b.text)),
     matchAllTerms: request.matchAllTerms,

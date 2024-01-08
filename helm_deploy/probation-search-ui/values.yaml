@@ -53,6 +53,7 @@ generic-service:
       SESSION_SECRET: "SESSION_SECRET"
       SENTRY_DSN: "SENTRY_DSN"
       SENTRY_LOADER_SCRIPT_ID: "SENTRY_LOADER_SCRIPT_ID"
+      SIGNING_SECRET: "SIGNING_SECRET"
     elasticache-redis:
       REDIS_HOST: "primary_endpoint_address"
       REDIS_AUTH_TOKEN: "auth_token"

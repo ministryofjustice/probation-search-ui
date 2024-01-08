@@ -1,4 +1,8 @@
-import { convertToTitleCase, highlightText, initialiseName } from './utils'
+import { createHmac } from 'crypto'
+import { Request } from 'express'
+import { addSeconds, subSeconds } from 'date-fns'
+import { convertToTitleCase, highlightText, initialiseName, signUrl, verifySignedUrl } from './utils'
+import config from '../config'
 
 describe('convert to title case', () => {
   it.each([
@@ -44,5 +48,66 @@ describe('highlightText', () => {
     ['Hello world)', 'world)', 'Hello <span class="highlighted-text">world)</span>'],
   ])('should highlight text correctly', (textToHighlight, query, expected) => {
     expect(highlightText(textToHighlight, query, true)).toEqual(expected)
+  })
+})
+
+describe('signUrl', () => {
+  it('should add signature and expiry to URL', () => {
+    const path = '/example/path'
+    const expectedExpiry = addSeconds(new Date(), 600)
+    const expectedSignature = createHmac(config.signing.algorithm, config.signing.secret)
+      .update(`${path};${expectedExpiry.getTime()}`)
+      .digest('hex')
+
+    const signedUrl = signUrl(path, expectedExpiry)
+    const signature = signedUrl.match(/signature=([^&]*)/)?.[1]
+    const expiry = signedUrl.match(/expiry=([^&]*)/)?.[1]
+
+    expect(expiry).toBe(expectedExpiry.getTime().toString())
+    expect(signature).toBe(expectedSignature)
+  })
+})
+
+describe('verifySignedUrl', () => {
+  it('should return true for a valid signed URL', () => {
+    const signedUrl = new URL(signUrl('/example/path'), 'http://localhost')
+
+    const request = {
+      path: signedUrl.pathname,
+      query: {
+        signature: signedUrl.searchParams.get('signature'),
+        expiry: signedUrl.searchParams.get('expiry'),
+      },
+    } as unknown as Request
+
+    expect(verifySignedUrl(request)).toBe(true)
+  })
+
+  it('should return false if the signature is invalid', () => {
+    const signedUrl = new URL(signUrl('/example/path'), 'http://localhost')
+
+    const request = {
+      path: signedUrl.pathname,
+      query: {
+        signature: 'invalid-signature',
+        expiry: signedUrl.searchParams.get('expiry'),
+      },
+    } as unknown as Request
+
+    expect(verifySignedUrl(request)).toBe(false)
+  })
+
+  it('should return false if the expiry has passed', () => {
+    const signedUrl = new URL(signUrl('/example/path', subSeconds(new Date(), 1)), 'http://localhost')
+
+    const request = {
+      path: signedUrl.pathname,
+      query: {
+        signature: signedUrl.searchParams.get('signature'),
+        expiry: signedUrl.searchParams.get('expiry'),
+      },
+    } as unknown as Request
+
+    expect(verifySignedUrl(request)).toBe(false)
   })
 })
