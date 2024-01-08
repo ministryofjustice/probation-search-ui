@@ -84,7 +84,7 @@
 
         function updateFilters() {
           const matchAllTerms = document.querySelector("input[name=\"match-all-terms\"]:checked");
-          const providers = []
+          const providers = [];
           document.querySelectorAll("input[name=\"providers-filter\"]:checked").forEach(el => el && providers.push(el.value));
           fetch("/delius/nationalSearch/filters", {
             method: "POST",
@@ -96,27 +96,27 @@
             })
           }).then(() => {
             const url = new URL(location.href);
-            url.search = "";
+            url.search = ""; // reset page number
             location.href = url;
           });
         }
 
         function postMessage(action, source) {
-          fetch("/delius/nationalSearch/trackEvent", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              _csrf: document.getElementsByName("_csrf")[0].value,
-              action: action,
-              index: +source?.getAttribute("data-index"),
-              crn: source?.getAttribute("data-crn")
-            })
-          }).finally(() => {
-            top.postMessage(JSON.stringify({
-              action: action,
-              data: source?.getAttribute("data-offender-id") ?? {}
-            }), { targetOrigin: "{{ deliusUrl }}" });
-          });
+          let eventData = {
+            _csrf: document.getElementsByName("_csrf")[0].value,
+            action: action
+          };
+          if (source) {
+            eventData.index = +source.getAttribute("data-index");
+            eventData.crn = source.getAttribute("data-crn");
+          }
+          const event = new Blob([JSON.stringify(eventData)], { type: "application/json" });
+          navigator.sendBeacon("/delius/nationalSearch/trackEvent", event);
+
+          top.postMessage(JSON.stringify({
+            action: action,
+            data: source?.getAttribute("data-offender-id") ?? {}
+          }), { targetOrigin: "{{ deliusUrl }}" });
         }
 
         document.getElementById("search-results-container").addEventListener("input", e => {
