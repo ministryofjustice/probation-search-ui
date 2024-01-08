@@ -30,6 +30,7 @@ interface StreamRequest {
   path?: string
   headers?: Record<string, string>
   errorLogger?: (e: UnsanitisedError) => void
+  handle404?: boolean
 }
 
 export default class RestClient {
@@ -119,7 +120,7 @@ export default class RestClient {
     }
   }
 
-  async stream({ path = null, headers = {} }: StreamRequest = {}): Promise<unknown> {
+  async stream({ path = null, headers = {}, handle404 }: StreamRequest = {}): Promise<unknown> {
     logger.info(`Get using user credentials: calling ${this.name}: ${path}`)
     return new Promise((resolve, reject) => {
       superagent
@@ -134,6 +135,7 @@ export default class RestClient {
         .timeout(this.timeoutConfig())
         .set(headers)
         .end((error, response) => {
+          if (handle404 && error && error.response?.status === 404) resolve(null)
           if (error) {
             logger.warn(sanitiseError(error), `Error calling ${this.name}`)
             reject(error)

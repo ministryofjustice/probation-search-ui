@@ -99,6 +99,10 @@ export default {
     key: process.env.HTTPS_KEY,
     cert: process.env.HTTPS_CERT,
   },
+  signing: {
+    secret: get('SIGNING_SECRET', 'signing-secret', requiredInProduction),
+    algorithm: get('SIGNING_ALGORITHM', 'sha256'),
+  },
 }
 
 function customApiUrl() {

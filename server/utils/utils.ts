@@ -1,4 +1,8 @@
 import { Chunk, findAll } from 'highlight-words-core'
+import { endOfDay, isAfter } from 'date-fns'
+import { createHmac, timingSafeEqual } from 'crypto'
+import { Request } from 'express'
+import config from '../config'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -38,4 +42,31 @@ export const highlightText = (textToHighlight?: string, query?: string, shouldHi
       return highlight ? `<span class="highlighted-text">${text}</span>` : text
     })
     .join('')
+}
+
+/**
+ * Sign the URL and add the signature as a query parameter.
+ *
+ * @param path the URL to sign (relative path)
+ * @param expiresAt the expiry date, defaults to the end of the current day.
+ */
+export const signUrl = (path: string, expiresAt?: Date): string => {
+  const expiry = (expiresAt ?? endOfDay(new Date())).getTime()
+  const signature = createHmac(config.signing.algorithm, config.signing.secret)
+    .update(`${path};${expiry}`)
+    .digest('hex')
+  return `${path}?signature=${signature}&expiry=${expiry}`
+}
+
+export const verifySignedUrl = (request: Request): boolean => {
+  const signature = request.query.signature as string
+  const expiry = request.query.expiry as string
+  const expected = createHmac(config.signing.algorithm, config.signing.secret)
+    .update(`${request.path};${expiry}`)
+    .digest('hex')
+  return (
+    isAfter(Number(expiry), new Date()) &&
+    expected.length === signature.length &&
+    timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+  )
 }
