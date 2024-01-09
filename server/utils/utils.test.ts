@@ -60,8 +60,8 @@ describe('signUrl', () => {
       .digest('hex')
 
     const signedUrl = signUrl(path, expectedExpiry)
-    const signature = signedUrl.match(/signature=([^&]*)/)?.[1]
-    const expiry = signedUrl.match(/expiry=([^&]*)/)?.[1]
+    const signature = /signature=([^&]*)/.exec(signedUrl)?.[1]
+    const expiry = /expiry=([^&]*)/.exec(signedUrl)?.[1]
 
     expect(expiry).toBe(expectedExpiry.getTime().toString())
     expect(signature).toBe(expectedSignature)
