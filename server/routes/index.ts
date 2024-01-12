@@ -7,6 +7,7 @@ import {
   ProbationSearchResponse,
 } from '@ministryofjustice/probation-search-frontend/data/probationSearchClient'
 import { format, parseISO } from 'date-fns'
+import { Readable } from 'stream'
 import config from '../config'
 import type { Services } from '../services'
 import PrisonApiClient from '../data/prisonApiClient'
@@ -65,7 +66,7 @@ export default function routes(service: Services): Router {
     if (!verifySignedUrl(req)) {
       res.sendStatus(403)
     } else {
-      let data
+      let data: Readable
       if (req.params.prisonerId) {
         const token = await service.hmppsAuthClient.getSystemClientToken()
         data = await new PrisonApiClient(token).getImageData(req.params.prisonerId)

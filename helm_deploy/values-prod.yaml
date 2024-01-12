@@ -2,6 +2,12 @@
 # Per environment values which override defaults in probation-search-ui/values.yaml
 
 generic-service:
+  replicaCount: 4
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
   ingress:
     host: probation-search.hmpps.service.justice.gov.uk
 
