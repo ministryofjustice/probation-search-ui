@@ -7,10 +7,10 @@ export default class PrisonApiClient extends RestClient {
     super('PrisonApiClient', config.apis.prisonApi, token)
   }
 
-  async getImageData(nomsNumber: string): Promise<Readable> {
-    return (await this.stream({
+  getImageData(nomsNumber: string): Promise<Readable> {
+    return this.stream({
       path: `/api/bookings/offenderNo/${nomsNumber}/image/data`,
       handle404: true,
-    })) as Promise<Readable>
+    })
   }
 }

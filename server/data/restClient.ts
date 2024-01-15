@@ -3,9 +3,9 @@ import superagent from 'superagent'
 import Agent, { HttpsAgent } from 'agentkeepalive'
 
 import logger from '../../logger'
+import type { UnsanitisedError } from '../sanitisedError'
 import sanitiseError from '../sanitisedError'
 import { ApiConfig } from '../config'
-import type { UnsanitisedError } from '../sanitisedError'
 import { restClientMetricsMiddleware } from './restClientMetricsMiddleware'
 
 interface GetRequest {
@@ -120,10 +120,10 @@ export default class RestClient {
     }
   }
 
-  async stream({ path = null, headers = {}, handle404 }: StreamRequest = {}): Promise<unknown> {
+  async stream({ path = null, headers = {}, handle404 }: StreamRequest): Promise<Readable> {
     logger.info(`Get using user credentials: calling ${this.name}: ${path}`)
-    return new Promise((resolve, reject) => {
-      superagent
+    try {
+      const response = await superagent
         .get(`${this.apiUrl()}${path}`)
         .agent(this.agent)
         .auth(this.token, { type: 'bearer' })
@@ -134,20 +134,15 @@ export default class RestClient {
         })
         .timeout(this.timeoutConfig())
         .set(headers)
-        .end((error, response) => {
-          if (handle404 && error && error.response?.status === 404) resolve(null)
-          if (error) {
-            logger.warn(sanitiseError(error), `Error calling ${this.name}`)
-            reject(error)
-          } else if (response) {
-            const s = new Readable()
-            // eslint-disable-next-line no-underscore-dangle,@typescript-eslint/no-empty-function
-            s._read = () => {}
-            s.push(response.body)
-            s.push(null)
-            resolve(s)
-          }
-        })
-    })
+      const readable = Readable.from(response.body)
+      readable.push(response.body)
+      readable.push(null)
+      return readable
+    } catch (error) {
+      if (handle404 && error.response?.status === 404) return null
+      const sanitisedError = sanitiseError(error)
+      logger.warn({ ...sanitisedError }, `Error calling ${this.name}, path: '${path}', verb: 'GET (stream)'`)
+      throw sanitisedError
+    }
   }
 }

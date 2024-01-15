@@ -4,8 +4,6 @@ generic-service:
 
   serviceAccountName: probation-search-ui
 
-  replicaCount: 4
-
   image:
     repository: quay.io/hmpps/probation-search-ui
     tag: app_version # override at deployment time
