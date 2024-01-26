@@ -82,25 +82,6 @@
           };
         }
 
-        function updateFilters() {
-          const matchAllTerms = document.querySelector("input[name=\"match-all-terms\"]:checked");
-          const providers = [];
-          document.querySelectorAll("input[name=\"providers-filter\"]:checked").forEach(el => el && providers.push(el.value));
-          fetch("/delius/nationalSearch/filters", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              _csrf: document.getElementsByName("_csrf")[0].value,
-              matchAllTerms: !matchAllTerms || matchAllTerms.value,
-              providers: providers
-            })
-          }).then(() => {
-            const url = new URL(location.href);
-            url.search = ""; // reset page number
-            location.href = url;
-          });
-        }
-
         function postMessage(action, source) {
           let eventData = {
             _csrf: document.getElementsByName("_csrf")[0].value,
@@ -119,8 +100,35 @@
           }), { targetOrigin: "{{ deliusUrl }}" });
         }
 
+        function postFilters(selectedProviders) {
+          const matchAllTerms = document.querySelector("input[name=\"match-all-terms\"]:checked");
+          const providers = selectedProviders ?? [...document.querySelectorAll("input[name=\"providers-filter\"]:checked")].map(el => el.value);
+          localStorage.setItem("providers", JSON.stringify(providers));
+          return fetch("/delius/nationalSearch/filters", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              _csrf: document.getElementsByName("_csrf")[0].value,
+              matchAllTerms: !matchAllTerms || matchAllTerms.value,
+              providers: providers
+            })
+          });
+        }
+
+        function updateFilters() {
+          postFilters().then(() => {
+            const url = new URL(location.href);
+            url.search = ""; // reset page number
+            location.href = url;
+          });
+        }
+
+        // Load filters from local storage
+        postFilters(JSON.parse(localStorage.getItem("providers")));
+
+        // Register event listeners
         document.getElementById("search-results-container").addEventListener("input", e => {
-          if (e.target.name === "match-all-terms" || e.target.name === "providers-filter") debounce(updateFilters, 250)();
+          if (e.target.name === "match-all-terms" || e.target.name === "providers-filter") debounce(updateFilters, 500)();
         });
         document.getElementById("search-results-container").addEventListener("click", e => {
           const target = e.target.closest("a");
@@ -129,6 +137,8 @@
         });
         document.getElementById("add-new-person-link").addEventListener("click", () => postMessage("addOffender"));
         document.getElementById("previous-search-link").addEventListener("click", () => postMessage("toggleSearch"));
+
+        // Focus on input
         const search = document.getElementById("search");
         search.focus(); // the autofocus attribute doesn't work in a cross-origin iframe
         search.setSelectionRange(search.value.length, search.value.length); // focus at end of field

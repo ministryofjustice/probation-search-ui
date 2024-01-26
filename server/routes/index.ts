@@ -120,7 +120,9 @@ function mapResults(response: ProbationSearchResponse, request: ProbationSearchR
       }
     }),
     query: request.query,
-    providers: [...selectedProviders, ...returnedProviders].sort((a, b) => a.text?.localeCompare(b.text)),
+    providers: [...selectedProviders, ...returnedProviders].sort(
+      (a, b) => +b.checked - +a.checked || a.text?.localeCompare(b.text),
+    ),
     matchAllTerms: request.matchAllTerms,
     deliusUrl: config.delius.url,
   }
