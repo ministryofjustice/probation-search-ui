@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "copy-views": "cp -R server/views dist/server/",
-    "compile-sass": "sass --quiet-deps --no-source-map --load-path=node_modules/govuk-frontend --load-path=node_modules/@ministryofjustice/frontend --load-path=. assets/scss/application.scss:./assets/stylesheets/application.css assets/scss/application-ie8.scss:./assets/stylesheets/application-ie8.css assets/scss/new-tech.scss:./assets/stylesheets/new-tech.css --style compressed",
+    "compile-sass": "sass --quiet-deps --no-source-map --load-path=node_modules/govuk-frontend/dist --load-path=node_modules/@ministryofjustice/frontend --load-path=. assets/scss/application.scss:./assets/stylesheets/application.css assets/scss/new-tech.scss:./assets/stylesheets/new-tech.css --style compressed",
     "watch-ts": "tsc -w",
     "watch-views": "nodemon --watch server/views -e html,njk -x npm run copy-views",
     "watch-node": "DEBUG=gov-starter-server* nodemon -r dotenv/config --inspect --watch dist/ dist/server.js | bunyan -o short",
@@ -109,7 +109,7 @@
     "express": "^4.18.2",
     "express-prom-bundle": "^7.0.0",
     "express-session": "^1.17.3",
-    "govuk-frontend": "^4.7.0",
+    "govuk-frontend": "^5.0.0",
     "helmet": "^7.1.0",
     "highlight-words-core": "^1.2.2",
     "http-errors": "^2.0.0",
