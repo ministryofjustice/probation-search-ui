@@ -1,5 +1,5 @@
 {% extends "../../partials/layout.njk" %}
-{% from "probationSearch/macro.njk" import probationSearch %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% set mainClasses = "app-container govuk-body" %}
 
@@ -16,51 +16,41 @@
            title="Add a new person">Add a new person</a>
     </div>
 
-    {{ probationSearch({
-        id: "search",
-        classes: "app-search-input govuk-body-l govuk-!-padding-3 govuk-!-margin-bottom-2",
-        label: {
-            text: "Search for people on probation",
-            classes: "govuk-label--l",
-            isPageHeading: true
-        },
-        hint: {
-            text: "Use any combination of names, dates of birth, ID numbers, telephone numbers, towns and postcodes."
-        },
-        postHint: {
-            html: "<a tabindex='2' href='/delius/nationalSearch/help'
-                      title='View tips for getting better results'
-                      class='app-national-search-help govuk-link govuk-body'>Tips for getting better results</a>"
-        },
-        attributes: {
-            tabindex: '1'
-        },
-        searchOnInput: true,
-        results: probationSearchResults
-    }) }}
-{% endblock %}
+    {%- include "./form.njk" -%}
 
-{% block content %}
-    {% if probationSearchResults.errorMessage %}
-        <div class="govuk-error-summary">
-            <h2 class="govuk-error-summary__title">There is a problem</h2>
-            <div class="govuk-error-summary__body">
-                <ul class="govuk-list govuk-error-summary__list">
-                    <li>
-                        <a href="#search">{{ probationSearchResults.errorMessage.text }}</a>
-                    </li>
-                </ul>
+    <div id="search-results-container"
+         class="probation-search__results-container{{ ' probation-search__has-results' if searchResults.results else '' }}">
+        {% if searchResults.errorMessage %}
+            <div class="govuk-error-summary">
+                <h2 class="govuk-error-summary__title">There is a problem</h2>
+                <div class="govuk-error-summary__body">
+                    <ul class="govuk-list govuk-error-summary__list">
+                        <li>
+                            <a href="#search">{{ searchResults.errorMessage.text }}</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    {% else %}
-        <h3 class="govuk-heading-m">Find people by using any combination of:</h3>
-        <ul class="govuk-list govuk-list--bullet">
-            <li>name and date of birth</li>
-            <li>CRN, PNC and National Insurance numbers</li>
-            <li>aliases and other recorded dates of birth</li>
-            <li>towns and postcodes</li>
-        </ul>
-    {% endif %}
+        {% elif searchResults.response.totalElements > 0 %}
+            <p>Showing {{ searchResults.pagination.from }} to {{ searchResults.pagination.to }} of {{ searchResults.pagination.total }} results.</p>
+
+            {%- include "./results.njk" -%}
+
+            {% if searchResults.pagination.items | length > 1 %}
+                {{ govukPagination({ previous: { href: searchResults.pagination.prev }, next: { href: searchResults.pagination.next }, items: searchResults.pagination.items }) }}
+            {% endif %}
+        {% elif searchResults.query != null %}
+            <p>There are no results for your search. Try refining your query above.</p>
+        {% else %}
+            <h3 class="govuk-heading-m">Find people by using any combination of:</h3>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>name and date of birth</li>
+                <li>CRN, PNC and National Insurance numbers</li>
+                <li>aliases and other recorded dates of birth</li>
+                <li>towns and postcodes</li>
+            </ul>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block head %}
@@ -71,77 +61,6 @@
     <script src="/assets/govuk/all.bundle.js"></script>
     <script type=module src="/assets/govukFrontendInit.js"></script>
     <script src="/assets/moj/all.js"></script>
+    <script src="/assets/delius.js"></script>
     {% include "../../partials/sentry.njk" %}
-    <script nonce="{{ cspNonce }}">
-      (() => {
-        function debounce(fn, delay) {
-          let timeoutId;
-          return function(...args) {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => fn.apply(this, args), delay);
-          };
-        }
-
-        function postMessage(action, source) {
-          let eventData = {
-            _csrf: document.getElementsByName("_csrf")[0].value,
-            action: action
-          };
-          if (source) {
-            eventData.index = +source.getAttribute("data-index");
-            eventData.crn = source.getAttribute("data-crn");
-          }
-          const event = new Blob([JSON.stringify(eventData)], { type: "application/json" });
-          navigator.sendBeacon("/delius/nationalSearch/trackEvent", event);
-
-          top.postMessage(JSON.stringify({
-            action: action,
-            data: source?.getAttribute("data-offender-id") ?? {}
-          }), { targetOrigin: "{{ deliusUrl }}" });
-        }
-
-        function postFilters(selectedProviders) {
-          const matchAllTerms = document.querySelector("input[name=\"match-all-terms\"]:checked");
-          const providers = selectedProviders ?? [...document.querySelectorAll("input[name=\"providers-filter\"]:checked")].map(el => el.value);
-          localStorage.setItem("providers", JSON.stringify(providers));
-          return fetch("/delius/nationalSearch/filters", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              _csrf: document.getElementsByName("_csrf")[0].value,
-              matchAllTerms: !matchAllTerms || matchAllTerms.value,
-              providers: providers
-            })
-          });
-        }
-
-        function updateFilters() {
-          postFilters().then(() => {
-            const url = new URL(location.href);
-            url.search = ""; // reset page number
-            location.href = url;
-          });
-        }
-
-        // Load filters from local storage
-        postFilters(JSON.parse(localStorage.getItem("providers")));
-
-        // Register event listeners
-        document.getElementById("search-results-container").addEventListener("input", e => {
-          if (e.target.name === "match-all-terms" || e.target.name === "providers-filter") debounce(updateFilters, 500)();
-        });
-        document.getElementById("search-results-container").addEventListener("click", e => {
-          const target = e.target.closest("a");
-          if (target && target.classList.contains("view-offender-link")) postMessage("viewOffender", target);
-          if (target && target.classList.contains("add-contact-link")) postMessage("addContact", target);
-        });
-        document.getElementById("add-new-person-link").addEventListener("click", () => postMessage("addOffender"));
-        document.getElementById("previous-search-link").addEventListener("click", () => postMessage("toggleSearch"));
-
-        // Focus on input
-        const search = document.getElementById("search");
-        search.focus(); // the autofocus attribute doesn't work in a cross-origin iframe
-        search.setSelectionRange(search.value.length, search.value.length); // focus at end of field
-      })();
-    </script>
 {% endblock %}

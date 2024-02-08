@@ -1,0 +1,54 @@
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+<form id="search-form" class="probation-search__form" method="POST">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+    <div class="probation-search__input-container">
+        {{ govukInput({
+            attributes: {
+                tabindex: '1'
+            },
+            id: "search",
+            classes: "app-search-input govuk-body-l govuk-!-padding-3 govuk-!-margin-bottom-2",
+            errorMessage: searchResults.errorMessage,
+            hint: {
+                text: "Use any combination of names, dates of birth, ID numbers, telephone numbers, towns and postcodes."
+            },
+            label: {
+                text: "Search for people on probation",
+                classes: "govuk-label--l",
+                isPageHeading: true
+            },
+            name: "probation-search-input",
+            type: "search",
+            value: searchResults.query
+        }) }}
+
+        <p id="search-suggestions" class="probation-search__suggestions">
+            {% if searchResults.suggestions | length %}
+                Did you mean
+                {%- set comma = joiner() %}
+                {%- for suggestion in searchResults.suggestions %}{{ comma() }}
+                    <a href="#" data-suggested-query="{{ suggestion.newQuery }}"
+                       class="govuk-link govuk-link--no-visited-state"
+                       title="Search again using {{ suggestion.text }}">{{ suggestion.text }}</a>
+                {%- endfor %}?
+            {% endif %}
+            <script nonce="{{ cspNonce }}">
+              document.getElementById("search-suggestions").addEventListener("click", e => {
+                if (e.target.dataset.suggestedQuery) {
+                  document.getElementById("search").value = e.target.dataset.suggestedQuery;
+                  document.getElementById("search-form").submit();
+                }
+              });
+            </script>
+        </p>
+
+        <a tabindex='2' href='/delius/nationalSearch/help'
+           title='View tips for getting better results'
+           class='app-national-search-help govuk-link govuk-body'>Tips for getting better results</a>
+
+        <label for="search" class="govuk-visually-hidden">Results will be updated as you type</label>
+    </div>
+</form>

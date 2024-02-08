@@ -1,11 +1,18 @@
 import type { Express } from 'express'
 import request from 'supertest'
+import CaseSearchService, {
+  CaseSearchOptions,
+} from '@ministryofjustice/probation-search-frontend/service/caseSearchService'
 import { appWithAllRoutes } from './testutils/appSetup'
 import HmppsAuthClient from '../data/hmppsAuthClient'
 
 let app: Express
 
-const services = { hmppsAuthClient: new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient> }
+const services = {
+  searchService: new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>,
+  deliusSearchService: new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>,
+  hmppsAuthClient: new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>,
+}
 
 beforeEach(() => {
   app = appWithAllRoutes({ services })
@@ -15,13 +22,13 @@ afterEach(() => {
   jest.resetAllMocks()
 })
 
-describe('GET /', () => {
-  it('should render index page', () => {
+describe('GET /search', () => {
+  it('should render search page', () => {
     return request(app)
-      .get('/')
+      .get('/search')
       .expect('Content-Type', /html/)
       .expect(res => {
-        expect(res.text).toContain('Search for a person on probation')
+        expect(res.text).toContain('Find a person on probation')
       })
   })
 })

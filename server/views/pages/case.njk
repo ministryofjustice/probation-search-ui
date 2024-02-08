@@ -1,0 +1,9 @@
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - View case" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+    <h1>Case view</h1>
+    <p>This is a dummy case view page for CRN: {{ crn }}</p>
+{% endblock %}

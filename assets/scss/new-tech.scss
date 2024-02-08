@@ -33,12 +33,6 @@ $govuk-page-width: $moj-page-width;
   @include govuk-width-container;
 }
 
-.probation-search__has-results {
-  & ~ .govuk-width-container > .govuk-main-wrapper {
-    display: none; // hide welcome content when results are rendered
-  }
-}
-
 .probation-search__suggestions {
   color: govuk-colour("white");
   float: left;
