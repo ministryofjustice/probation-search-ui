@@ -1,6 +1,6 @@
+import type { HealthCheckCallback, HealthCheckService } from './healthCheck'
 import healthCheck from './healthCheck'
 import type { ApplicationInfo } from '../applicationInfo'
-import type { HealthCheckCallback, HealthCheckService } from './healthCheck'
 
 describe('Healthcheck', () => {
   const testAppInfo: ApplicationInfo = {

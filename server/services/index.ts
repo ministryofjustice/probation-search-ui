@@ -1,5 +1,4 @@
 import CaseSearchService from '@ministryofjustice/probation-search-frontend/service/caseSearchService'
-import { ProbationSearchResult } from '@ministryofjustice/probation-search-frontend/data/probationSearchClient'
 import { dataAccess } from '../data'
 import UserService from './userService'
 import config from '../config'
