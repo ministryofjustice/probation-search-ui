@@ -1,5 +1,5 @@
 {% extends "../partials/layout.njk" %}
-{% from "probationSearch/macro.njk" import probationSearch %}
+{% from "probation/case-search/macro.njk" import caseSearch %}
 
 {% set pageTitle = applicationName + " - Home" %}
 {% set mainClasses = "app-container govuk-body" %}
@@ -22,13 +22,13 @@
                     example should be all you need for most services.</p>
                 <h3 class="govuk-heading-m">Code:</h3>
                 <pre>{% raw %}
-{{ probationSearch({
+{{ caseSearch({
     id: "basic",
-    results: probationSearchResults }) }}
+    results: searchResults }) }}
                 {% endraw %}</pre>
                 <p>
                     The only required fields are <code>id</code> and <code>results</code>.
-                    The <code>probationSearchResults</code> value is set up for you by the router
+                    The <code>searchResults</code> value is set up for you by the router
                     (see
                     <a href="https://www.npmjs.com/package/@ministryofjustice/probation-search-frontend#3-configure-the-express-routes">Configuring
                         the Express routes</a>),
@@ -36,9 +36,9 @@
                 </p>
                 <h3 class="govuk-heading-m">Output:</h3>
                 <div class="example-output">
-                    {{ probationSearch({
+                    {{ caseSearch({
                         id: "basic",
-                        results: probationSearchResults }) }}
+                        results: searchResults }) }}
                 </div>
             </li>
 
@@ -47,9 +47,9 @@
                 <p>Any wording in the component can be overridden to suit your service's needs.</p>
                 <h3 class="govuk-heading-m">Code:</h3>
                 <pre>{% raw %}
-{{ probationSearch({
+{{ caseSearch({
     id: "custom-wording",
-    results: probationSearchResults,
+    results: searchResults,
     label: {
         text: "Who is this referral for?",
         classes: "govuk-label--l"
@@ -61,9 +61,9 @@
         {% endraw %}</pre>
                 <h3 class="govuk-heading-m">Output:</h3>
                 <div class="example-output">
-                    {{ probationSearch({
+                    {{ caseSearch({
                         id: "custom-wording",
-                        results: probationSearchResults,
+                        results: searchResults,
                         label: {
                             text: "Who is this referral for?",
                             classes: "govuk-label--l"
@@ -72,25 +72,6 @@
                             html: "Use the box below to find the <strong>probation case</strong> you are making a referral for."
                         }
                     }) }}
-                </div>
-            </li>
-
-            <li>
-                <h2 class="govuk-heading-l">Search as you type</h2>
-                <p>Results will live reload as the user types their query.</p>
-                <h3 class="govuk-heading-m">Code:</h3>
-                <pre>{% raw %}
-{{ probationSearch({
-    id: "on-input",
-    searchOnInput: true,
-    results: probationSearchResults }) }}
-        {% endraw %}</pre>
-                <h3 class="govuk-heading-m">Output:</h3>
-                <div class="example-output">
-                    {{ probationSearch({
-                        id: "on-input",
-                        searchOnInput: true,
-                        results: probationSearchResults }) }}
                 </div>
             </li>
         </ul>

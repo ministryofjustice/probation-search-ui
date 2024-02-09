@@ -8,7 +8,7 @@ context('Delius search', () => {
   it('displays welcome message', () => {
     cy.signIn()
     cy.visit('/delius/nationalSearch')
-    cy.get('main').should('contain.text', 'Find people by using any combination of:')
+    cy.get('#search-results-container').should('contain.text', 'Find people by using any combination of:')
   })
 
   it('displays results', () => {
@@ -16,7 +16,8 @@ context('Delius search', () => {
     cy.visit('/delius/nationalSearch')
     cy.get('#search').type('test')
     cy.get('#search-results-container')
-      .should('contain.text', 'Showing 1 to 2 of 2 results.')
+      .should('contain.text', 'Showing 1 to 2')
+      .should('contain.text', 'of 2 results.')
       .should('contain.text', 'A000001')
       .should('contain.text', 'A000002')
       .should('contain.text', 'London')

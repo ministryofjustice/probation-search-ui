@@ -117,7 +117,7 @@
         {% if 'previousSurname' in result.highlight %}
             <p>
                 <span class='govuk-!-margin-right-1'>Previous surname:</span>
-                {{ result.previousSurname | highlight(query, 'previousSurnames' in result.highlight) | safe }}
+                {{ result.previousSurname | highlight(query, 'previousSurname' in result.highlight) | safe }}
             </p>
         {% endif %}
         {% if 'contactDetails.addresses.buildingName' in result.highlight
