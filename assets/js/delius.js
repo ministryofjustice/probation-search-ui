@@ -1,4 +1,4 @@
-;(() => {
+;(deliusUrl => {
   function debounce(fn, delay) {
     let timeoutId
     return function (...args) {
@@ -99,7 +99,7 @@
         action: action,
         data: source?.getAttribute('data-offender-id') ?? {},
       }),
-      { targetOrigin: '{{ deliusUrl }}' },
+      { targetOrigin: deliusUrl },
     )
   }
 
@@ -135,4 +135,4 @@
   }
 
   setup()
-})()
+})(deliusUrl)
