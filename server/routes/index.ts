@@ -19,9 +19,9 @@ export default function routes(services: Services): Router {
   router.get('/', (req, res) => res.redirect('/search'))
 
   searchRoutes(router, services)
-  caseViewRoutes(router, services)
   exampleRoutes(router, services)
   deliusRoutes(router, services)
+  caseViewRoutes(router)
 
   return router
 }
