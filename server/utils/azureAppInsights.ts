@@ -32,7 +32,7 @@ export function buildAppInsightsClient(
 }
 
 export default class ApplicationInsightsEvents {
-  static searchPerformed(request: ProbationSearchRequest, response: ProbationSearchResponse) {
+  static searchPerformed(request: ProbationSearchRequest, response: ProbationSearchResponse, username: string) {
     defaultClient?.trackEvent({
       name: 'SearchPerformed',
       properties: {
@@ -43,7 +43,7 @@ export default class ApplicationInsightsEvents {
         matchAllTerms: request.matchAllTerms,
         providersFilter: request.providersFilter,
         pageNumber: request.pageNumber,
-        asUsername: request.asUsername,
+        asUsername: username,
         response: {
           size: response.size,
           totalElements: response.totalElements,
