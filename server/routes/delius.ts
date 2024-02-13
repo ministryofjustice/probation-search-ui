@@ -23,7 +23,9 @@ export default function deliusRoutes(router: Router, services: Services) {
     res.render('pages/deliusSearch/index', {
       deliusUrl: config.delius.url,
       sentry: config.sentry,
-      ...(res.locals.searchResponse ? mapResults(res.locals.searchResponse, res.locals.searchRequest) : {}),
+      ...(res.locals.searchResponse
+        ? mapResults(res.locals.searchResponse, res.locals.searchRequest, req.user.username)
+        : {}),
     }),
   )
 
@@ -63,8 +65,8 @@ export default function deliusRoutes(router: Router, services: Services) {
   })
 }
 
-function mapResults(response: ProbationSearchResponse, request: ProbationSearchRequest) {
-  ApplicationInsightsEvents.searchPerformed(request, response)
+function mapResults(response: ProbationSearchResponse, request: ProbationSearchRequest, username: string) {
+  ApplicationInsightsEvents.searchPerformed(request, response, username)
   const returnedProviders = response.probationAreaAggregations.map(p => ({
     value: `${p.code}-${p.description}`,
     text: `${p.description} (${p.count})`,
