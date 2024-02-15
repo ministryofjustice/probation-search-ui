@@ -1,9 +1,15 @@
-import { defaultClient, DistributedTracingModes, setup, TelemetryClient } from 'applicationinsights'
+import {
+  defaultClient,
+  DistributedTracingModes,
+  getCorrelationContext,
+  setup,
+  TelemetryClient,
+} from 'applicationinsights'
 import {
   ProbationSearchRequest,
   ProbationSearchResponse,
 } from '@ministryofjustice/probation-search-frontend/data/probationSearchClient'
-import { Request } from 'express'
+import { Request, RequestHandler } from 'express'
 import type { ApplicationInfo } from '../applicationInfo'
 
 export function initialiseAppInsights(): void {
@@ -12,6 +18,18 @@ export function initialiseAppInsights(): void {
     console.log('Enabling azure application insights')
 
     setup().setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
+  }
+}
+
+export function appInsightsMiddleware(): RequestHandler {
+  return (req, res, next) => {
+    res.prependOnceListener('finish', () => {
+      const context = getCorrelationContext()
+      if (context && req.route) {
+        context.customProperties.setProperty('operationName', `${req.method} ${req.route?.path}`)
+      }
+    })
+    next()
   }
 }
 
@@ -25,6 +43,13 @@ export function buildAppInsightsClient(
     defaultClient.addTelemetryProcessor(({ data }) => {
       const { url } = data.baseData
       return !url?.endsWith('/health') && !url?.endsWith('/ping') && !url?.endsWith('/metrics')
+    })
+    defaultClient.addTelemetryProcessor(({ tags, data }, contextObjects) => {
+      const operationNameOverride = contextObjects.correlationContext?.customProperties?.getProperty('operationName')
+      if (operationNameOverride) {
+        tags['ai.operation.name'] = data.baseData.name = operationNameOverride // eslint-disable-line no-param-reassign,no-multi-assign
+      }
+      return true
     })
     return defaultClient
   }
