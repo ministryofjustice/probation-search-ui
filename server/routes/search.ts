@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import type { Services } from '../services'
-import hmppsAudit from '../utils/hmppsAudit'
 
 export default function searchRoutes(router: Router, services: Services) {
   /**
@@ -8,10 +7,7 @@ export default function searchRoutes(router: Router, services: Services) {
    *
    */
   router.post('/search', services.searchService.post)
-  router.get('/search', services.searchService.get, (req, res) => {
-    hmppsAudit(res.locals.searchRequest, res.locals.searchResponse, req.user.username)
-    res.render('pages/search')
-  })
+  router.get('/search', services.searchService.get, (_req, res) => res.render('pages/search'))
 
   return router
 }
