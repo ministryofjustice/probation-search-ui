@@ -11,6 +11,7 @@ import type { Services } from '../services'
 import PrisonApiClient from '../data/prisonApiClient'
 import ApplicationInsightsEvents from '../utils/azureAppInsights'
 import { signUrl, verifySignedUrl } from '../utils/utils'
+import hmppsAudit from '../utils/hmppsAudit'
 
 export default function deliusRoutes(router: Router, services: Services) {
   const deliusSearch = new CaseSearchService({
@@ -67,6 +68,7 @@ export default function deliusRoutes(router: Router, services: Services) {
 
 function mapResults(response: ProbationSearchResponse, request: ProbationSearchRequest, username: string) {
   ApplicationInsightsEvents.searchPerformed(request, response, username)
+  hmppsAudit(request, response, username)
   const returnedProviders = response.probationAreaAggregations.map(p => ({
     value: `${p.code}-${p.description}`,
     text: `${p.description} (${p.count})`,
