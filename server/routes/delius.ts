@@ -20,14 +20,18 @@ export default function deliusRoutes(router: Router, services: Services) {
     allowEmptyQuery: true,
   })
   router.post('/delius/nationalSearch', deliusSearch.post)
-  router.get('/delius/nationalSearch', deliusSearch.get, (req, res) =>
-    res.render('pages/deliusSearch/index', {
-      deliusUrl: config.delius.url,
-      sentry: config.sentry,
-      ...(res.locals.searchResponse
-        ? mapResults(res.locals.searchResponse, res.locals.searchRequest, req.user.username)
-        : {}),
-    }),
+  router.get(
+    '/delius/nationalSearch',
+    deliusSearch.get,
+    (req, res, next) => hmppsAudit(req, res, next),
+    (req, res) =>
+      res.render('pages/deliusSearch/index', {
+        deliusUrl: config.delius.url,
+        sentry: config.sentry,
+        ...(res.locals.searchResponse
+          ? mapResults(res.locals.searchResponse, res.locals.searchRequest, req.user.username)
+          : {}),
+      }),
   )
 
   router.post('/delius/nationalSearch/filters', (req, res) => {
@@ -68,7 +72,6 @@ export default function deliusRoutes(router: Router, services: Services) {
 
 function mapResults(response: ProbationSearchResponse, request: ProbationSearchRequest, username: string) {
   ApplicationInsightsEvents.searchPerformed(request, response, username)
-  hmppsAudit(request, response, username)
   const returnedProviders = response.probationAreaAggregations.map(p => ({
     value: `${p.code}-${p.description}`,
     text: `${p.description} (${p.count})`,

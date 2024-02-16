@@ -103,6 +103,9 @@ export default {
     secret: get('SIGNING_SECRET', 'signing-secret', requiredInProduction),
     algorithm: get('SIGNING_ALGORITHM', 'sha256'),
   },
+  hmppsAudit: {
+    enabled: get('AUDIT_SQS_QUEUE_URL', 'notdefined') !== 'notdefined',
+  },
 }
 
 function customApiUrl() {
