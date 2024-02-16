@@ -8,12 +8,7 @@ export default function searchRoutes(router: Router, services: Services) {
    *
    */
   router.post('/search', services.searchService.post)
-  router.get(
-    '/search',
-    services.searchService.get,
-    (req, res, next) => hmppsAudit(req, res, next),
-    (_req, res) => res.render('pages/search'),
-  )
+  router.get('/search', services.searchService.get, hmppsAudit, (_req, res) => res.render('pages/search'))
 
   return router
 }

@@ -20,18 +20,14 @@ export default function deliusRoutes(router: Router, services: Services) {
     allowEmptyQuery: true,
   })
   router.post('/delius/nationalSearch', deliusSearch.post)
-  router.get(
-    '/delius/nationalSearch',
-    deliusSearch.get,
-    (req, res, next) => hmppsAudit(req, res, next),
-    (req, res) =>
-      res.render('pages/deliusSearch/index', {
-        deliusUrl: config.delius.url,
-        sentry: config.sentry,
-        ...(res.locals.searchResponse
-          ? mapResults(res.locals.searchResponse, res.locals.searchRequest, req.user.username)
-          : {}),
-      }),
+  router.get('/delius/nationalSearch', deliusSearch.get, hmppsAudit, (req, res) =>
+    res.render('pages/deliusSearch/index', {
+      deliusUrl: config.delius.url,
+      sentry: config.sentry,
+      ...(res.locals.searchResponse
+        ? mapResults(res.locals.searchResponse, res.locals.searchRequest, req.user.username)
+        : {}),
+    }),
   )
 
   router.post('/delius/nationalSearch/filters', (req, res) => {

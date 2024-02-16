@@ -19,7 +19,10 @@ import config from '../config'
  * @param next The NextFunction
  */
 export default function hmppsAudit(req: Request, res: Response, next: NextFunction): void {
-  if (res.locals.searchRequest === undefined || config.hmppsAudit.enabled === false) {
+  if (res.locals.searchRequest === undefined) {
+    return next()
+  }
+  if (config.hmppsAudit.enabled === false) {
     logger.warn('HMPPS Audit is not configured')
     return next()
   }
