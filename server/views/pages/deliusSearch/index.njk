@@ -31,16 +31,8 @@
                     </ul>
                 </div>
             </div>
-        {% elif searchResults.response.totalElements > 0 %}
-            <p>Showing {{ searchResults.pagination.from }} to {{ searchResults.pagination.to }} of {{ searchResults.pagination.total }} results.</p>
-
-            {%- include "./results.njk" -%}
-
-            {% if searchResults.pagination.items | length > 1 %}
-                {{ govukPagination({ previous: { href: searchResults.pagination.prev }, next: { href: searchResults.pagination.next }, items: searchResults.pagination.items }) }}
-            {% endif %}
         {% elif searchResults.query != null %}
-            <p>There are no results for your search. Try refining your query above.</p>
+            {%- include "./results.njk" -%}
         {% else %}
             <h3 class="govuk-heading-m">Find people by using any combination of:</h3>
             <ul class="govuk-list govuk-list--bullet">
