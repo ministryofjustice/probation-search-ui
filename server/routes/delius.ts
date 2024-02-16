@@ -11,6 +11,7 @@ import type { Services } from '../services'
 import PrisonApiClient from '../data/prisonApiClient'
 import ApplicationInsightsEvents from '../utils/azureAppInsights'
 import { signUrl, verifySignedUrl } from '../utils/utils'
+import hmppsAudit from '../utils/hmppsAudit'
 
 export default function deliusRoutes(router: Router, services: Services) {
   const deliusSearch = new CaseSearchService({
@@ -19,7 +20,7 @@ export default function deliusRoutes(router: Router, services: Services) {
     allowEmptyQuery: true,
   })
   router.post('/delius/nationalSearch', deliusSearch.post)
-  router.get('/delius/nationalSearch', deliusSearch.get, (req, res) =>
+  router.get('/delius/nationalSearch', deliusSearch.get, hmppsAudit, (req, res) =>
     res.render('pages/deliusSearch/index', {
       deliusUrl: config.delius.url,
       sentry: config.sentry,
