@@ -1,6 +1,10 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 
+{% if results | length > 0 %}
+    <p>Showing {{ searchResults.pagination.from }} to {{ searchResults.pagination.to }} of {{ searchResults.pagination.total }} results.</p>
+{% endif %}
+
 <div id="search-results">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-third">
@@ -18,32 +22,36 @@
             </div>
 
             {% if providers | length > 0 %}
-            <div class="app-national-search-filter">
-                {{ govukCheckboxes({
-                    name: "providers-filter",
-                    classes: "govuk-checkboxes--small",
-                    fieldset: { legend: { text: "Providers" } },
-                    items: providers
-                }) }}
-            </div>
+                <div class="app-national-search-filter">
+                    {{ govukCheckboxes({
+                        name: "providers-filter",
+                        classes: "govuk-checkboxes--small",
+                        fieldset: { legend: { text: "Providers" } },
+                        items: providers
+                    }) }}
+                </div>
             {% endif %}
         </div>
         <div class="govuk-grid-column-two-thirds">
             {% if results | length > 0 %}
-            <ul class="govuk-list">
-                {% for result in results %}
-                    <li class="app-result">
-                        {% if result.accessDenied %}
-                            {% include "pages/deliusSearch/restrictedResult.njk" %}
-                        {% else %}
-                            {% include "pages/deliusSearch/result.njk" %}
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
+                <ul class="govuk-list">
+                    {% for result in results %}
+                        <li class="app-result">
+                            {% if result.accessDenied %}
+                                {% include "pages/deliusSearch/restrictedResult.njk" %}
+                            {% else %}
+                                {% include "pages/deliusSearch/result.njk" %}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
             {% else %}
-            <p class="govuk-margin-top-3">There are no results for your search. Try refining your query above.</p>
+                <p class="govuk-margin-top-3">There are no results for your search. Try refining your query above.</p>
             {% endif %}
         </div>
     </div>
 </div>
+
+{% if searchResults.pagination.items | length > 1 %}
+    {{ govukPagination({ previous: { href: searchResults.pagination.prev }, next: { href: searchResults.pagination.next }, items: searchResults.pagination.items }) }}
+{% endif %}
