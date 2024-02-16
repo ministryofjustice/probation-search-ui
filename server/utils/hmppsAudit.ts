@@ -12,7 +12,7 @@ import config from '../config'
  * Sends HMPPS Audit Events
  *
  * Sends 1 event to audit the SEARCHED_PERFORMED action using the search input
- * Sends a VIEWED_RESULTS_PAGE_X event for each of the returned crns in the search results, where X is the page number
+ * Sends a VIEWED_RESULTS event for each of the returned crns in the search results
  *
  * @param req The Request
  * @param res The Response
@@ -38,7 +38,7 @@ export default function hmppsAudit(req: Request, res: Response, next: NextFuncti
 
   response.content.forEach(result => {
     auditService.sendAuditMessage({
-      action: `VIEWED_RESULTS_PAGE_${request.pageNumber}`,
+      action: `VIEWED_RESULTS`,
       who: userName,
       subjectId: result.otherIds.crn,
       subjectType: 'CRN',
