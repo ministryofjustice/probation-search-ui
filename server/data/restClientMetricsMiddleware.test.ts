@@ -13,6 +13,11 @@ describe('restClientMetricsMiddleware', () => {
   })
 
   describe('normalizePath', () => {
+    it('normalises parameterised paths', () => {
+      const result = normalizePath('/probation-case/:crn/appointments/:appointmentId')
+      expect(result).toBe('/probation-case/#val/appointments/#val')
+    })
+
     it('normalises recall ids', () => {
       const result = normalizePath('/recalls/15e4cccf-cc7b-4946-aa22-a82086735ec2/view-recall')
       expect(result).toBe('/recalls/#val/view-recall')
