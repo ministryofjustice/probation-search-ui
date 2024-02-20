@@ -113,9 +113,6 @@ You will also need to add `https://localhost:3000/sign-in/callback` as a registe
 To run the Cypress integration tests locally:
 
 ```shell
-# Start dependencies
-docker-compose -f docker-compose-test.yml up -d
-
 # Start the UI in test mode
 npm run start-feature:dev
 
