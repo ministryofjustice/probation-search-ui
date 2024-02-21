@@ -2,7 +2,7 @@ context('Search', () => {
   beforeEach(() => {
     cy.task('reset')
     cy.task('stubSignIn')
-    cy.task('stubAuthUser')
+    cy.task('stubManageUser')
   })
 
   it('displays results', () => {

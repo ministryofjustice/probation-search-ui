@@ -4,7 +4,7 @@ import UserService from './userService'
 import config from '../config'
 
 export const services = () => {
-  const { applicationInfo, manageUsersApiClient } = dataAccess()
+  const { applicationInfo, hmppsAuthClient, manageUsersApiClient } = dataAccess()
 
   const userService = new UserService(manageUsersApiClient)
   const searchService = new CaseSearchService({
