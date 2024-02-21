@@ -4,8 +4,8 @@ import crypto from 'crypto'
 import { StrategyCreated } from 'passport'
 import DeliusStrategy from './deliusStrategy'
 import { HmppsAuthClient } from '../data'
-import TestingTokenStore from '../data/tokenStore/testingTokenStore'
 import config from '../config'
+import InMemoryTokenStore from '../data/tokenStore/inMemoryTokenStore'
 
 jest.mock('../data')
 
@@ -13,7 +13,7 @@ describe('DeliusStrategy', () => {
   let deliusStrategy: StrategyCreated<DeliusStrategy>
 
   beforeEach(() => {
-    const strategy = new DeliusStrategy(new HmppsAuthClient(new TestingTokenStore()))
+    const strategy = new DeliusStrategy(new HmppsAuthClient(new InMemoryTokenStore()))
     deliusStrategy = {
       ...strategy,
       authenticate: strategy.authenticate,

@@ -9,8 +9,8 @@ import HmppsAuthClient from './hmppsAuthClient'
 import ManageUsersApiClient from './manageUsersApiClient'
 import { createRedisClient } from './redisClient'
 import RedisTokenStore from './tokenStore/redisTokenStore'
-import TestingTokenStore from './tokenStore/testingTokenStore'
 import config from '../config'
+import InMemoryTokenStore from './tokenStore/inMemoryTokenStore'
 
 const applicationInfo = applicationInfoSupplier()
 initialiseAppInsights()
@@ -21,7 +21,7 @@ type RestClientBuilder<T> = (token: string) => T
 export const dataAccess = () => ({
   applicationInfo,
   hmppsAuthClient: new HmppsAuthClient(
-    config.redis.enabled ? new RedisTokenStore(createRedisClient()) : new TestingTokenStore(),
+    config.redis.enabled ? new RedisTokenStore(createRedisClient()) : new InMemoryTokenStore(),
   ),
   manageUsersApiClient: new ManageUsersApiClient(),
 })
