@@ -12,7 +12,7 @@ generic-service:
     host: probation-search.hmpps.service.justice.gov.uk
 
   env:
-    ENVIRONMENT: prod
+    ENVIRONMENT_NAME: prod
     INGRESS_URL: "https://probation-search.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
     MANAGE_USERS_API_URL: "https://manage-users-api.hmpps.service.justice.gov.uk"

@@ -9,7 +9,7 @@ export const services = () => {
   const userService = new UserService(manageUsersApiClient)
   const searchService = new CaseSearchService({
     oauthClient: hmppsAuthClient,
-    environment: config.environment,
+    environment: config.environmentName,
   })
 
   return {

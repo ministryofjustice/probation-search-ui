@@ -16,7 +16,7 @@ import hmppsAudit from '../utils/hmppsAudit'
 export default function deliusRoutes(router: Router, services: Services) {
   const deliusSearch = new CaseSearchService({
     oauthClient: services.hmppsAuthClient,
-    environment: config.environment,
+    environment: config.environmentName,
     allowEmptyQuery: true,
   })
   router.post('/delius/nationalSearch', deliusSearch.post)

@@ -33,7 +33,7 @@ export interface ApiConfig {
 
 export default {
   buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
-  environment: customApiUrl() ?? (get('ENVIRONMENT', 'local', requiredInProduction) as Environment),
+  environmentName: customApiUrl() ?? (get('ENVIRONMENT_NAME', 'local', requiredInProduction) as Environment),
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
   production,
@@ -53,7 +53,7 @@ export default {
   sentry: {
     dsn: process.env.SENTRY_DSN,
     loaderScriptId: process.env.SENTRY_LOADER_SCRIPT_ID,
-    environment: get('ENVIRONMENT', 'local', requiredInProduction),
+    environment: get('ENVIRONMENT_NAME', 'local', requiredInProduction),
     tracesSampleRate: Number(get('SENTRY_TRACES_SAMPLE_RATE', 0.05)),
     replaySampleRate: Number(get('SENTRY_REPLAY_SAMPLE_RATE', 0.0)),
   },
@@ -102,7 +102,6 @@ export default {
     },
   },
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
-  environmentName: get('ENVIRONMENT_NAME', ''),
   https: new URL(get('INGRESS_URL', 'http://localhost:3000', requiredInProduction)).protocol === 'https:',
   certificate: {
     key: process.env.HTTPS_KEY,
