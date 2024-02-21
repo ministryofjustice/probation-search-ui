@@ -33,7 +33,7 @@ export interface ApiConfig {
 
 export default {
   buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
-  environmentName: customApiUrl() ?? (get('ENVIRONMENT_NAME', 'local', requiredInProduction) as Environment),
+  environmentName: get('ENVIRONMENT_NAME', 'local', requiredInProduction) as Environment,
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
   production,
