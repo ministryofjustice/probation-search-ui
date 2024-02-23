@@ -13,6 +13,8 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
 
   app.locals.asset_path = '/assets/'
   app.locals.applicationName = 'Probation Search'
+  app.locals.environmentName = config.environmentName
+  app.locals.environmentNameColour = config.environmentName === 'preprod' ? 'govuk-tag--green' : ''
 
   // Cachebusting version string
   if (production) {

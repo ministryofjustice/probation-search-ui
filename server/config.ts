@@ -33,7 +33,7 @@ export interface ApiConfig {
 
 export default {
   buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
-  environment: customApiUrl() ?? (get('ENVIRONMENT', 'local', requiredInProduction) as Environment),
+  environmentName: get('ENVIRONMENT_NAME', 'local', requiredInProduction) as Environment,
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
   gitRef: get('GIT_REF', 'xxxxxxxxxxxxxxxxxxx', requiredInProduction),
   production,
@@ -53,7 +53,7 @@ export default {
   sentry: {
     dsn: process.env.SENTRY_DSN,
     loaderScriptId: process.env.SENTRY_LOADER_SCRIPT_ID,
-    environment: get('ENVIRONMENT', 'local', requiredInProduction),
+    environment: get('ENVIRONMENT_NAME', 'local', requiredInProduction),
     tracesSampleRate: Number(get('SENTRY_TRACES_SAMPLE_RATE', 0.05)),
     replaySampleRate: Number(get('SENTRY_REPLAY_SAMPLE_RATE', 0.0)),
   },
@@ -74,6 +74,14 @@ export default {
       apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction),
       systemClientId: get('SYSTEM_CLIENT_ID', 'clientid', requiredInProduction),
       systemClientSecret: get('SYSTEM_CLIENT_SECRET', 'clientsecret', requiredInProduction),
+    },
+    manageUsersApi: {
+      url: get('MANAGE_USERS_API_URL', 'http://localhost:9091', requiredInProduction),
+      timeout: {
+        response: Number(get('MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('MANAGE_USERS_API_TIMEOUT_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(Number(get('MANAGE_USERS_API_TIMEOUT_RESPONSE', 10000))),
     },
     tokenVerification: {
       url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
@@ -108,7 +116,7 @@ export default {
   },
 }
 
-function customApiUrl() {
+export function customApiUrl() {
   return process.env.API_URL
     ? {
         searchApi: {

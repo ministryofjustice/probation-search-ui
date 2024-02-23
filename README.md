@@ -60,7 +60,7 @@ You'll need the following roles:
 Create a `.env` file at the root of the project:
 ```properties
 NODE_ENV=development
-ENVIRONMENT=dev
+ENVIRONMENT_NAME=dev
 REDIS_ENABLED=false
 HMPPS_AUTH_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
 PRISON_API_URL=https://prison-api-dev.prison.service.justice.gov.uk

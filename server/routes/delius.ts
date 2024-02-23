@@ -6,17 +6,18 @@ import {
 import { format, parseISO } from 'date-fns'
 import { Readable } from 'stream'
 import CaseSearchService from '@ministryofjustice/probation-search-frontend/service/caseSearchService'
-import config from '../config'
+import config, { customApiUrl } from '../config'
 import type { Services } from '../services'
 import PrisonApiClient from '../data/prisonApiClient'
 import ApplicationInsightsEvents from '../utils/azureAppInsights'
 import { signUrl, verifySignedUrl } from '../utils/utils'
 import hmppsAudit from '../utils/hmppsAudit'
 
+const environment = customApiUrl() ?? config.environmentName
 export default function deliusRoutes(router: Router, services: Services) {
   const deliusSearch = new CaseSearchService({
     oauthClient: services.hmppsAuthClient,
-    environment: config.environment,
+    environment,
     allowEmptyQuery: true,
   })
   router.post('/delius/nationalSearch', deliusSearch.post)
