@@ -115,3 +115,14 @@ export default {
     enabled: get('AUDIT_SQS_QUEUE_URL', 'notdefined') !== 'notdefined',
   },
 }
+
+export function customApiUrl() {
+  return process.env.API_URL
+    ? {
+        searchApi: {
+          url: process.env.API_URL,
+          timeout: +get('API_TIMEOUT', 5000),
+        },
+      }
+    : null
+}
