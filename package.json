@@ -116,7 +116,6 @@
     "helmet": "^7.1.0",
     "highlight-words-core": "^1.2.2",
     "http-errors": "^2.0.0",
-    "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
     "nocache": "^4.0.0",
     "nunjucks": "^3.2.4",
