@@ -33,7 +33,7 @@ export default function hmppsAudit(req: Request, res: Response, next: NextFuncti
   auditService.sendAuditMessage({
     action: `SEARCH_PERFORMED`,
     who: userName,
-    details: { request },
+    details: JSON.stringify({ request }),
     correlationId: v4(),
     service: 'probation-search-ui',
   })
