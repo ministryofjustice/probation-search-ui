@@ -56,6 +56,7 @@ export default {
     environment: get('ENVIRONMENT_NAME', 'local', requiredInProduction),
     tracesSampleRate: Number(get('SENTRY_TRACES_SAMPLE_RATE', 0.05)),
     replaySampleRate: Number(get('SENTRY_REPLAY_SAMPLE_RATE', 0.0)),
+    replayOnErrorSampleRate: Number(get('SENTRY_REPLAY_ON_ERROR_SAMPLE_RATE', 0.1)),
   },
   delius: {
     url: get('DELIUS_URL', '*', requiredInProduction),

@@ -9,7 +9,7 @@
         integrations: [new Sentry.BrowserTracing(), new Sentry.Replay()],
         tracesSampleRate: {{ sentry.tracesSampleRate }},
         replaysSessionSampleRate: {{ sentry.replaySampleRate }},
-        replaysOnErrorSampleRate: 1.0, // Capture replays for any sessions with an error
+        replaysOnErrorSampleRate: {{ sentry.replayOnErrorSampleRate }},
         initialScope: {
           user: { username: "{{ user.username }}" },
         },
