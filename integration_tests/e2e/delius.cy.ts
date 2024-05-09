@@ -1,18 +1,14 @@
 context('Delius search', () => {
   beforeEach(() => {
-    cy.task('reset')
-    cy.task('stubSignIn')
-    cy.task('stubManageUser')
+    cy.visit('/')
   })
 
   it('displays welcome message', () => {
-    cy.signIn()
     cy.visit('/delius/nationalSearch')
     cy.get('#search-results-container').should('contain.text', 'Find people by using any combination of:')
   })
 
   it('displays results', () => {
-    cy.signIn()
     cy.visit('/delius/nationalSearch')
     cy.get('#search').type('test')
     cy.get('#search-results-container')
@@ -25,7 +21,6 @@ context('Delius search', () => {
   })
 
   it('navigates to help page', () => {
-    cy.signIn()
     cy.visit('/delius/nationalSearch')
     cy.get('.app-national-search-help').click()
     cy.get('h1').should('contain.text', 'Search tips')

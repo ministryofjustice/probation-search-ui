@@ -44,7 +44,7 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
 
-  app.use(routes(services))
+  app.use(config.basePath, routes(services))
 
   if (config.sentry.dsn) app.use(Sentry.Handlers.errorHandler())
   app.use((req, res, next) => next(createError(404, 'Not found')))

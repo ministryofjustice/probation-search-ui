@@ -1,12 +1,6 @@
 context('Search', () => {
-  beforeEach(() => {
-    cy.task('reset')
-    cy.task('stubSignIn')
-    cy.task('stubManageUser')
-  })
-
   it('displays results', () => {
-    cy.signIn()
+    cy.visit('/search')
     cy.get('#search').type('test')
     cy.get('button').click()
     cy.get('#search-results-container')
