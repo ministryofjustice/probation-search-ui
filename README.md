@@ -14,7 +14,6 @@ To include this in your project, check out the [@ministryofjustice/probation-sea
 You'll need to install:
 
 * [Node 21.x](https://nodejs.org/download/release/latest-v21.x)*
-* [Docker](https://www.docker.com/)
 
 *If you're already using [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm), run:
 `nvm install --latest-npm` at the project root to install the correct Node version automatically.
@@ -29,30 +28,22 @@ npm install
 
 ### Run the service
 
-To run the service locally, with dependencies in Docker:
+To run the service locally, with dependencies in WireMock:
 
 ```shell
-# Pull the latest Docker image versions
-docker-compose pull
-
-# Start the dependencies only
-docker-compose up -d --scale=app=0
+# Mock the dependencies
+npm run wiremock
 
 # Start the UI service and watch for changes
 npm run start:dev
 ```
 
-Open http://localhost:3000 in your browser, and login with the following credentials:
-
-* Username: `AUTH_USER`
-* Password: `password123456`
+Open http://localhost:3000 in your browser.
 
 ### Integrate with dev services
 
 Alternatively, you can integrate your local UI with the dev/test services deployed on MOJ Cloud Platform using a personal HMPPS Auth client.
 If you don't already have a personal client, request one in the [#hmpps-auth-audit-registers](https://mojdt.slack.com/archives/C02S71KUBED) Slack channel.
-
-This removes the need for using Docker.
 
 You'll need the following roles:
 * `ROLE_COMMUNITY` for searching probation cases
@@ -63,6 +54,7 @@ NODE_ENV=development
 ENVIRONMENT_NAME=dev
 REDIS_ENABLED=false
 HMPPS_AUTH_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
+MANAGE_USERS_API_URL=https://manage-users-api-dev.hmpps.service.justice.gov.uk
 PRISON_API_URL=https://prison-api-dev.prison.service.justice.gov.uk
 
 # Add your personal client credentials below:
