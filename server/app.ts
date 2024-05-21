@@ -46,7 +46,7 @@ export default function createApp(services: Services): express.Application {
 
   app.use(config.basePath, routes(services))
 
-  if (config.sentry.dsn) app.use(Sentry.Handlers.errorHandler())
+  if (config.sentry.dsn) Sentry.setupExpressErrorHandler(app)
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
 
