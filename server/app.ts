@@ -39,11 +39,15 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpWebRequestParsing())
   app.use(setUpStaticResources())
   nunjucksSetup(app, services.applicationInfo)
-  app.use(setUpAuthentication(services))
+  app.use(config.basePath, setUpAuthentication(services))
   app.use(authorisationMiddleware())
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
 
+  app.use((_req, res, next) => {
+    res.locals.basePath = config.basePath
+    next()
+  })
   app.use(config.basePath, routes(services))
 
   if (config.sentry.dsn) Sentry.setupExpressErrorHandler(app)
