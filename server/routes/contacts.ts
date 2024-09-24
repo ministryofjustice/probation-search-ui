@@ -21,7 +21,7 @@ export default function contactsRoutes(router: Router, services: Services) {
   router.get(
     '/contacts/:crn/compare',
     async (req, res, next) => {
-      if (!('contactSearch' in req.session) || !req.session.contactSearch || !req.session.contactSearch.query) {
+      if (!('contactSearch' in req.session) || !req.session.contactSearch?.query) {
         res.locals.query = ''
         return next()
       }
