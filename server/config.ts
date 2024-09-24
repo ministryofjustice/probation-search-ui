@@ -39,7 +39,7 @@ export default {
   production,
   staticResourceCacheDuration: '1h',
   liveReload: get('LIVE_RELOAD', 'false') === 'true',
-  basePath: (get('BASE_PATH', '/').startsWith('/') ? '' : '/') + get('BASE_PATH', '/'),
+  basePath: get('BASE_PATH', ''),
   redis: {
     enabled: get('REDIS_ENABLED', 'false', requiredInProduction) === 'true',
     host: get('REDIS_HOST', 'localhost', requiredInProduction),
