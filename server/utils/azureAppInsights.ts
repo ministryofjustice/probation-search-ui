@@ -91,8 +91,8 @@ export default class ApplicationInsightsEvents {
       name: ApplicationInsightsEvents.mapActionToEventName(req.body.action),
       properties: {
         query: {
-          length: req.session.probationSearch?.q?.length,
-          tokens: req.session.probationSearch?.q?.trim().split(/\s+/).length,
+          length: req.session.probationSearch?.query?.length,
+          tokens: req.session.probationSearch?.query?.trim().split(/\s+/).length,
         },
         matchAllTerms: req.session.probationSearch?.matchAllTerms,
         providersFilter: req.session.probationSearch?.providers,

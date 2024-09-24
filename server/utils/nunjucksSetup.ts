@@ -2,6 +2,7 @@
 import path from 'path'
 import nunjucks from 'nunjucks'
 import express from 'express'
+import { format, parseISO } from 'date-fns'
 import { highlightText, initialiseName } from './utils'
 import { ApplicationInfo } from '../applicationInfo'
 import config from '../config'
@@ -47,4 +48,6 @@ export default function nunjucksSetup(app: express.Express, applicationInfo: App
   njkEnv.addFilter('initialiseName', initialiseName)
   njkEnv.addFilter('highlight', highlightText)
   njkEnv.addFilter('formatNumber', (num: number) => num.toLocaleString('en-GB'))
+  njkEnv.addFilter('formatDate', (date: string) => format(parseISO(date), 'dd/MM/yyyy'))
+  njkEnv.addFilter('indexOfId', (list: { id: number }[], item: { id: number }) => list.map(i => i.id).indexOf(item.id))
 }

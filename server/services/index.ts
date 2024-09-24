@@ -12,11 +12,18 @@ export const services = () => {
     environment: config.environmentName,
   })
 
+  const contactsCaseSearchService = new CaseSearchService({
+    oauthClient: hmppsAuthClient,
+    environment: config.environmentName,
+    resultPath: crn => `/contacts/${crn}/compare`,
+  })
+
   return {
     applicationInfo,
     hmppsAuthClient,
     userService,
     searchService,
+    contactsCaseSearchService,
   }
 }
 

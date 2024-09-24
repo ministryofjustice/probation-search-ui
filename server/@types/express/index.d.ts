@@ -6,6 +6,7 @@ declare module 'express-session' {
     returnTo: string
     nowInMinutes: number
     probationSearch?: ProbationSearch.SearchParameters
+    contactSearch?: ContactSearch.SearchParameters
   }
 }
 
@@ -25,10 +26,14 @@ export declare global {
   }
   namespace ProbationSearch {
     interface SearchParameters extends Record<string, string | string[]> {
-      q?: string
-      page?: string
-      matchAllTerms?: string
+      query?: string
       providers?: string[]
+      matchAllTerms?: string
+    }
+  }
+  namespace ContactSearch {
+    interface SearchParameters extends Record<string, string | string[]> {
+      query?: string
     }
   }
 }
