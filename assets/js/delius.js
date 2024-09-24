@@ -71,7 +71,7 @@
     const providers =
       selectedProviders ?? [...document.querySelectorAll('input[name="providers-filter"]:checked')].map(el => el.value)
     localStorage.setItem('providers', JSON.stringify(providers))
-    return fetch('/delius/nationalSearch/filters', {
+    return fetch(window.location.pathname + '/filters', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -92,7 +92,7 @@
       eventData.crn = source.getAttribute('data-crn')
     }
     const event = new Blob([JSON.stringify(eventData)], { type: 'application/json' })
-    navigator.sendBeacon('/delius/nationalSearch/trackEvent', event)
+    navigator.sendBeacon(window.location.pathname + '/trackEvent', event)
 
     top.postMessage(
       JSON.stringify({
