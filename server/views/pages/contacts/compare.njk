@@ -1,0 +1,138 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% set pageTitle = applicationName + " - Contacts" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row govuk-!-margin-bottom-5">
+            <div class="moj-search">
+                <form method="post">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                    {{ govukInput({
+                        classes: 'moj-search__input',
+                        label: {
+                            text: 'Compare contact search results',
+                            classes: "moj-search__label govuk-label--l",
+                            isPageHeading: true
+                        },
+                        hint: {
+                            text: 'Search for contacts by notes, type, or outcome. The results will be displayed side by side for comparison below.'
+                        },
+                        id: 'contact-search-input',
+                        name: 'contact-search-input',
+                        type: 'search',
+                        value: query
+                    }) }}
+
+                    {{ govukButton({
+                        classes: 'moj-search__button',
+                        text: 'Search'
+                    }) }}
+                </form>
+            </div>
+        </div>
+        {% if query %}
+            <div class="govuk-grid-row contact-search-comparison">
+                <div class="govuk-grid-column-one-half">
+                    {% if resultsA %}
+                        <table class="govuk-table">
+                            <caption class="govuk-table__caption">
+                                <div class="govuk-table__caption--m">Result set 1</div>
+                                <p>Showing {{ resultsA.results | length }} of {{ resultsA.totalResults }} results</p>
+                            </caption>
+
+                            <tbody class="govuk-table__body">
+                            {% for result in resultsA.results %}
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell">
+                                        <div class="result-index">
+                                            <span>{{ loop.index }}</span>
+                                            {% set otherIndex = resultsB.results | indexOfId(result) + 1 %}
+                                            {% if otherIndex == 0 %}
+                                            {% elseif otherIndex < loop.index %}
+                                                <span class="moj-badge--red"
+                                                      title="Down from #{{ otherIndex }}">▼</span>
+                                            {% elseif otherIndex > loop.index %}
+                                                <span class="moj-badge--green"
+                                                      title="Up from #{{ otherIndex }}">▲</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="govuk-table__cell govuk-table--small-text">
+                                        {% if result.notes | length > 0 %}
+                                            <p class="notes">{{ result.notes | escape }}</p>
+                                        {% else %}
+                                            <p>No notes</p>
+                                        {% endif %}
+                                        {{ govukDetails({
+                                            summaryText: "Details",
+                                            html: "<p><strong>Date</strong>: " + (result.date | formatDate) + " " + result.startTime + "</p>
+                                                   <p><strong>Type</strong>: " + result.typeDescription + "</p>
+                                                   <p><strong>Outcome</strong>: " + (result.outcomeDescription | default('N/A')) + "</p>
+                                                   <p><a target='delius' href='" + deliusUrl + "/NDelius-war/delius/JSP/deeplink.xhtml?component=Contact&componentId=" + result.id + "'>View in Delius</a></p>"
+                                        }) }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p class="govuk-body">No results</p>
+                    {% endif %}
+                </div>
+                <div class="govuk-grid-column-one-half">
+                    {% if resultsB %}
+                        <table class="govuk-table">
+                            <caption class="govuk-table__caption">
+                                <div class="govuk-table__caption--m">Result set 2</div>
+                                <p>Showing {{ resultsB.results | length }} of {{ resultsB.totalResults }} results</p>
+                            </caption>
+
+                            <tbody class="govuk-table__body">
+                            {% for result in resultsB.results %}
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell">
+                                        <div class="result-index">
+                                            <span>{{ loop.index }}</span>
+                                            {% set otherIndex = resultsA.results | indexOfId(result) + 1 %}
+                                            {% if otherIndex == 0 %}{% elseif otherIndex < loop.index %}
+                                                <span class="moj-badge--red"
+                                                      title="Down from #{{ otherIndex }}">▼</span>
+                                            {% elseif otherIndex == loop.index %}
+                                                <span class="moj-badge--yellow" title="No change">=</span>
+                                            {% else %}
+                                                <span class="moj-badge--green"
+                                                      title="Up from #{{ otherIndex }}">▲</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="govuk-table__cell">
+                                        {% if result.notes | length > 0 %}
+                                            <p class="notes">{{ result.notes | escape }}</p>
+                                        {% else %}
+                                            <p>No notes</p>
+                                        {% endif %}
+                                        {{ govukDetails({
+                                            summaryText: "Details",
+                                            html: "<p><strong>Date</strong>: " + (result.date | formatDate) + " " + result.startTime + "</p>
+                                                   <p><strong>Type</strong>: " + result.typeDescription + "</p>
+                                                   <p><strong>Outcome</strong>: " + (result.outcomeDescription | default('N/A')) + "</p>
+                                                   <p><a target='delius' href='" + deliusUrl + "/NDelius-war/delius/JSP/deeplink.xhtml?component=Contact&componentId=" + result.id + "'>View in Delius</a></p>"
+                                        }) }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p class="govuk-body">No results</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

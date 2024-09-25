@@ -10,7 +10,7 @@ let app: Express
 
 const services = {
   searchService: new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>,
-  deliusSearchService: new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>,
+  contactsCaseSearchService: new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>,
   hmppsAuthClient: new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>,
 }
 

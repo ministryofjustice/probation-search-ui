@@ -5,6 +5,7 @@ import deliusRoutes from './delius'
 import searchRoutes from './search'
 import exampleRoutes from './examples'
 import caseViewRoutes from './case'
+import contactsRoutes from './contacts'
 
 export default function routes(services: Services): Router {
   const router = Router()
@@ -22,6 +23,7 @@ export default function routes(services: Services): Router {
   exampleRoutes(router, services)
   deliusRoutes(router, services)
   caseViewRoutes(router)
+  contactsRoutes(router, services)
 
   return router
 }

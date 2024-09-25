@@ -22,3 +22,20 @@
     padding: govuk-spacing(4);
   }
 }
+
+.contact-search-comparison {
+  .notes {
+    background-color: #f0f5f7;
+    border-radius: 6px;
+    font-size: smaller;
+    max-height: 400px;
+    overflow-wrap: anywhere;
+    overflow-y: auto;
+    padding: 10px 12px;
+    white-space: pre-wrap;
+  }
+  .result-index {
+    cursor: default;
+    white-space: nowrap;
+  }
+}

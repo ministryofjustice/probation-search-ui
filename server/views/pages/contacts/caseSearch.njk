@@ -1,0 +1,9 @@
+{% extends "../../partials/layout.njk" %}
+
+{% set pageTitle = applicationName + " - Contacts" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+    {% from "probation/case-search/macro.njk" import caseSearch %}
+    {{ caseSearch({ id: "search", results: searchResults }) }}
+{% endblock %}
