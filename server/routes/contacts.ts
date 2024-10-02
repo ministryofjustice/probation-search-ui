@@ -3,6 +3,7 @@ import type { Services } from '../services'
 import hmppsAudit from '../utils/hmppsAudit'
 import ContactSearchApiClient from '../data/contactSearchClient'
 import config from '../config'
+import asyncMiddleware from '../middleware/asyncMiddleware'
 
 export default function contactsRoutes(router: Router, services: Services) {
   router.post('/contacts', services.contactsCaseSearchService.post)
@@ -20,7 +21,7 @@ export default function contactsRoutes(router: Router, services: Services) {
   })
   router.get(
     '/contacts/:crn/compare',
-    async (req, res, next) => {
+    asyncMiddleware(async (req, res, next) => {
       if (!('contactSearch' in req.session) || !req.session.contactSearch?.query) {
         res.locals.query = ''
         return next()
@@ -38,7 +39,7 @@ export default function contactsRoutes(router: Router, services: Services) {
       res.locals.resultsB = resultsB
       res.locals.deliusUrl = config.delius.url
       return next()
-    },
+    }),
     (_req, res) => res.render('pages/contacts/compare'),
   )
 

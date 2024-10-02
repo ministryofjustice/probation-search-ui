@@ -16,7 +16,7 @@
                         classes: 'moj-search__input',
                         label: {
                             text: 'Compare contact search results',
-                            classes: "moj-search__label govuk-label--l",
+                            classes: 'moj-search__label govuk-label--l',
                             isPageHeading: true
                         },
                         hint: {
@@ -70,7 +70,7 @@
                                         {% endif %}
                                         {{ govukDetails({
                                             summaryText: "Details",
-                                            html: "<p><strong>Date</strong>: " + (result.date | formatDate) + " " + result.startTime + "</p>
+                                            html: "<p><strong>Date</strong>: " + (result.date | formatDate) + " " + (result.startTime | default('')) + "</p>
                                                    <p><strong>Type</strong>: " + result.typeDescription + "</p>
                                                    <p><strong>Outcome</strong>: " + (result.outcomeDescription | default('N/A')) + "</p>
                                                    <p><a target='delius' href='" + deliusUrl + "/NDelius-war/delius/JSP/deeplink.xhtml?component=Contact&componentId=" + result.id + "'>View in Delius</a></p>"
@@ -119,7 +119,7 @@
                                         {% endif %}
                                         {{ govukDetails({
                                             summaryText: "Details",
-                                            html: "<p><strong>Date</strong>: " + (result.date | formatDate) + " " + result.startTime + "</p>
+                                            html: "<p><strong>Date</strong>: " + (result.date | formatDate) + " " + (result.startTime | default('')) + "</p>
                                                    <p><strong>Type</strong>: " + result.typeDescription + "</p>
                                                    <p><strong>Outcome</strong>: " + (result.outcomeDescription | default('N/A')) + "</p>
                                                    <p><a target='delius' href='" + deliusUrl + "/NDelius-war/delius/JSP/deeplink.xhtml?component=Contact&componentId=" + result.id + "'>View in Delius</a></p>"
