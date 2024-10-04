@@ -21,6 +21,7 @@ interface Contact {
   date: string
   startTime: string
   lastUpdatedDateTime: string
+  score: number
 }
 
 export default class ContactSearchApiClient extends RestClient {

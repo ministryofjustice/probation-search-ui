@@ -50,7 +50,7 @@
                                 <tr class="govuk-table__row">
                                     <td class="govuk-table__cell">
                                         <div class="result-index">
-                                            <span>{{ loop.index }}</span>
+                                            <span title="Score: {{ result.score }}">{{ loop.index }}</span>
                                             {% set otherIndex = resultsB.results | indexOfId(result) + 1 %}
                                             {% if otherIndex == 0 %}
                                             {% elseif otherIndex < loop.index %}
@@ -98,7 +98,7 @@
                                 <tr class="govuk-table__row">
                                     <td class="govuk-table__cell">
                                         <div class="result-index">
-                                            <span>{{ loop.index }}</span>
+                                            <span title="Score: {{ result.score }}">{{ loop.index }}</span>
                                             {% set otherIndex = resultsA.results | indexOfId(result) + 1 %}
                                             {% if otherIndex == 0 %}{% elseif otherIndex < loop.index %}
                                                 <span class="moj-badge--red"
@@ -134,6 +134,12 @@
                         <p class="govuk-body">No results</p>
                     {% endif %}
                 </div>
+            </div>
+            <div class="govuk-grid-row">
+                {{ govukDetails({
+                    summaryText: "System information",
+                    html: "<pre>" + ({ "crn": crn, "query": query, "resultSet1": resultsA, "resultSet2": resultsB } | dump(2) | escape) + "</pre>"
+                }) }}
             </div>
         {% endif %}
     </div>
