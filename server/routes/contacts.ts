@@ -34,6 +34,7 @@ export default function contactsRoutes(router: Router, services: Services) {
         client.searchContacts(crn, query, false),
         client.searchContacts(crn, query, true),
       ])
+      res.locals.crn = crn
       res.locals.query = query
       res.locals.resultsA = resultsA
       res.locals.resultsB = resultsB
