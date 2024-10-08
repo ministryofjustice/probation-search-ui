@@ -48,6 +48,7 @@ export default class ContactSearchApiClient extends RestClient {
         crn,
         query,
         matchAllTerms: false,
+        includeScores: true,
       },
     })) as Page<Contact>
 
