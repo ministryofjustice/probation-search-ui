@@ -15,6 +15,12 @@ export const services = () => {
   const contactsCaseSearchService = new CaseSearchService({
     oauthClient: hmppsAuthClient,
     environment: config.environmentName,
+    resultPath: crn => `/contacts/${crn}/search?resultSet=2`,
+  })
+
+  const contactsCaseComparisonService = new CaseSearchService({
+    oauthClient: hmppsAuthClient,
+    environment: config.environmentName,
     resultPath: crn => `/contacts/${crn}/compare`,
   })
 
@@ -24,6 +30,7 @@ export const services = () => {
     userService,
     searchService,
     contactsCaseSearchService,
+    contactsCaseComparisonService,
   }
 }
 

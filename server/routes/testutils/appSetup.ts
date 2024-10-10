@@ -60,6 +60,7 @@ export function appWithAllRoutes({
   services = {
     searchService: new CaseSearchService({} as CaseSearchOptions),
     contactsCaseSearchService: new CaseSearchService({} as CaseSearchOptions),
+    contactsCaseComparisonService: new CaseSearchService({} as CaseSearchOptions),
   },
   userSupplier = () => user,
 }: {
