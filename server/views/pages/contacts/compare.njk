@@ -42,7 +42,6 @@
                         <table class="govuk-table">
                             <caption class="govuk-table__caption">
                                 <div class="govuk-table__caption--m">Result set 1</div>
-                                <p>Showing {{ resultsA.results | length }} of {{ resultsA.totalResults }} results</p>
                             </caption>
 
                             <tbody class="govuk-table__body">
@@ -51,15 +50,6 @@
                                     <td class="govuk-table__cell">
                                         <div class="result-index">
                                             <span title="Score: {{ result.score }}">{{ loop.index }}</span>
-                                            {% set otherIndex = resultsB.results | indexOfId(result) + 1 %}
-                                            {% if otherIndex == 0 %}
-                                            {% elseif otherIndex < loop.index %}
-                                                <span class="moj-badge--red"
-                                                      title="Down from #{{ otherIndex }}">▼</span>
-                                            {% elseif otherIndex > loop.index %}
-                                                <span class="moj-badge--green"
-                                                      title="Up from #{{ otherIndex }}">▲</span>
-                                            {% endif %}
                                         </div>
                                     </td>
                                     <td class="govuk-table__cell govuk-table--small-text">
@@ -80,7 +70,7 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        <p>Time taken: {{ resultsA.timeTaken }}</p>
+                        <p>Loaded {{ resultsA.results | length }} results in {{ resultsA.timeTaken }}</p>
                     {% else %}
                         <p class="govuk-body">No results</p>
                     {% endif %}
@@ -90,7 +80,6 @@
                         <table class="govuk-table">
                             <caption class="govuk-table__caption">
                                 <div class="govuk-table__caption--m">Result set 2</div>
-                                <p>Showing {{ resultsB.results | length }} of {{ resultsB.totalResults }} results</p>
                             </caption>
 
                             <tbody class="govuk-table__body">
@@ -99,16 +88,6 @@
                                     <td class="govuk-table__cell">
                                         <div class="result-index">
                                             <span title="Score: {{ result.score }}">{{ loop.index }}</span>
-                                            {% set otherIndex = resultsA.results | indexOfId(result) + 1 %}
-                                            {% if otherIndex == 0 %}{% elseif otherIndex < loop.index %}
-                                                <span class="moj-badge--red"
-                                                      title="Down from #{{ otherIndex }}">▼</span>
-                                            {% elseif otherIndex == loop.index %}
-                                                <span class="moj-badge--yellow" title="No change">=</span>
-                                            {% else %}
-                                                <span class="moj-badge--green"
-                                                      title="Up from #{{ otherIndex }}">▲</span>
-                                            {% endif %}
                                         </div>
                                     </td>
                                     <td class="govuk-table__cell">
@@ -129,7 +108,7 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        <p>Time taken: {{ resultsB.timeTaken }}</p>
+                        <p>Loaded {{ resultsB.results | length }} results in {{ resultsB.timeTaken }}</p>
                     {% else %}
                         <p class="govuk-body">No results</p>
                     {% endif %}

@@ -43,7 +43,7 @@ export default class ContactSearchApiClient extends RestClient {
   async searchContacts(crn: string, query: string, semantic: boolean): Promise<Page<Contact> & { timeTaken: string }> {
     const start = performance.now()
     const response = (await this.post({
-      path: `/search/contacts?semantic=${semantic}`,
+      path: `/search/contacts?semantic=${semantic}&size=1000`,
       data: {
         crn,
         query,
