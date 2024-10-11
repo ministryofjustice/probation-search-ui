@@ -1,0 +1,93 @@
+{% extends "../../partials/layout.njk" %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% set pageTitle = applicationName + " - Contacts" %}
+{% set mainClasses = "app-container govuk-body" %}
+
+{% block content %}
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row govuk-!-margin-bottom-5">
+            <div class="moj-search">
+                <form method="post">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                    {{ govukInput({
+                        classes: 'moj-search__input',
+                        label: {
+                            text: 'Search for contacts',
+                            classes: 'moj-search__label govuk-label--l',
+                            isPageHeading: true
+                        },
+                        hint: {
+                            text: 'Search for contacts by notes, type, or outcome.'
+                        },
+                        id: 'contact-search-input',
+                        name: 'contact-search-input',
+                        type: 'search',
+                        value: query
+                    }) }}
+
+                    {{ govukButton({
+                        classes: 'moj-search__button',
+                        text: 'Search'
+                    }) }}
+                </form>
+            </div>
+        </div>
+        {% if query %}
+            <div class="govuk-grid-row contact-search-comparison">
+                <div class="govuk-grid-column-full">
+                    {% if results and results.results | length > 0 %}
+                        <table class="govuk-table">
+                            <caption class="govuk-table__caption">
+                                <div class="govuk-table__caption--m">Results</div>
+                            </caption>
+
+                            <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                <th scope="col" class="govuk-table__header"></th>
+                                <th scope="col" class="govuk-table__header">Date</th>
+                                <th scope="col" class="govuk-table__header">Type</th>
+                                <th scope="col" class="govuk-table__header">Outcome</th>
+                                <th scope="col" class="govuk-table__header">Notes</th>
+                            </tr>
+                            </thead>
+                            <tbody class="govuk-table__body">
+                            {% for result in results.results %}
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell">
+                                        <div class="result-index">
+                                            <span title="Score: {{ result.score }}">{{ loop.index }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="govuk-table__cell govuk-table--small-text">{{ (result.date | formatDate) + " " + (result.startTime | default('')) }}</td>
+                                    <td class="govuk-table__cell govuk-table--small-text">{{ result.typeDescription }}</td>
+                                    <td class="govuk-table__cell govuk-table--small-text">{{ result.outcomeDescription | default('') }}</td>
+                                    <td class="govuk-table__cell govuk-table--small-text">
+                                        {% if result.notes | length > 0 %}
+                                            <p class="notes">{{ result.notes | escape }}</p>
+                                        {% else %}
+                                            <p>No notes</p>
+                                        {% endif %}
+                                        <a target='delius' href='{{ deliusUrl }}/NDelius-war/delius/JSP/deeplink.xhtml?component=Contact&componentId={{ result.id }}'>View in Delius</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <p>Loaded {{ results.results | length }} results in {{ results.timeTaken }}</p>
+                    {% else %}
+                        <p class="govuk-body">No results</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="govuk-grid-row">
+                {{ govukDetails({
+                    summaryText: "System information",
+                    html: "<pre>" + ({ "crn": crn, "query": query, "results": results } | dump(2) | escape) + "</pre>"
+                }) }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

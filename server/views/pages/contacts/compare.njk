@@ -100,7 +100,7 @@
                                             summaryText: "Details",
                                             html: "<p><strong>Date</strong>: " + (result.date | formatDate) + " " + (result.startTime | default('')) + "</p>
                                                    <p><strong>Type</strong>: " + result.typeDescription + "</p>
-                                                   <p><strong>Outcome</strong>: " + (result.outcomeDescription | default('N/A')) + "</p>
+                                                   <p><strong>Outcome</strong>: " + (result.outcomeDescription | default('')) + "</p>
                                                    <p><a target='delius' href='" + deliusUrl + "/NDelius-war/delius/JSP/deeplink.xhtml?component=Contact&componentId=" + result.id + "'>View in Delius</a></p>"
                                         }) }}
                                     </td>
