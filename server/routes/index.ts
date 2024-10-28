@@ -10,11 +10,11 @@ import contactsRoutes from './contacts'
 export default function routes(services: Services): Router {
   const router = Router()
 
-  router.get('/info', (req, res) =>
+  router.get('/info', (req, res) => {
     res.send({
       productId: config.productId,
-    }),
-  )
+    })
+  })
 
   // Home page
   router.get('/', (req, res) => res.redirect('/search'))

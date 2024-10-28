@@ -36,7 +36,7 @@ export default function deliusRoutes(router: Router, services: Services) {
     const session = req.session.probationSearch
     session.matchAllTerms = req.body.matchAllTerms
     session.providers = req.body.providers
-    return res.sendStatus(200)
+    res.sendStatus(200)
   })
 
   router.get('/delius/nationalSearch/prisoner-image/:prisonerId', async (req, res) => {
@@ -63,7 +63,7 @@ export default function deliusRoutes(router: Router, services: Services) {
 
   router.post('/delius/nationalSearch/trackEvent', (req, res) => {
     ApplicationInsightsEvents.trackEvent(req)
-    return res.sendStatus(200)
+    res.sendStatus(200)
   })
 }
 
