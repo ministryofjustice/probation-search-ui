@@ -121,6 +121,9 @@
     document.getElementById('add-new-person-link').addEventListener('click', () => postMessage('addOffender'))
     document.getElementById('previous-search-link').addEventListener('click', () => postMessage('toggleSearch'))
 
+    // Open external links in a new window
+    document.querySelectorAll('a[href*="//"]').forEach(a => (a.target = '_blank'))
+
     // Focus on input
     const search = document.getElementById('search')
     search.focus() // the autofocus attribute doesn't work in a cross-origin iframe
