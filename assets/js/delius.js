@@ -122,7 +122,7 @@
     document.getElementById('previous-search-link').addEventListener('click', () => postMessage('toggleSearch'))
 
     // Open external links in a new window
-    document.querySelectorAll('a[href*="//"]').forEach(a => (a.target = '_blank'))
+    document.querySelectorAll('a[href*="//"]:not(.govuk-pagination__link)').forEach(a => (a.target = '_blank'))
 
     // Focus on input
     const search = document.getElementById('search')
