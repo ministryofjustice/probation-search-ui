@@ -13,7 +13,7 @@ To include this in your project, check out the [@ministryofjustice/probation-sea
 
 You'll need to install:
 
-* [Node 21.x](https://nodejs.org/download/release/latest-v21.x)*
+* [Node 22.x](https://nodejs.org/download/release/latest-v22.x)*
 
 *If you're already using [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm), run:
 `nvm install --latest-npm` at the project root to install the correct Node version automatically.
