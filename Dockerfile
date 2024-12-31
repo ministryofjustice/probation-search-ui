@@ -1,5 +1,5 @@
 # Stage: base image
-FROM node:22-slim as base
+FROM node:22-slim AS base
 
 ARG BUILD_NUMBER=1_0_0
 ARG GIT_REF=not-available
@@ -24,7 +24,7 @@ RUN apt-get update && \
         rm -rf /var/lib/apt/lists/*
 
 # Stage: build assets
-FROM base as build
+FROM base AS build
 
 ARG BUILD_NUMBER=1_0_0
 ARG GIT_REF=not-available
