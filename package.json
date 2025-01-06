@@ -126,7 +126,7 @@
     "redis": "^4.7.0",
     "superagent": "^10.1.1",
     "url-value-parser": "^2.2.0",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.4"
   },
   "devDependencies": {
     "@ministryofjustice/eslint-config-hmpps": "^0.0.1-beta.1",
@@ -167,7 +167,7 @@
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
     "prettier-plugin-jinja-template": "^2.0.0",
-    "sass": "^1.83.0",
+    "sass": "^1.83.1",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.2",
