@@ -5,10 +5,14 @@
 
 {% set pageTitle = applicationName + " - Contacts" %}
 {% set mainClasses = "app-container govuk-body" %}
+{% set headerLink = "/contacts/compare" %}
 
 {% block content %}
     <div class="govuk-width-container">
         <div class="govuk-grid-row govuk-!-margin-bottom-5">
+            {{ govukBackLink({ text: "Back", href: "/contacts/search" }) }}
+            <span class="govuk-body-s govuk-!-display-inline-block">| {{ crn }}</span>
+
             <div class="moj-search">
                 <form method="post">
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}">

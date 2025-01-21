@@ -7,13 +7,15 @@ import asyncMiddleware from '../middleware/asyncMiddleware'
 
 export default function contactsRoutes(router: Router, services: Services) {
   router.post('/contacts/search', services.contactsCaseSearchService.post)
-  router.get('/contacts/search', services.contactsCaseSearchService.get, hmppsAudit, (_req, res) =>
-    res.render('pages/contacts/caseSearch'),
-  )
+  router.get('/contacts/search', services.contactsCaseSearchService.get, hmppsAudit, (req, res) => {
+    if (req.session.contactSearch) req.session.contactSearch = {}
+    res.render('pages/contacts/caseSearch')
+  })
   router.post('/contacts/compare', services.contactsCaseComparisonService.post)
-  router.get('/contacts/compare', services.contactsCaseComparisonService.get, hmppsAudit, (_req, res) =>
-    res.render('pages/contacts/caseSearch'),
-  )
+  router.get('/contacts/compare', services.contactsCaseComparisonService.get, hmppsAudit, (req, res) => {
+    if (req.session.contactSearch) req.session.contactSearch = {}
+    res.render('pages/contacts/caseSearch')
+  })
 
   const postQuery: RequestHandler = (req, res, next) => {
     // Add the query to the session
@@ -28,11 +30,12 @@ export default function contactsRoutes(router: Router, services: Services) {
   router.get(
     '/contacts/:crn/compare',
     asyncMiddleware(async (req, res, next) => {
+      const { crn } = req.params
+      res.locals.crn = crn
       if (!('contactSearch' in req.session) || !req.session.contactSearch?.query) {
         res.locals.query = ''
         return next()
       }
-      const { crn } = req.params
       const { query } = req.session.contactSearch
       const token = await services.hmppsAuthClient.getSystemClientToken()
       const client = new ContactSearchApiClient(token)
@@ -40,7 +43,6 @@ export default function contactsRoutes(router: Router, services: Services) {
         client.searchContacts(crn, query, false),
         client.searchContacts(crn, query, true),
       ])
-      res.locals.crn = crn
       res.locals.query = query
       res.locals.resultsA = resultsA
       res.locals.resultsB = resultsB
@@ -54,15 +56,15 @@ export default function contactsRoutes(router: Router, services: Services) {
   router.get(
     '/contacts/:crn/search',
     asyncMiddleware(async (req, res, next) => {
+      const { crn } = req.params
+      res.locals.crn = crn
       if (!('contactSearch' in req.session) || !req.session.contactSearch?.query) {
         res.locals.query = ''
         return next()
       }
-      const { crn } = req.params
       const { query } = req.session.contactSearch
       const token = await services.hmppsAuthClient.getSystemClientToken()
       const client = new ContactSearchApiClient(token)
-      res.locals.crn = crn
       res.locals.query = query
       res.locals.results = await client.searchContacts(crn, query, req.query.resultSet === '2')
       res.locals.deliusUrl = config.delius.url

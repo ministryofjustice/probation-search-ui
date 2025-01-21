@@ -38,4 +38,8 @@
     cursor: default;
     white-space: nowrap;
   }
+  .notes em, .highlighted-text {
+    background-color: mix(govuk-colour("yellow"), white, 25%);
+    font-style: normal;
+  }
 }
