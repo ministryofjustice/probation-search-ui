@@ -2,13 +2,19 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% set pageTitle = applicationName + " - Contacts" %}
 {% set mainClasses = "app-container govuk-body" %}
+{% set headerLink = "/contacts/search" %}
 
 {% block content %}
     <div class="govuk-width-container">
         <div class="govuk-grid-row govuk-!-margin-bottom-5">
+            {{ govukBackLink({ text: "Back", href: "/contacts/search" }) }}
+            <span class="govuk-body-s govuk-!-display-inline-block">| {{ crn }}</span>
+
             <div class="moj-search">
                 <form method="post">
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
@@ -51,6 +57,7 @@
                                 <th scope="col" class="govuk-table__header">Type</th>
                                 <th scope="col" class="govuk-table__header">Outcome</th>
                                 <th scope="col" class="govuk-table__header">Notes</th>
+                                <th scope="col" class="govuk-table__header"></th>
                             </tr>
                             </thead>
                             <tbody class="govuk-table__body">
@@ -62,15 +69,32 @@
                                         </div>
                                     </td>
                                     <td class="govuk-table__cell govuk-table--small-text">{{ (result.date | formatDate) + " " + (result.startTime | default('')) }}</td>
-                                    <td class="govuk-table__cell govuk-table--small-text">{{ result.typeDescription }}</td>
-                                    <td class="govuk-table__cell govuk-table--small-text">{{ result.outcomeDescription | default('') }}</td>
+                                    <td class="govuk-table__cell govuk-table--small-text"><span
+                                                class="{{ 'highlighted-text' if 'type' in result.highlights }}">{{ result.typeDescription }}</span>
+                                    </td>
+                                    <td class="govuk-table__cell govuk-table--small-text"><span
+                                                class="{{ 'highlighted-text' if 'outcome' in result.highlights }}">{{ result.outcomeDescription | default('') }}</span>
+                                    </td>
                                     <td class="govuk-table__cell govuk-table--small-text">
                                         {% if result.notes | length > 0 %}
-                                            <p class="notes">{{ result.notes | escape }}</p>
+                                            <p class="notes">
+                                                {%- if 'notes' in result.highlights -%}
+                                                    {%- for note in result.highlights.notes -%}
+                                                        <span>{{ note | safe }}</span>
+                                                    {%- endfor -%}
+                                                {%- else -%}
+                                                    {{- result.notes -}}
+                                                {%- endif -%}
+                                            </p>
                                         {% else %}
                                             <p>No notes</p>
                                         {% endif %}
-                                        <a target='delius' href='{{ deliusUrl }}/NDelius-war/delius/JSP/deeplink.xhtml?component=Contact&componentId={{ result.id }}'>View in Delius</a>
+                                    </td>
+                                    <td class="govuk-table__cell govuk-table--small-text">
+                                        <a target='delius'
+                                           href='{{ deliusUrl }}/NDelius-war/delius/JSP/deeplink.xhtml?component=Contact&componentId={{ result.id }}'>
+                                            View in Delius
+                                        </a>
                                     </td>
                                 </tr>
                             {% endfor %}
