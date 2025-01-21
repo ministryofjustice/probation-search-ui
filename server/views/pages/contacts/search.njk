@@ -9,12 +9,14 @@
 {% set mainClasses = "app-container govuk-body" %}
 {% set headerLink = "/contacts/search" %}
 
+{% block beforeContent %}
+    {{ govukBackLink({ text: "Back", href: "/contacts/search" }) }}
+    <span class="govuk-body-s govuk-!-display-inline-block">| {{ crn }}</span>
+{% endblock %}
+
 {% block content %}
     <div class="govuk-width-container">
-        <div class="govuk-grid-row govuk-!-margin-bottom-5">
-            {{ govukBackLink({ text: "Back", href: "/contacts/search" }) }}
-            <span class="govuk-body-s govuk-!-display-inline-block">| {{ crn }}</span>
-
+        <div class="govuk-!-margin-bottom-5">
             <div class="moj-search">
                 <form method="post">
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
@@ -91,9 +93,9 @@
                                         {% endif %}
                                     </td>
                                     <td class="govuk-table__cell govuk-table--small-text">
-                                        <a target='delius'
-                                           href='{{ deliusUrl }}/NDelius-war/delius/JSP/deeplink.xhtml?component=Contact&componentId={{ result.id }}'>
-                                            View in Delius
+                                        <a target="delius"
+                                           href="{{ deliusUrl }}/NDelius-war/delius/JSP/deeplink.xhtml?component=Contact&componentId={{ result.id }}">
+                                            Open&nbsp;in&nbsp;Delius
                                         </a>
                                     </td>
                                 </tr>
@@ -106,12 +108,10 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="govuk-grid-row">
-                {{ govukDetails({
-                    summaryText: "System information",
-                    html: "<pre>" + ({ "crn": crn, "query": query, "results": results } | dump(2) | escape) + "</pre>"
-                }) }}
-            </div>
+            {{ govukDetails({
+                summaryText: "System information",
+                html: "<pre>" + ({ "crn": crn, "query": query, "results": results } | dump(2) | escape) + "</pre>"
+            }) }}
         {% endif %}
     </div>
 {% endblock %}
