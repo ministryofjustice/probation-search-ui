@@ -70,11 +70,11 @@
                                         </div>
                                     </td>
                                     <td class="govuk-table__cell govuk-table--small-text">{{ (result.date | formatDate) + " " + (result.startTime | default('')) }}</td>
-                                    <td class="govuk-table__cell govuk-table--small-text"><span
-                                                class="{{ 'highlighted-text' if 'type' in result.highlights }}">{{ result.typeDescription }}</span>
+                                    <td class="govuk-table__cell govuk-table--small-text">
+                                        <span class="{{ 'highlighted-text' if 'type' in result.highlights }}">{{ result.typeDescription }}</span>
                                     </td>
-                                    <td class="govuk-table__cell govuk-table--small-text"><span
-                                                class="{{ 'highlighted-text' if 'outcome' in result.highlights }}">{{ result.outcomeDescription | default('') }}</span>
+                                    <td class="govuk-table__cell govuk-table--small-text">
+                                        <span class="{{ 'highlighted-text' if 'outcome' in result.highlights }}">{{ result.outcomeDescription | default('') }}</span>
                                     </td>
                                     <td class="govuk-table__cell govuk-table--small-text">
                                         {% if result.notes | length > 0 %}
@@ -82,6 +82,7 @@
                                                 {%- if 'notes' in result.highlights -%}
                                                     {%- for note in result.highlights.notes -%}
                                                         <span>{{ note | safe }}</span>
+                                                        {% if not loop.last %}&hellip;{% endif %}
                                                     {%- endfor -%}
                                                 {%- else -%}
                                                     {{- result.notes -}}
