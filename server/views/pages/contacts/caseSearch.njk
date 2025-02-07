@@ -6,5 +6,10 @@
 
 {% block content %}
     {% from "probation/case-search/macro.njk" import caseSearch %}
-    {{ caseSearch({ id: "search", results: searchResults }) }}
+    {{ caseSearch({
+        id: "search",
+        results: searchResults,
+        label: "Search for people on probation",
+        hint: "Use any combination of names, dates of birth, ID numbers, telephone numbers, towns and postcodes."
+    }) }}
 {% endblock %}
