@@ -9,7 +9,14 @@
     {{ caseSearch({
         id: "search",
         results: searchResults,
-        label: "Search for people on probation",
-        hint: "Use any combination of names, dates of birth, ID numbers, telephone numbers, towns and postcodes."
+        hint: {
+            classes: 'moj-search__hint',
+            html: 'Use any combination of names, dates of birth, ID numbers, telephone numbers, towns and postcodes.'
+        },
+        label: {
+            text: "Search for people on probation",
+            classes: "moj-search__label govuk-label--l",
+            isPageHeading: true
+        }
     }) }}
 {% endblock %}
