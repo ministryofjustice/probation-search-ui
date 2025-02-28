@@ -3,9 +3,10 @@ import type { Request, Response } from 'express'
 
 import authorisationMiddleware from './authorisationMiddleware'
 
-function createToken(authorities: string[], username: string = 'USER1') {
+function createToken(authorities: string[], sub: string = 'USER1') {
   const payload = {
-    user_name: username,
+    sub,
+    user_name: 'USER1',
     scope: ['read', 'write'],
     auth_source: 'nomis',
     authorities,
@@ -18,15 +19,15 @@ function createToken(authorities: string[], username: string = 'USER1') {
 
 describe('authorisationMiddleware', () => {
   let req: Request = {
-    path: '/index'
+    path: '/index',
   } as unknown as jest.Mocked<Request>
   const next = jest.fn()
 
-  function createResWithToken({ authorities, username = 'USER1' }: { authorities: string[], username?: string }): Response {
+  function createResWithToken({ authorities, sub = 'USER1' }: { authorities: string[]; sub?: string }): Response {
     return {
       locals: {
         user: {
-          token: createToken(authorities, username),
+          token: createToken(authorities, sub),
         },
       },
       redirect: jest.fn(),
@@ -65,9 +66,9 @@ describe('authorisationMiddleware', () => {
   })
 
   it('should redirect when trying to access contact search', async () => {
-    const res = createResWithToken({ authorities: ['SOME_REQUIRED_ROLE'], username: 'OTHER_USER' })
+    const res = createResWithToken({ authorities: ['SOME_REQUIRED_ROLE'], sub: 'OTHER_USER' })
     req = {
-      path: '/contacts/something'
+      path: '/contacts/something',
     } as unknown as jest.Mocked<Request>
 
     await authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
@@ -77,9 +78,9 @@ describe('authorisationMiddleware', () => {
   })
 
   it('should return next when trying to access contact search as authorised username', async () => {
-    const res = createResWithToken({ authorities: ['SOME_REQUIRED_ROLE'], username: 'MARCUSASPIN' })
+    const res = createResWithToken({ authorities: ['SOME_REQUIRED_ROLE'], sub: 'MARCUSASPIN' })
     req = {
-      path: '/contacts/something'
+      path: '/contacts/something',
     } as unknown as jest.Mocked<Request>
 
     await authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
