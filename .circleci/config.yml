@@ -1,22 +1,14 @@
 version: 2.1
-
 orbs:
   hmpps: ministryofjustice/hmpps@7
   slack: circleci/slack@4.12.5
-
 parameters:
-  alerts-slack-channel:
-    type: string
-    default: probation-integration-notifications
-
   releases-slack-channel:
     type: string
     default: probation-integration-notifications
-
   node-version:
     type: string
     default: 22.12-browsers
-
 jobs:
   build:
     executor:
@@ -51,7 +43,6 @@ jobs:
             - build
             - dist
             - .cache/Cypress
-
   unit_test:
     executor:
       name: hmpps/node
@@ -67,7 +58,6 @@ jobs:
           path: test_results
       - store_artifacts:
           path: test_results/unit-test-reports.html
-
   integration_test:
     executor:
       name: hmpps/node
@@ -97,110 +87,5 @@ jobs:
           path: integration-tests/videos
       - store_artifacts:
           path: integration-tests/screenshots
-
 workflows:
   version: 2
-  build-test-and-deploy:
-    jobs:
-      - build:
-          filters:
-            tags:
-              ignore: /.*/
-      - unit_test:
-          requires:
-            - build
-      - integration_test:
-          requires:
-            - build
-      - hmpps/helm_lint:
-          name: helm_lint
-      - hmpps/build_docker:
-          name: build_docker
-          filters:
-            branches:
-              only:
-                - main
-      - hmpps/deploy_env:
-          name: deploy_dev
-          env: "dev"
-          jira_update: true
-          context: hmpps-common-vars
-          filters:
-            branches:
-              only:
-                - main
-          requires:
-            - helm_lint
-            - unit_test
-            - integration_test
-            - build_docker
-          helm_timeout: 5m
-      - hmpps/deploy_env:
-          name: deploy_preprod
-          env: "preprod"
-          jira_update: true
-          jira_env_type: staging
-          context:
-            - hmpps-common-vars
-            - probation-search-ui-preprod
-          filters:
-            branches:
-              only:
-                - main
-          requires:
-            - helm_lint
-            - unit_test
-            - integration_test
-            - build_docker
-          helm_timeout: 5m
-      - request-prod-approval:
-          type: approval
-          requires:
-            - deploy_dev
-            - deploy_preprod
-      - hmpps/deploy_env:
-          name: deploy_prod
-          env: "prod"
-          jira_update: true
-          jira_env_type: production
-          slack_notification: true
-          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          context:
-            - hmpps-common-vars
-            - probation-search-ui-prod
-          requires:
-            - request-prod-approval
-          helm_timeout: 5m
-
-  security:
-    triggers:
-      - schedule:
-          cron: "29 3 * * 1-5"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - hmpps/npm_security_audit:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-          context:
-            - hmpps-common-vars
-      - hmpps/veracode_pipeline_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-          context:
-            - veracode-credentials
-            - hmpps-common-vars
-  security-weekly:
-    triggers:
-      - schedule:
-          cron: "8 3 * * 1"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - hmpps/veracode_policy_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-          context:
-            - veracode-credentials
-            - hmpps-common-vars
