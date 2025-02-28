@@ -4,13 +4,27 @@ import type { RequestHandler } from 'express'
 import logger from '../../logger'
 import asyncMiddleware from './asyncMiddleware'
 
+const authorisedContactSearchUsers = [
+  'ZOEWALKERNPS',
+  'JOEPRINOLD1HMPPS',
+  'MARCUSASPIN',
+  'AOJ19Y',
+  'ANDREWLOGANMOJ',
+  'DAVIDBONDNPS'
+]
+
 export default function authorisationMiddleware(authorisedRoles: string[] = []): RequestHandler {
   return asyncMiddleware((req, res, next) => {
     if (res.locals?.user?.token) {
-      const { authorities: roles = [] } = jwtDecode(res.locals.user.token) as { authorities?: string[] }
+      const { authorities: roles = [], user_name } = jwtDecode(res.locals.user.token) as { authorities?: string[], user_name?: string }
 
       if (authorisedRoles.length && !roles.some(role => authorisedRoles.includes(role))) {
         logger.error('User is not authorised to access this')
+        return res.redirect('/authError')
+      }
+
+      if (req.path.includes('/contacts/') && user_name && !authorisedContactSearchUsers.includes(user_name.toUpperCase())) {
+        logger.error(`User ${user_name} is not authorised to access contact search`)
         return res.redirect('/authError')
       }
 
