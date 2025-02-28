@@ -5,7 +5,7 @@ generic-service:
   serviceAccountName: probation-search-ui
 
   image:
-    repository: quay.io/hmpps/probation-search-ui
+    repository: ghcr.io/ministryofjustice/probation-search-ui
     tag: app_version # override at deployment time
     port: 3000
 
