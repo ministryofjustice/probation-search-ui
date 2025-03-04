@@ -40,10 +40,16 @@ export default class ContactSearchApiClient extends RestClient {
     )
   }
 
-  async searchContacts(crn: string, query: string, semantic: boolean): Promise<Page<Contact> & { timeTaken: string }> {
+  async searchContacts(
+    crn: string,
+    query: string,
+    semantic: boolean,
+    sort: string = 'score,desc',
+    size: number = 1000,
+  ): Promise<Page<Contact> & { timeTaken: string }> {
     const start = performance.now()
     const response = (await this.post({
-      path: `/search/contacts?semantic=${semantic}&size=1000`,
+      path: `/search/contacts?semantic=${semantic}&size=${size}&sort=${sort}`,
       data: {
         crn,
         query,

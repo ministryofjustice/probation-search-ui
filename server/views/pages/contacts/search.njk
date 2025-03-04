@@ -17,7 +17,7 @@
     <div class="govuk-width-container">
         <div class="govuk-!-margin-bottom-5">
             <div class="moj-search">
-                <form method="post">
+                <form id="search-form" method="post">
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
                     {{ govukInput({
                         classes: 'moj-search__input',
@@ -59,7 +59,12 @@
                             <thead class="govuk-table__head">
                             <tr class="govuk-table__row">
                                 <th scope="col" class="govuk-table__header"></th>
-                                <th scope="col" class="govuk-table__header">Date</th>
+                                <th scope="col" class="govuk-table__header" aria-sort="{{ sortByDate }}">
+                                    <button name="sortByDate" type="submit" form="search-form"
+                                            value="{{ 'ascending' if sortByDate == 'descending' else ('none' if sortByDate == 'ascending' else 'descending') }}">
+                                        Date
+                                    </button>
+                                </th>
                                 <th scope="col" class="govuk-table__header">Type</th>
                                 <th scope="col" class="govuk-table__header">Outcome</th>
                                 <th scope="col" class="govuk-table__header">Notes</th>

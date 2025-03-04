@@ -34,6 +34,7 @@ export declare global {
   namespace ContactSearch {
     interface SearchParameters extends Record<string, string | string[]> {
       query?: string
+      sortByDate?: 'ascending' | 'descending' | 'none'
     }
   }
 }

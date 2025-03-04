@@ -22,6 +22,7 @@ export default function contactsRoutes(router: Router, services: Services) {
     if (!req.session.contactSearch) {
       req.session.contactSearch = {}
     }
+    req.session.contactSearch.sortByDate = req.body.sortByDate ?? 'none'
     req.session.contactSearch.query = req.body['contact-search-input']
     res.redirect(req.url)
   }
@@ -62,11 +63,12 @@ export default function contactsRoutes(router: Router, services: Services) {
         res.locals.query = ''
         return next()
       }
-      const { query } = req.session.contactSearch
+      const { query, sortByDate } = req.session.contactSearch
       const token = await services.hmppsAuthClient.getSystemClientToken()
       const client = new ContactSearchApiClient(token)
       res.locals.query = query
-      res.locals.results = await client.searchContacts(crn, query, req.query.resultSet === '2')
+      res.locals.sortByDate = sortByDate
+      res.locals.results = await client.searchContacts(crn, query, req.query.resultSet === '2', sortString(sortByDate))
       res.locals.deliusUrl = config.delius.url
       return next()
     }),
@@ -74,4 +76,10 @@ export default function contactsRoutes(router: Router, services: Services) {
   )
 
   return router
+}
+
+function sortString(sortByDate: 'ascending' | 'descending' | 'none' = 'none'): string {
+  if (sortByDate === 'ascending') return 'date,asc'
+  if (sortByDate === 'descending') return 'date,desc'
+  return 'score,desc'
 }
