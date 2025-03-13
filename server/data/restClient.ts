@@ -76,7 +76,7 @@ export default class RestClient {
         .responseType(responseType)
         .timeout(this.timeoutConfig())
 
-      return raw ? result : result.body
+      return raw ? (result as Response) : result.body
     } catch (error) {
       if (handle404 && error.response?.status === 404) return null
       const sanitisedError = sanitiseError(error)
