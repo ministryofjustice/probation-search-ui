@@ -22,8 +22,8 @@ export default function setUpAuth(services: Services): Router {
     return res.render('autherror')
   })
 
-  router.get('/delius/*', passport.authenticate('delius'))
-  router.get('/delius/*', (req, res, next) => {
+  router.get('/delius/*splat', passport.authenticate('delius'))
+  router.get('/delius/*splat', (req, res, next) => {
     // If Delius authentication was successful, we can remove the request parameters
     if (req.query.user && req.query.t && req.isAuthenticated()) return res.redirect(removeParameters(req, 'user', 't'))
     return next()
