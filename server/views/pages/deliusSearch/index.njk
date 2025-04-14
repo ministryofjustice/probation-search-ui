@@ -51,9 +51,8 @@
 
 {% block bodyEnd %}
     <script src="/assets/govuk/all.bundle.js"></script>
-    <script type=module src="/assets/govukFrontendInit.js"></script>
-    <script src="/assets/moj/all.js"></script>
-    <script src="/assets/mojFrontendInit.js"></script>
+    <script type="module" src="/assets/govukFrontendInit.js"></script>
+    <script type="module" src="/assets/moj/init.js"></script>
     <script nonce="{{ cspNonce }}">deliusUrl = {{ deliusUrl | dump | safe }};</script>
     <script src="/assets/delius.js"></script>
     {% include "../../partials/sentry.njk" %}
