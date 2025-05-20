@@ -4,7 +4,14 @@ import type { RequestHandler } from 'express'
 import logger from '../../logger'
 import asyncMiddleware from './asyncMiddleware'
 
-const authorisedContactSearchUsers = ['ZOEWALKERNPS', 'JOEPRINOLD1HMPPS', 'MARCUSASPIN', 'AOJ19Y', 'ANDREWLOGANMOJ']
+const authorisedContactSearchUsers = [
+  'ZOEWALKERNPS',
+  'JOEPRINOLD1HMPPS',
+  'JOE.PRINOLD',
+  'MARCUSASPIN',
+  'AOJ19Y',
+  'ANDREWLOGANMOJ',
+]
 
 export default function authorisationMiddleware(authorisedRoles: string[] = []): RequestHandler {
   return asyncMiddleware((req, res, next) => {
