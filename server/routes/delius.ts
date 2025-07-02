@@ -14,9 +14,9 @@ import { signUrl, verifySignedUrl } from '../utils/utils'
 import hmppsAudit from '../utils/hmppsAudit'
 
 const environment = customApiUrl() ?? config.environmentName
-export default function deliusRoutes(router: Router, services: Services) {
+export default function deliusRoutes(router: Router, { hmppsAuthClient }: Services) {
   const deliusSearch = new CaseSearchService({
-    oauthClient: services.hmppsAuthClient,
+    hmppsAuthClient,
     environment,
     allowEmptyQuery: true,
   })
@@ -45,8 +45,7 @@ export default function deliusRoutes(router: Router, services: Services) {
     } else {
       let data: Readable
       if (req.params.prisonerId) {
-        const token = await services.hmppsAuthClient.getSystemClientToken()
-        data = await new PrisonApiClient(token).getImageData(req.params.prisonerId)
+        data = await new PrisonApiClient(hmppsAuthClient).getImageData(req.params.prisonerId)
       }
       if (data) {
         res.set('Cache-Control', 'private, max-age=86400')

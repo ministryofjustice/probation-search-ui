@@ -5,8 +5,8 @@ import createError from 'http-errors'
 import * as Sentry from '@sentry/node'
 import nunjucksSetup from './utils/nunjucksSetup'
 import errorHandler from './errorHandler'
+import { appInsightsMiddleware } from './utils/azureAppInsights'
 import authorisationMiddleware from './middleware/authorisationMiddleware'
-import { metricsMiddleware } from './monitoring/metricsApp'
 
 import setUpAuthentication from './middleware/setUpAuthentication'
 import setUpCsrf from './middleware/setUpCsrf'
@@ -21,7 +21,6 @@ import routes from './routes'
 import type { Services } from './services'
 import config from './config'
 import initSentry from './utils/sentry'
-import { appInsightsMiddleware } from './utils/azureAppInsights'
 
 export default function createApp(services: Services): express.Application {
   const app = express()
@@ -32,14 +31,13 @@ export default function createApp(services: Services): express.Application {
 
   initSentry(app)
   app.use(appInsightsMiddleware())
-  app.use(metricsMiddleware)
   app.use(setUpHealthChecks(services.applicationInfo))
   app.use(setUpWebSecurity())
   app.use(setUpWebSession())
   app.use(setUpWebRequestParsing())
   app.use(setUpStaticResources())
-  nunjucksSetup(app, services.applicationInfo)
-  app.use(config.basePath, setUpAuthentication(services))
+  nunjucksSetup(app)
+  app.use(config.basePath, setUpAuthentication(services.hmppsAuthClient))
   app.use(authorisationMiddleware())
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())

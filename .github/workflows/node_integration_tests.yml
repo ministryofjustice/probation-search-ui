@@ -48,6 +48,7 @@ jobs:
       id: integration-tests
       shell: bash
       run: |
+        nohup npm run wiremock &
         nohup npm run start-feature &
         sleep 5
         npm run int-test

@@ -1,6 +1,8 @@
 import environments from '@ministryofjustice/probation-search-frontend/environments'
-import config, { AgentConfig } from '../config'
-import RestClient from './restClient'
+import { AgentConfig, asSystem, RestClient } from '@ministryofjustice/hmpps-rest-client'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
+import config from '../config'
+import logger from '../../logger'
 
 interface Page<T> {
   results: T[]
@@ -25,7 +27,7 @@ interface Contact {
 }
 
 export default class ContactSearchApiClient extends RestClient {
-  constructor(token: string) {
+  constructor(authenticationClient: AuthenticationClient) {
     super(
       'ContactSearchApiClient',
       {
@@ -36,7 +38,8 @@ export default class ContactSearchApiClient extends RestClient {
         timeout: { response: 30000, deadline: 30000 },
         agent: new AgentConfig(30000),
       },
-      token,
+      logger,
+      authenticationClient,
     )
   }
 
@@ -48,15 +51,18 @@ export default class ContactSearchApiClient extends RestClient {
     size: number = 1000,
   ): Promise<Page<Contact> & { timeTaken: string }> {
     const start = performance.now()
-    const response = (await this.post({
-      path: `/search/contacts?semantic=${semantic}&size=${size}&sort=${sort}`,
-      data: {
-        crn,
-        query,
-        matchAllTerms: false,
-        includeScores: true,
+    const response = (await this.post(
+      {
+        path: `/search/contacts?semantic=${semantic}&size=${size}&sort=${sort}`,
+        data: {
+          crn,
+          query,
+          matchAllTerms: false,
+          includeScores: true,
+        },
       },
-    })) as Page<Contact>
+      asSystem(),
+    )) as Page<Contact>
 
     const timeTaken = `${((performance.now() - start) / 1000).toFixed(3)} seconds`
 
