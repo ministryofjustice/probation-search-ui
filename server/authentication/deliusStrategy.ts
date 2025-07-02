@@ -2,14 +2,14 @@ import { Strategy, StrategyCreated } from 'passport'
 import { addHours } from 'date-fns'
 import { Request } from 'express'
 import crypto from 'crypto'
-import { HmppsAuthClient } from '../data'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import logger from '../../logger'
 import config from '../config'
 
 export default class DeliusStrategy extends Strategy {
   name = 'delius'
 
-  constructor(public readonly hmppsAuthClient: HmppsAuthClient) {
+  constructor(public readonly hmppsAuthClient: AuthenticationClient) {
     super()
   }
 
@@ -26,7 +26,7 @@ export default class DeliusStrategy extends Strategy {
         this.fail('Expired Delius link')
       } else {
         this.hmppsAuthClient
-          .getSystemClientToken(username)
+          .getToken(username)
           .then(token => {
             logger.debug('Swapped Delius user token for HMPPS Auth token')
             this.success({ token, username, authSource: 'delius' })

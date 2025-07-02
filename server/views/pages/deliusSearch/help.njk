@@ -70,6 +70,5 @@
 {% endblock %}
 
 {% block head %}
-    <link href="/assets/stylesheets/application.css?{{ version }}" rel="stylesheet" />
-    <link href="/assets/stylesheets/new-tech.css?{{ version }}" rel="stylesheet" />
+  <link href="{{ '/assets/css/new-tech.css' | assetMap }}" rel="stylesheet" />
 {% endblock %}

@@ -1,0 +1,2 @@
+# The Fingerprint of false positive alerts can be added here to be excluded from future scans.
+wiremock/mappings/hmpps-auth.json:jwt:27

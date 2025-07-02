@@ -3,20 +3,26 @@ import request from 'supertest'
 import CaseSearchService, {
   CaseSearchOptions,
 } from '@ministryofjustice/probation-search-frontend/service/caseSearchService'
-import { appWithAllRoutes } from './testutils/appSetup'
-import HmppsAuthClient from '../data/hmppsAuthClient'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
+import { appWithAllRoutes, user } from './testutils/appSetup'
+
+const hmppsAuthClient = {} as jest.Mocked<AuthenticationClient>
+const searchService = new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>
+const contactsCaseSearchService = new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>
+const contactsCaseComparisonService = new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>
 
 let app: Express
 
-const services = {
-  searchService: new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>,
-  contactsCaseSearchService: new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>,
-  contactsCaseComparisonService: new CaseSearchService({} as CaseSearchOptions) as jest.Mocked<CaseSearchService>,
-  hmppsAuthClient: new HmppsAuthClient(null) as jest.Mocked<HmppsAuthClient>,
-}
-
 beforeEach(() => {
-  app = appWithAllRoutes({ services })
+  app = appWithAllRoutes({
+    services: {
+      hmppsAuthClient,
+      searchService,
+      contactsCaseSearchService,
+      contactsCaseComparisonService,
+    },
+    userSupplier: () => user,
+  })
 })
 
 afterEach(() => {
@@ -28,6 +34,7 @@ describe('GET /search', () => {
     return request(app)
       .get('/search')
       .expect('Content-Type', /html/)
+      .expect(200)
       .expect(res => {
         expect(res.text).toContain('Find a person on probation')
       })
@@ -55,7 +62,7 @@ describe('GET /delius/nationalSearch', () => {
   })
 
   it('displays results', async () => {
-    services.hmppsAuthClient.getSystemClientToken = jest.fn().mockResolvedValue('token')
+    hmppsAuthClient.getToken = jest.fn().mockResolvedValue('token')
     let cookies: string[]
     await request(app)
       .post('/delius/nationalSearch')
@@ -69,17 +76,6 @@ describe('GET /delius/nationalSearch', () => {
       .expect('Content-Type', /html/)
       .expect(getResponse => {
         expect(getResponse.text).toContain('Showing 1 to 2 of 2 results.')
-      })
-  })
-})
-
-describe('GET /info', () => {
-  it('should render info endpoint information', () => {
-    return request(app)
-      .get('/info')
-      .expect('Content-Type', /application\/json/)
-      .expect(res => {
-        expect(res.text).toContain('productId')
       })
   })
 })

@@ -3,7 +3,7 @@ import 'applicationinsights'
 
 import * as https from 'https'
 import fs from 'fs'
-import { app, metricsApp } from './server/index'
+import app from './server/index'
 import logger from './logger'
 import config from './server/config'
 
@@ -19,7 +19,3 @@ if (config.certificate.key && config.certificate.cert) {
     logger.info(`Server listening on http://localhost:${app.get('port')}`)
   })
 }
-
-metricsApp.listen(metricsApp.get('port'), () => {
-  logger.info(`Metrics server listening on port ${metricsApp.get('port')}`)
-})

@@ -3,7 +3,7 @@ import {
   DistributedTracingModes,
   getCorrelationContext,
   setup,
-  TelemetryClient,
+  type TelemetryClient,
 } from 'applicationinsights'
 import {
   ProbationSearchRequest,
@@ -21,18 +21,6 @@ export function initialiseAppInsights(): void {
   }
 }
 
-export function appInsightsMiddleware(): RequestHandler {
-  return (req, res, next) => {
-    res.prependOnceListener('finish', () => {
-      const context = getCorrelationContext()
-      if (context && req.route) {
-        context.customProperties.setProperty('operationName', `${req.method} ${req.route?.path}`)
-      }
-    })
-    next()
-  }
-}
-
 export function buildAppInsightsClient(
   { applicationName, buildNumber }: ApplicationInfo,
   overrideName?: string,
@@ -40,20 +28,40 @@ export function buildAppInsightsClient(
   if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
     defaultClient.context.tags['ai.cloud.role'] = overrideName || applicationName
     defaultClient.context.tags['ai.application.ver'] = buildNumber
+
     defaultClient.addTelemetryProcessor(({ data }) => {
       const { url } = data.baseData
       return !url?.endsWith('/health') && !url?.endsWith('/ping') && !url?.endsWith('/metrics')
     })
+
     defaultClient.addTelemetryProcessor(({ tags, data }, contextObjects) => {
       const operationNameOverride = contextObjects.correlationContext?.customProperties?.getProperty('operationName')
       if (operationNameOverride) {
-        tags['ai.operation.name'] = data.baseData.name = operationNameOverride // eslint-disable-line no-param-reassign,no-multi-assign
+        /*  eslint-disable no-param-reassign */
+        tags['ai.operation.name'] = operationNameOverride
+        data.baseData.name = operationNameOverride
+        /*  eslint-enable no-param-reassign */
       }
       return true
     })
+
     return defaultClient
   }
   return null
+}
+
+export function appInsightsMiddleware(): RequestHandler {
+  return (req, res, next) => {
+    res.prependOnceListener('finish', () => {
+      const context = getCorrelationContext()
+      if (context && req.route) {
+        const path = req.route?.path
+        const pathToReport = Array.isArray(path) ? `"${path.join('" | "')}"` : path
+        context.customProperties.setProperty('operationName', `${req.method} ${pathToReport}`)
+      }
+    })
+    next()
+  }
 }
 
 export default class ApplicationInsightsEvents {

@@ -1,30 +1,33 @@
+/* eslint-disable import/first */
 /*
  * Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
  * In particular, applicationinsights automatically collects bunyan logs
  */
-import { buildAppInsightsClient, initialiseAppInsights } from '../utils/azureAppInsights'
+import { AuthenticationClient, InMemoryTokenStore, RedisTokenStore } from '@ministryofjustice/hmpps-auth-clients'
+import { initialiseAppInsights, buildAppInsightsClient } from '../utils/azureAppInsights'
 import applicationInfoSupplier from '../applicationInfo'
-import HmppsAuthClient from './hmppsAuthClient'
-import ManageUsersApiClient from './manageUsersApiClient'
-import { createRedisClient } from './redisClient'
-import RedisTokenStore from './tokenStore/redisTokenStore'
-import config from '../config'
-import InMemoryTokenStore from './tokenStore/inMemoryTokenStore'
 
 const applicationInfo = applicationInfoSupplier()
 initialiseAppInsights()
 buildAppInsightsClient(applicationInfo)
 
-type RestClientBuilder<T> = (token: string) => T
+import { createRedisClient } from './redisClient'
+import config from '../config'
+import logger from '../../logger'
 
-export const dataAccess = () => ({
-  applicationInfo,
-  hmppsAuthClient: new HmppsAuthClient(
+export const dataAccess = () => {
+  const hmppsAuthClient = new AuthenticationClient(
+    config.apis.hmppsAuth,
+    logger,
     config.redis.enabled ? new RedisTokenStore(createRedisClient()) : new InMemoryTokenStore(),
-  ),
-  manageUsersApiClient: new ManageUsersApiClient(),
-})
+  )
+
+  return {
+    applicationInfo,
+    hmppsAuthClient,
+  }
+}
 
 export type DataAccess = ReturnType<typeof dataAccess>
 
-export { HmppsAuthClient, RestClientBuilder, ManageUsersApiClient }
+export { AuthenticationClient }

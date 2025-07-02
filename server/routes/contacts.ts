@@ -38,8 +38,7 @@ export default function contactsRoutes(router: Router, services: Services) {
         return next()
       }
       const { query } = req.session.contactSearch
-      const token = await services.hmppsAuthClient.getSystemClientToken()
-      const client = new ContactSearchApiClient(token)
+      const client = new ContactSearchApiClient(services.hmppsAuthClient)
       const [resultsA, resultsB] = await Promise.all([
         client.searchContacts(crn, query, false),
         client.searchContacts(crn, query, true),
@@ -64,8 +63,7 @@ export default function contactsRoutes(router: Router, services: Services) {
         return next()
       }
       const { query, sortByDate } = req.session.contactSearch
-      const token = await services.hmppsAuthClient.getSystemClientToken()
-      const client = new ContactSearchApiClient(token)
+      const client = new ContactSearchApiClient(services.hmppsAuthClient)
       res.locals.query = query
       res.locals.sortByDate = sortByDate
       res.locals.results = await client.searchContacts(crn, query, req.query.resultSet === '2', sortString(sortByDate))

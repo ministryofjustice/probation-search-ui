@@ -11,7 +11,6 @@ generic-service:
     ENVIRONMENT_NAME: dev
     INGRESS_URL: "https://probation-search-dev.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
-    MANAGE_USERS_API_URL: "https://manage-users-api-dev.hmpps.service.justice.gov.uk"
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api-dev.prison.service.justice.gov.uk"
     PRISON_API_URL: "https://prison-api-dev.prison.service.justice.gov.uk"
     DELIUS_URL: "https://ndelius.test.probation.service.justice.gov.uk"

@@ -2,10 +2,9 @@ import { subHours } from 'date-fns'
 import { Request } from 'express'
 import crypto from 'crypto'
 import { StrategyCreated } from 'passport'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import DeliusStrategy from './deliusStrategy'
-import { HmppsAuthClient } from '../data'
 import config from '../config'
-import InMemoryTokenStore from '../data/tokenStore/inMemoryTokenStore'
 
 jest.mock('../data')
 
@@ -13,7 +12,7 @@ describe('DeliusStrategy', () => {
   let deliusStrategy: StrategyCreated<DeliusStrategy>
 
   beforeEach(() => {
-    const strategy = new DeliusStrategy(new HmppsAuthClient(new InMemoryTokenStore()))
+    const strategy = new DeliusStrategy({} as AuthenticationClient)
     deliusStrategy = {
       ...strategy,
       authenticate: strategy.authenticate,
@@ -24,7 +23,7 @@ describe('DeliusStrategy', () => {
       pass: jest.fn(),
       error: jest.fn(),
     }
-    deliusStrategy.hmppsAuthClient.getSystemClientToken = jest.fn(() => Promise.resolve('testToken'))
+    deliusStrategy.hmppsAuthClient.getToken = jest.fn(() => Promise.resolve('testToken'))
   })
 
   it('should have the name property set to "delius"', () => {
@@ -60,7 +59,7 @@ describe('DeliusStrategy', () => {
     expect(deliusStrategy.fail).not.toHaveBeenCalled()
     expect(deliusStrategy.error).not.toHaveBeenCalled()
     expect(deliusStrategy.success).toHaveBeenCalledWith({ username, token: 'testToken', authSource: 'delius' })
-    expect(deliusStrategy.hmppsAuthClient.getSystemClientToken).toHaveBeenCalledWith(username)
+    expect(deliusStrategy.hmppsAuthClient.getToken).toHaveBeenCalledWith(username)
   })
 
   it('should handle authentication failure for expired Delius link', async () => {
@@ -103,7 +102,7 @@ describe('DeliusStrategy', () => {
         t: encrypt(timestamp),
       },
     } as unknown as Request
-    deliusStrategy.hmppsAuthClient.getSystemClientToken = jest.fn(() => Promise.reject(new Error('error')))
+    deliusStrategy.hmppsAuthClient.getToken = jest.fn(() => Promise.reject(new Error('error')))
 
     deliusStrategy.authenticate(req)
 
