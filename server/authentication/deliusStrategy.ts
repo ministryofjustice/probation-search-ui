@@ -31,7 +31,10 @@ export default class DeliusStrategy extends Strategy {
             logger.debug('Swapped Delius user token for HMPPS Auth token')
             this.success({ token, username, authSource: 'delius' })
           })
-          .catch(reason => this.error(reason))
+          .catch(reason => {
+            logger.error('Error getting HMPPS Auth token', reason)
+            this.error(reason)
+          })
       }
     }
   }
