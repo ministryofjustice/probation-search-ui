@@ -86,7 +86,11 @@ export default function setupAuthentication(authenticationClient: Authentication
   })
 
   router.use(async (req, res, next) => {
-    if (req.isAuthenticated() && (await tokenVerificationClient.verifyToken(req as unknown as AuthenticatedRequest))) {
+    if (
+      req.isAuthenticated() &&
+      (req.path?.startsWith('/delius') ||
+        (await tokenVerificationClient.verifyToken(req as unknown as AuthenticatedRequest)))
+    ) {
       return next()
     }
     req.session.returnTo = req.originalUrl
