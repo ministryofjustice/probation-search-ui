@@ -9,9 +9,9 @@ export default class PrisonApiClient extends RestClient {
     super('PrisonApiClient', config.apis.prisonApi, logger, authenticationClient)
   }
 
-  getImageData(nomsNumber: string): Promise<Readable> {
+  async getImageData(nomsNumber: string): Promise<Readable> {
     try {
-      return this.stream({ path: `/api/bookings/offenderNo/${nomsNumber}/image/data` }, asSystem())
+      return await this.stream({ path: `/api/bookings/offenderNo/${nomsNumber}/image/data` }, asSystem())
     } catch (error) {
       if (error instanceof SanitisedError && error.responseStatus === 404) return null
       throw error
