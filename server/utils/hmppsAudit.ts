@@ -4,7 +4,6 @@ import {
   ProbationSearchResponse,
 } from '@ministryofjustice/probation-search-frontend/data/probationSearchClient'
 import { auditService } from '@ministryofjustice/hmpps-audit-client'
-import { v4 } from 'uuid'
 import logger from '../../logger'
 import config from '../config'
 
@@ -34,7 +33,7 @@ export default function hmppsAudit(req: Request, res: Response, next: NextFuncti
     action: `SEARCH_PERFORMED`,
     who: userName,
     details: JSON.stringify({ request }),
-    correlationId: v4(),
+    correlationId: crypto.randomUUID(),
     service: 'probation-search-ui',
   })
 
@@ -44,7 +43,7 @@ export default function hmppsAudit(req: Request, res: Response, next: NextFuncti
       who: userName,
       subjectId: result.otherIds.crn,
       subjectType: 'CRN',
-      correlationId: v4(),
+      correlationId: crypto.randomUUID(),
       service: 'probation-search-ui',
     })
   })
