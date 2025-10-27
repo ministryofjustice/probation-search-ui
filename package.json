@@ -83,7 +83,7 @@
     "@ministryofjustice/hmpps-auth-clients": "^0.0.3",
     "@ministryofjustice/hmpps-monitoring": "^0.0.2",
     "@ministryofjustice/hmpps-rest-client": "^0.0.3",
-    "@ministryofjustice/probation-search-frontend": "^3.2.2",
+    "@ministryofjustice/probation-search-frontend": "^3.3.0",
     "@sentry/node": "^10.22.0",
     "agentkeepalive": "^4.6.0",
     "applicationinsights": "^2.9.8",
