@@ -6,7 +6,7 @@
 
 {% block content %}
     <h1 class="govuk-heading-xl">Examples</h1>
-    <div class="govuk-!-width-two-thirds">
+    <div class="govuk-!-width-full">
         <p>
             A collection of examples showing how the
             <a href="https://www.npmjs.com/package/@ministryofjustice/probation-search-frontend">probation-search-frontend</a>
@@ -18,13 +18,11 @@
         <ul class="examples-list govuk-list">
             <li>
                 <h2 class="govuk-heading-l">Basic example</h2>
-                <p>The component sets sensible defaults, and requires little additional configuration, so this basic
+                <p>The component sets sensible defaults and requires little additional configuration, so this basic
                     example should be all you need for most services.</p>
                 <h3 class="govuk-heading-m">Code:</h3>
                 <pre>{% raw %}
-{{ caseSearch({
-    id: "basic",
-    results: searchResults }) }}
+{{ caseSearch({ id: "basic", results: searchResults }) }}
                 {% endraw %}</pre>
                 <p>
                     The only required fields are <code>id</code> and <code>results</code>.
