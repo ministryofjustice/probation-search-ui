@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken'
 
+const JWT_SECRET = process.env.JWT_SECRET ?? 'secret'
+
 export default function createUserToken(authorities: string[]) {
   const payload = {
     user_name: 'user1',
@@ -10,5 +12,5 @@ export default function createUserToken(authorities: string[]) {
     client_id: 'clientid',
   }
 
-  return jwt.sign(payload, 'secret', { expiresIn: '1h' })
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
 }
