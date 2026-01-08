@@ -3,6 +3,8 @@ import type { Request, Response } from 'express'
 
 import authorisationMiddleware from './authorisationMiddleware'
 
+const JWT_SECRET = process.env.JWT_SECRET ?? 'secret'
+
 function createToken(authorities: string[], sub: string = 'USER1') {
   const payload = {
     sub,
@@ -14,7 +16,7 @@ function createToken(authorities: string[], sub: string = 'USER1') {
     client_id: 'clientid',
   }
 
-  return jwt.sign(payload, 'secret', { expiresIn: '1h' })
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
 }
 
 describe('authorisationMiddleware', () => {
