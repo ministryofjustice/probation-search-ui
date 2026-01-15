@@ -28,7 +28,7 @@ export default function setUpWebSecurity(): Router {
             "'self' https://*.sentry-cdn.com",
             (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`,
           ],
-          connectSrc: ["'self' https://*.sentry.io"],
+          connectSrc: ["'self' https://*.sentry.io https://*.sentry-cdn.com"],
           workerSrc: ["'self' blob:"],
           styleSrc: ["'self'", (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`],
           fontSrc: ["'self'"],
