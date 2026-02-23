@@ -31,19 +31,20 @@ export default function contactsRoutes(router: Router, services: Services) {
   router.get(
     '/contacts/:crn/compare',
     asyncMiddleware(async (req, res, next) => {
-      const { crn } = req.params
+      const crn = req.params.crn as string
       res.locals.crn = crn
       if (!('contactSearch' in req.session) || !req.session.contactSearch?.query) {
         res.locals.query = ''
         return next()
       }
-      const { query } = req.session.contactSearch
+      const rawQuery = req.session.contactSearch.query
+      const queryString = Array.isArray(rawQuery) ? rawQuery[0] : (rawQuery ?? '')
       const client = new ContactSearchApiClient(services.hmppsAuthClient)
       const [resultsA, resultsB] = await Promise.all([
-        client.searchContacts(crn, query, false),
-        client.searchContacts(crn, query, true),
+        client.searchContacts(crn, queryString, false),
+        client.searchContacts(crn, queryString, true),
       ])
-      res.locals.query = query
+      res.locals.query = queryString
       res.locals.resultsA = resultsA
       res.locals.resultsB = resultsB
       res.locals.deliusUrl = config.delius.url
@@ -56,7 +57,7 @@ export default function contactsRoutes(router: Router, services: Services) {
   router.get(
     '/contacts/:crn/search',
     asyncMiddleware(async (req, res, next) => {
-      const { crn } = req.params
+      const crn = req.params.crn as string
       res.locals.crn = crn
       if (!('contactSearch' in req.session) || !req.session.contactSearch?.query) {
         res.locals.query = ''
