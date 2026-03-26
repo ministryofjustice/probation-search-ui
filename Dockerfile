@@ -1,5 +1,19 @@
 # Stage: base image
-FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS base
+FROM node:24-alpine AS base
+
+LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
+
+RUN apk --update-cache upgrade --available \
+  && apk --no-cache add tzdata \
+  && rm -rf /var/cache/apk/*
+
+ENV TZ=Europe/London
+RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
+
+RUN addgroup --gid 2000 --system appgroup && \
+    adduser --uid 2000 --system appuser --ingroup appgroup
+
+WORKDIR /app
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -23,13 +37,13 @@ ARG GIT_REF
 ARG GIT_BRANCH
 
 COPY package*.json ./
-RUN CYPRESS_INSTALL_BINARY=0 NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false npm ci
+RUN CYPRESS_INSTALL_BINARY=0 npm run setup
 ENV NODE_ENV='production'
 
 COPY . .
 RUN npm run build
 
-RUN npm prune --no-audit --no-fund --omit=dev
+RUN npm prune --no-audit --omit=dev
 
 # Stage: copy production assets and dependencies
 FROM base
