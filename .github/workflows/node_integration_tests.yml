@@ -48,6 +48,7 @@ jobs:
       id: integration-tests
       shell: bash
       run: |
+        cypress install
         nohup npm run wiremock &
         nohup npm run start-feature &
         sleep 5
