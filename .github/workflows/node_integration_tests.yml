@@ -36,11 +36,6 @@ jobs:
           ./node_modules
           ~/.cache/Cypress
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-    - name: install cypress binary if cache missed
-      if: steps.restore-cache.outputs.cache-hit != 'true'
-      run: npm run setup
-    - name: ensure cypress binary is installed
-      run: npx cypress install
     - name: download the artifacts
       uses: actions/download-artifact@v8
       with:
