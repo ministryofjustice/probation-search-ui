@@ -153,7 +153,6 @@
     "jsonwebtoken": "^9.0.3",
     "lint-staged": "^16.4.0",
     "mocha-junit-reporter": "^2.2.1",
-    "nock": "^14.0.11",
     "prettier": "^3.8.1",
     "prettier-plugin-jinja-template": "^2.1.0",
     "supertest": "^7.2.2",
@@ -171,6 +170,6 @@
     "cypress-multi-reporters": {
       "diff": "^8.0.3"
     },
-    "serialize-javascript": "7.0.3"
+    "serialize-javascript": "^7.0.5"
   }
 }
