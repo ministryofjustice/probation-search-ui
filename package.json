@@ -133,8 +133,6 @@
     "@types/passport-oauth2": "^1.8.0",
     "@types/superagent": "^8.1.9",
     "@types/supertest": "^7.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.58.0",
-    "@typescript-eslint/parser": "^8.51.0",
     "audit-ci": "^7.1.0",
     "aws-sdk-client-mock": "^4.1.0",
     "chokidar": "^3.6.0",
@@ -153,23 +151,18 @@
     "jsonwebtoken": "^9.0.3",
     "lint-staged": "^16.4.0",
     "mocha-junit-reporter": "^2.2.1",
-    "prettier": "^3.8.1",
-    "prettier-plugin-jinja-template": "^2.1.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",
     "typescript": "^5.9.3",
     "wiremock": "^3.13.2"
   },
   "overrides": {
-    "@jgoz/esbuild-plugin-typecheck": {
-      "esbuild": "$esbuild"
-    },
-    "cypress": {
-      "qs": "^6.14.1"
-    },
     "cypress-multi-reporters": {
       "diff": "^8.0.3"
     },
-    "serialize-javascript": "^7.0.5"
+    "serialize-javascript": "^7.0.5",
+    "@eslint/eslintrc": {
+      "brace-expansion": "^1.1.13"
+    }
   }
 }
