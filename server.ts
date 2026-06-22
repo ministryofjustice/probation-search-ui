@@ -1,5 +1,5 @@
 // Require app insights before anything else to allow for instrumentation of bunyan and express
-import 'applicationinsights'
+import './server/utils/azureAppInsights'
 
 import * as https from 'https'
 import fs from 'fs'
