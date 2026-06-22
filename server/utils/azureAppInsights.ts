@@ -1,114 +1,65 @@
-import {
-  defaultClient,
-  DistributedTracingModes,
-  getCorrelationContext,
-  setup,
-  type TelemetryClient,
-} from 'applicationinsights'
+import type { Request } from 'express'
+import { initialiseTelemetry, flushTelemetry, telemetry } from '@ministryofjustice/hmpps-azure-telemetry'
 import {
   ProbationSearchRequest,
   ProbationSearchResponse,
 } from '@ministryofjustice/probation-search-frontend/data/probationSearchClient'
-import { Request, RequestHandler } from 'express'
-import type { ApplicationInfo } from '../applicationInfo'
+import logger from '../../logger'
 
-export function initialiseAppInsights(): void {
-  if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
-    // eslint-disable-next-line no-console
-    console.log('Enabling azure application insights')
+initialiseTelemetry({
+  serviceName: 'probation-search-ui',
+  serviceVersion: process.env.BUILD_NUMBER || 'unknown',
+  connectionString: process.env.APPLICATIONINSIGHTS_CONNECTION_STRING,
+  debug: process.env.DEBUG_TELEMETRY === 'true',
+})
+  .addFilter(telemetry.processors.filterSpanWherePath(['/health', '/ping', '/info', '/assets/*', '/favicon.ico']))
+  .addModifier(telemetry.processors.enrichSpanNameWithHttpRoute())
+  .startRecording()
 
-    setup().setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
-  }
+const shutdown = async (signal: string) => {
+  logger.info(`${signal} received, shutting down...`)
+  await flushTelemetry()
+  process.exit(0)
 }
 
-export function buildAppInsightsClient(
-  { applicationName, buildNumber }: ApplicationInfo,
-  overrideName?: string,
-): TelemetryClient {
-  if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
-    defaultClient.context.tags['ai.cloud.role'] = overrideName || applicationName
-    defaultClient.context.tags['ai.application.ver'] = buildNumber
-
-    defaultClient.addTelemetryProcessor(({ data }) => {
-      const { url } = data.baseData
-      return !url?.endsWith('/health') && !url?.endsWith('/ping') && !url?.endsWith('/metrics')
-    })
-
-    defaultClient.addTelemetryProcessor(({ tags, data }, contextObjects) => {
-      const operationNameOverride = contextObjects.correlationContext?.customProperties?.getProperty('operationName')
-      if (operationNameOverride) {
-        /*  eslint-disable no-param-reassign */
-        tags['ai.operation.name'] = operationNameOverride
-        data.baseData.name = operationNameOverride
-        /*  eslint-enable no-param-reassign */
-      }
-      return true
-    })
-
-    return defaultClient
-  }
-  return null
-}
-
-export function appInsightsMiddleware(): RequestHandler {
-  return (req, res, next) => {
-    res.prependOnceListener('finish', () => {
-      const context = getCorrelationContext()
-      if (context && req.route) {
-        const path = req.route?.path
-        const pathToReport = Array.isArray(path) ? `"${path.join('" | "')}"` : path
-        context.customProperties.setProperty('operationName', `${req.method} ${pathToReport}`)
-      }
-    })
-    next()
-  }
-}
+process.on('SIGTERM', () => shutdown('SIGTERM'))
+process.on('SIGINT', () => shutdown('SIGINT'))
 
 export default class ApplicationInsightsEvents {
   static searchPerformed(request: ProbationSearchRequest, response: ProbationSearchResponse, username: string) {
-    defaultClient?.trackEvent({
-      name: 'SearchPerformed',
-      properties: {
-        query: {
-          length: request.query.length,
-          tokens: request.query.trim().split(/\s+/).length,
-        },
-        matchAllTerms: request.matchAllTerms,
-        providersFilter: request.providersFilter,
-        pageNumber: request.pageNumber,
-        asUsername: username,
-        response: {
-          size: response.size,
-          totalElements: response.totalElements,
-          totalPages: response.totalPages,
-          suggestions: Object.values(response?.suggestions?.suggest || {})
-            .flatMap(suggestions => suggestions.flatMap(s => s.options.map(o => ({ ...s, ...o }))))
-            .sort((a, b) => b.score - a.score || b.freq - a.freq)
-            .map(s => s.text),
-          probationAreaAggregations: Object.fromEntries(
-            response.probationAreaAggregations.map(p => [p.description, p.count]),
-          ),
-          content: response.content.map(result => result.otherIds.crn),
-        },
-      },
+    telemetry.trackEvent('SearchPerformed', {
+      'query.length': request.query.length,
+      'query.tokens': countTokens(request.query),
+      matchAllTerms: request.matchAllTerms,
+      providersFilter: request.providersFilter.join(','),
+      pageNumber: request.pageNumber,
+      asUsername: username,
+      'response.size': response.size,
+      'response.totalElements': response.totalElements,
+      'response.totalPages': response.totalPages,
+      'response.suggestions': JSON.stringify(
+        Object.values(response?.suggestions?.suggest || {})
+          .flatMap(suggestions => suggestions.flatMap(s => s.options.map(o => ({ ...s, ...o }))))
+          .sort((a, b) => b.score - a.score || b.freq - a.freq)
+          .map(s => s.text),
+      ),
+      'response.probationAreaAggregations': JSON.stringify(
+        Object.fromEntries(response.probationAreaAggregations.map(p => [p.description, p.count])),
+      ),
+      'response.content': JSON.stringify(response.content.map(result => result.otherIds.crn)),
     })
   }
 
   static trackEvent(req: Request) {
-    defaultClient?.trackEvent({
-      name: ApplicationInsightsEvents.mapActionToEventName(req.body.action),
-      properties: {
-        query: {
-          length: req.session.probationSearch?.query?.length,
-          tokens: req.session.probationSearch?.query?.trim().split(/\s+/).length,
-        },
-        matchAllTerms: req.session.probationSearch?.matchAllTerms,
-        providersFilter: req.session.probationSearch?.providers,
-        asUsername: req.user.username,
-        pageNumber: req.session.probationSearch?.page,
-        selectedResult: req.body.index,
-        selectedCrn: req.body.crn,
-      },
+    telemetry.trackEvent(ApplicationInsightsEvents.mapActionToEventName(req.body.action), {
+      'query.length': req.session.probationSearch?.query?.length ?? 0,
+      'query.tokens': countTokens(req.session.probationSearch?.query),
+      matchAllTerms: req.session.probationSearch?.matchAllTerms ?? '',
+      providersFilter: req.session.probationSearch?.providers?.join(',') ?? '',
+      asUsername: req.user.username,
+      pageNumber: toNumber(req.session.probationSearch?.page),
+      selectedResult: req.body.index ?? '',
+      selectedCrn: req.body.crn ?? '',
     })
   }
 
@@ -119,4 +70,13 @@ export default class ApplicationInsightsEvents {
     if (action === 'toggleSearch') return 'NavigatedToPreviousSearch'
     return action
   }
+}
+
+function countTokens(query?: string): number {
+  return query?.trim() ? query.trim().split(/\s+/).length : 0
+}
+
+function toNumber(value?: string | string[]): number {
+  const normalised = Array.isArray(value) ? value[0] : value
+  return Number(normalised ?? 0)
 }
