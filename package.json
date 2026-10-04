@@ -167,6 +167,7 @@
     "js-yaml": "^4.2.0",
     "@eslint/eslintrc": {
       "brace-expansion": "^1.1.13"
-    }
+    },
+    "moment": "^2.30.2"
   }
 }
