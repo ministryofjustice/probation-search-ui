@@ -4,7 +4,6 @@ import flash from 'connect-flash'
 import { Strategy as OAuth2Strategy } from 'passport-oauth2'
 import { AuthenticatedRequest, AuthenticationClient, VerificationClient } from '@ministryofjustice/hmpps-auth-clients'
 import { removeParameters } from '@ministryofjustice/probation-search-frontend/utils/url'
-import * as Sentry from '@sentry/node'
 import config from '../config'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import generateOauthClientToken from '../utils/clientCredentials'
@@ -32,7 +31,12 @@ const oauth2Strategy = new OAuth2Strategy(
     customHeaders: { Authorization: generateOauthClientToken() },
   },
   (token, refreshToken, params, profile, done) => {
-    return done(null, { token, username: params.user_name, authSource: params.auth_source })
+    return done(null, {
+      token,
+      username: params.user_name,
+      userUuid: params.user_uuid,
+      authSource: params.auth_source,
+    })
   },
 )
 
@@ -98,7 +102,6 @@ export default function setupAuthentication(authenticationClient: Authentication
   })
 
   router.use((req, res, next) => {
-    if (req.isAuthenticated()) Sentry.setUser({ username: req.user.username })
     res.locals.user = req.user as HmppsUser
     next()
   })
