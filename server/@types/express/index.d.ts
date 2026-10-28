@@ -16,6 +16,7 @@ export declare global {
       username: string
       token: string
       authSource: string
+      userUuid?: string
     }
 
     interface Request {
