@@ -27,6 +27,7 @@
           "access_token": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyX25hbWUiOiJVU0VSMSIsIm5hbWUiOiJqb2huIHNtaXRoIiwic2NvcGUiOlsicmVhZCJdLCJhdXRoX3NvdXJjZSI6ImRlbGl1cyIsImF1dGhvcml0aWVzIjpbIlJPTEVfVElFUl9TRVJWSUNFX1VTRVIiXSwianRpIjoiODNiNTBhMTAtY2NhNi00MWRiLTk4NWYtZTg3ZWZiMzAzZGRiIiwiY2xpZW50X2lkIjoiY2xpZW50aWQiLCJpYXQiOjE3MDE5NTEzNjgsImV4cCI6OTk5OTk5OTk5OX0.",
           "token_type": "bearer",
           "user_name": "USER1",
+          "user_uuid": "2aedad3a-f1fa-420f-9558-82c9490cb183",
           "expires_in": 599,
           "scope": "read",
           "internalUser": true

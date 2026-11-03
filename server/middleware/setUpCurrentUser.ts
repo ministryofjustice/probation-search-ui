@@ -1,5 +1,6 @@
 import { jwtDecode } from 'jwt-decode'
 import express from 'express'
+import * as Sentry from '@sentry/node'
 import { convertToTitleCase } from '../utils/utils'
 import logger from '../../logger'
 
@@ -11,20 +12,25 @@ export default function setUpCurrentUser() {
       const {
         name,
         user_id: userId,
+        user_uuid: tokenUserUuid,
         authorities: roles = [],
       } = jwtDecode(res.locals.user.token) as {
         name?: string
         user_id?: string
+        user_uuid?: string
         authorities?: string[]
       }
 
       res.locals.user = {
         ...res.locals.user,
         userId,
+        userUuid: tokenUserUuid ?? res.locals.user.userUuid,
         name,
         displayName: convertToTitleCase(name),
         userRoles: roles.map(role => role.substring(role.indexOf('_') + 1)),
       }
+
+      Sentry.setUser(res.locals.user.userUuid ? { id: res.locals.user.userUuid } : null)
 
       if (res.locals.user.authSource === 'nomis') {
         res.locals.user.staffId = parseInt(userId, 10) || undefined

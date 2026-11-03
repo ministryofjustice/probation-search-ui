@@ -26,14 +26,14 @@ process.on('SIGTERM', () => shutdown('SIGTERM'))
 process.on('SIGINT', () => shutdown('SIGINT'))
 
 export default class ApplicationInsightsEvents {
-  static searchPerformed(request: ProbationSearchRequest, response: ProbationSearchResponse, username: string) {
+  static searchPerformed(request: ProbationSearchRequest, response: ProbationSearchResponse, userUuid?: string) {
     telemetry.trackEvent('SearchPerformed', {
       'query.length': request.query.length,
       'query.tokens': countTokens(request.query),
       matchAllTerms: request.matchAllTerms,
       providersFilter: request.providersFilter.join(','),
       pageNumber: request.pageNumber,
-      asUsername: username,
+      ...(userUuid ? { asUserUuid: userUuid } : {}),
       'response.size': response.size,
       'response.totalElements': response.totalElements,
       'response.totalPages': response.totalPages,
@@ -50,13 +50,13 @@ export default class ApplicationInsightsEvents {
     })
   }
 
-  static trackEvent(req: Request) {
+  static trackEvent(req: Request, userUuid?: string) {
     telemetry.trackEvent(ApplicationInsightsEvents.mapActionToEventName(req.body.action), {
       'query.length': req.session.probationSearch?.query?.length ?? 0,
       'query.tokens': countTokens(req.session.probationSearch?.query),
       matchAllTerms: req.session.probationSearch?.matchAllTerms ?? '',
       providersFilter: req.session.probationSearch?.providers?.join(',') ?? '',
-      asUsername: req.user.username,
+      ...(userUuid ? { asUserUuid: userUuid } : {}),
       pageNumber: toNumber(req.session.probationSearch?.page),
       selectedResult: req.body.index ?? '',
       selectedCrn: req.body.crn ?? '',

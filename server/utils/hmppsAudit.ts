@@ -27,11 +27,11 @@ export default function hmppsAudit(req: Request, res: Response, next: NextFuncti
   }
   const request: ProbationSearchRequest = res.locals.searchRequest
   const response: ProbationSearchResponse = res.locals.searchResponse
-  const userName = req.user.username
+  const userUuid = res.locals.user?.userUuid
 
   auditService.sendAuditMessage({
     action: `SEARCH_PERFORMED`,
-    who: userName,
+    who: userUuid,
     details: JSON.stringify({ request }),
     correlationId: crypto.randomUUID(),
     service: 'probation-search-ui',
@@ -40,7 +40,7 @@ export default function hmppsAudit(req: Request, res: Response, next: NextFuncti
   response.content.forEach(result => {
     auditService.sendAuditMessage({
       action: `VIEWED_RESULTS`,
-      who: userName,
+      who: userUuid,
       subjectId: result.otherIds.crn,
       subjectType: 'CRN',
       correlationId: crypto.randomUUID(),

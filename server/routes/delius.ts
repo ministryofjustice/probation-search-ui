@@ -26,7 +26,7 @@ export default function deliusRoutes(router: Router, { hmppsAuthClient }: Servic
       deliusUrl: config.delius.url,
       sentry: config.sentry,
       ...(res.locals.searchResponse
-        ? mapResults(res.locals.searchResponse, res.locals.searchRequest, req.user.username)
+        ? mapResults(res.locals.searchResponse, res.locals.searchRequest, res.locals.user?.userUuid)
         : {}),
     }),
   )
@@ -61,13 +61,13 @@ export default function deliusRoutes(router: Router, { hmppsAuthClient }: Servic
   router.get('/delius/nationalSearch/help', (req, res) => res.render('pages/deliusSearch/help'))
 
   router.post('/delius/nationalSearch/trackEvent', (req, res) => {
-    ApplicationInsightsEvents.trackEvent(req)
+    ApplicationInsightsEvents.trackEvent(req, res.locals.user?.userUuid)
     res.sendStatus(200)
   })
 }
 
-function mapResults(response: ProbationSearchResponse, request: ProbationSearchRequest, username: string) {
-  ApplicationInsightsEvents.searchPerformed(request, response, username)
+function mapResults(response: ProbationSearchResponse, request: ProbationSearchRequest, userUuid?: string) {
+  ApplicationInsightsEvents.searchPerformed(request, response, userUuid)
   const returnedProviders = response.probationAreaAggregations.map(p => ({
     value: `${p.code}-${p.description}`,
     text: `${p.description} (${p.count})`,
